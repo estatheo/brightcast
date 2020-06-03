@@ -1,0 +1,66 @@
+<nb-card>
+    <nb-card-header>
+        <div class="header-container">
+            <div>
+                Campaigns
+            </div>
+            <div>
+                <button type="button" nbButton status="primary" (click)="openModal()">Create New</button>
+            </div>
+        </div>
+
+    </nb-card-header>
+    <nb-card-body>
+        <table class="table table-striped" [mfData]="data" #mf="mfDataTable" [mfRowsOnPage]="15">
+            <thead>
+                <tr>
+                    <th style="width: 20%">
+                        <mfDefaultSorter by="name">Name</mfDefaultSorter>
+                    </th>
+                    <th style="width: 20%">
+                        <mfDefaultSorter by="sent">Sent</mfDefaultSorter>
+                    </th>
+                    <th style="width: 20%">
+                        <mfDefaultSorter by="email">Read</mfDefaultSorter>
+                    </th>
+                    <th style="width: 20%">
+                        <mfDefaultSorter by="email">Response</mfDefaultSorter>
+                    </th>
+                    <th class="statusCol">
+                        <mfDefaultSorter by="email">Status</mfDefaultSorter>
+                    </th>
+                    <th style="width: 30%">
+                        <mfDefaultSorter by="email">Action</mfDefaultSorter>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of mf.data">
+                    <td>{{item.name}}</td>
+                    <td>{{item.sent}}</td>
+                    <td>{{item.read}}</td>
+                    <td>{{item.response}}</td>
+                    <td *ngIf="item.status == 0" ><div class="status created"> Created </div></td>
+                    <td *ngIf="item.status == 1" ><div class="status submitted"> Submitted </div></td>
+                    <td *ngIf="item.status == 2" ><div class="status completed"> Completed </div></td>
+                    <td *ngIf="item.status == 3" ><div class="status canceled"> Canceled </div></td>
+                    <td>
+                        <div class="flex-icons">
+                            <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons">
+                            </nb-icon>
+                            <nb-icon [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
+                                class="campaign-icons">
+                            </nb-icon>
+                            <nb-icon [icon]="'refresh'" pack="eva" class="campaign-icons">
+                            </nb-icon>
+                            <nb-icon [icon]="'paper-plane'" pack="eva" class="campaign-icons">
+                            </nb-icon>
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </nb-card-body>
+</nb-card>

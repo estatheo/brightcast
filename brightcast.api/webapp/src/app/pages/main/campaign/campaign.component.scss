@@ -1,0 +1,58 @@
+
+.header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+nb-icon {
+  cursor: pointer;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.statusCol {
+  width: 20%;
+}
+.flex-icons{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+table {
+    color: inherit;
+    margin-top: 5px;
+    td {
+        text-align: center;
+    }
+    th {
+        text-align: center;
+    }
+  }
+  
+  .status {
+      border-radius: 25px;
+      max-width: 140px;
+      margin: auto;
+  }
+  .created {
+    background-color: #F9DAAA;
+    // color: #FFAB2B !important;
+    color: black;
+  }
+  .submitted {
+    background-color: #BCCEFF;
+    // color: #0048CD !important;
+    color: black;
+  }
+  .completed {
+    background-color: #EDFFE2 ;
+    // color: #6DD230 !important;
+    color: black;
+  }
+  .canceled {
+    background-color: #FFAED0;
+    // color: #FE4D97 !important;
+    color: black;
+  }
+

@@ -1,0 +1,101 @@
+<div class="card-container">
+  <div class="card-iteself" [ngClass]="{'card-selected': selectedChart==='Delivered'}" (click)="selectedChart = 'Delivered'">
+    <nb-card>
+      <nb-card-body>
+        <div class="card-heading">
+          Delivered
+        </div>
+        <div class="card-values">
+          <div class="absolute" counto [step]="50" [countTo]="27698" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues1[0] = $event">
+            {{absoluteValues1[0] | number:'1.0-0'}}
+          </div>
+          <div class="percentage" [style.color]="percentageValues[0] >= 0 ? '#3DD598' : '#FC5A5A'">
+            {{percentageValues[0] >= 0 ? '+' : '' }} {{percentageValues[0] | number:'1.2-2'}}%
+
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="card-iteself" [ngClass]="{'card-selected': selectedChart==='Read'}" (click)="selectedChart = 'Read'">
+    <nb-card>
+      <nb-card-body>
+        <div class="card-heading">
+          Read
+        </div>
+        <div class="card-values">
+          <div class="absolute" counto [step]="50" [countTo]="27632" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues1[1] = $event">
+            {{absoluteValues1[1] | number:'1.0-0'}}
+          </div>
+          <div class="percentage" [style.color]="percentageValues[1] >= 0 ? '#3DD598' : '#FC5A5A'">
+            {{percentageValues[1] >= 0 ? '+' : '' }} {{percentageValues[1] | number:'1.2-2'}}%
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="card-iteself" [ngClass]="{'card-selected': selectedChart==='New Subscribers'}" (click)="selectedChart = 'New Subscribers'">
+    <nb-card>
+      <nb-card-body>
+        <div class="card-heading">
+          New Subscribers
+        </div>
+        <div class="card-values">
+          <div class="absolute" counto [step]="50" [countTo]="27698" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues1[2] = $event">
+            {{absoluteValues1[2] | number:'1.0-0'}}
+          </div>
+          <div class="percentage" [style.color]="percentageValues[2] >= 0 ? '#3DD598' : '#FC5A5A'">
+            {{percentageValues[2] >= 0 ? '+' : '' }} {{percentageValues[2] | number:'1.2-2'}}%
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="card-iteself" [ngClass]="{'card-selected': selectedChart==='Unsubscribed'}" (click)="selectedChart = 'Unsubscribed'">
+    <nb-card>
+      <nb-card-body>
+        <div class="card-heading">
+          Unsubscribed
+        </div>
+        <div class="card-values">
+          <div class="absolute" counto [step]="50" [countTo]="27632" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues1[3] = $event">
+            {{absoluteValues1[3] | number:'1.0-0'}}
+          </div>
+          <div class="percentage" [style.color]="percentageValues[3] >= 0 ? '#3DD598' : '#FC5A5A'">
+            {{percentageValues[3] >= 0 ? '+' : '' }} {{percentageValues[3] | number:'1.2-2'}}%
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="card-iteself" [ngClass]="{'card-selected': selectedChart==='Replies'}" (click)="selectedChart = 'Replies'">
+    <nb-card>
+      <nb-card-body>
+        <div class="card-heading">
+          Replies
+        </div>
+        <div class="card-values">
+          <div class="absolute" counto [step]="50" [countTo]="27632" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues1[4] = $event">
+            {{absoluteValues1[4] | number:'1.0-0'}}
+          </div>
+          <div class="percentage" [style.color]="percentageValues[4] >= 0 ? '#3DD598' : '#FC5A5A'">
+            {{percentageValues[4] >= 0 ? '+' : '' }} {{percentageValues[4] | number:'1.2-2'}}%
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
+
+<!-- Chart Below -->
+
+<div class="row">
+  <div class="col">
+    <ngx-ecommerce-charts chartName="{{selectedChart}}"></ngx-ecommerce-charts>
+  </div>
+</div>

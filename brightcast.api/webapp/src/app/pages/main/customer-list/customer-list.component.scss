@@ -1,0 +1,42 @@
+.custom {
+    text-align: center;
+}
+.header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+.icon-flex {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+
+.flex-icons{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+// .icon-itself {
+//     padding-left: 5px;
+//     padding-right: 5px;
+//     cursor: pointer;
+// }
+nb-icon {
+    cursor: pointer;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+table {
+    color: inherit;
+    margin-top: 5px;
+    td {
+        text-align: center;
+    }
+    th {
+        text-align: center;
+    }
+}

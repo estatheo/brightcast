@@ -1,0 +1,21 @@
+@import '../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  nb-card {
+    transform: translate3d(0, 0, 0);
+  }
+  nb-icon {
+    margin: 0.7rem;
+    cursor: pointer;
+  }
+}
+
+table {
+  tr {
+    color: white;
+  }
+
+  td {
+      color: white;
+  }
+}
