@@ -34,7 +34,7 @@ namespace brightcast.Services
 
         public List<UserProfile> GetAllByUserId(int id)
         {
-            return _context.UserProfiles.Where(x => x.UserId == id).Where(x => x.Deleted == 1).ToList();
+            return _context.UserProfiles.Where(x => x.UserId == id).Where(x => x.Deleted == 0).ToList();
         }
 
 
@@ -48,7 +48,17 @@ namespace brightcast.Services
 
             profile.Deleted = 0;
 
+            if (profile.Default)
+            {
+                var profiles =_context.UserProfiles.Where(x => x.UserId == profile.UserId && x.Deleted == 0);
+                foreach (var userProfile in profiles)
+                {
+                    userProfile.Default = false;
+                    _context.UserProfiles.Update(userProfile);
+                }
+            }
             _context.UserProfiles.Add(profile);
+
             _context.SaveChanges();
 
             return profile;

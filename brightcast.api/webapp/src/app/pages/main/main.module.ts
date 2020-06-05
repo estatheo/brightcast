@@ -22,12 +22,11 @@ import { FormsModule } from '@angular/forms';
 import { CampaignFormComponent } from './campaign/campaign-form/campaign-form.component';
 import { WindowFormComponent } from '../modal-overlays/window/window-form/window-form.component';
 import { CampaignService } from './campaign/campaign-form/campaign-form.service';
-import { OnboardingComponent } from './onboarding/onboarding.component';
 import { CustomerFormComponent } from './customer-list/customer-form/customer-form.component';
 import { CustomerService } from './customer-list/customer-form/customer.service';
 
 @NgModule({
-  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CampaignComponent, CampaignFormComponent, OnboardingComponent, CustomerFormComponent],
+  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CampaignComponent, CampaignFormComponent, CustomerFormComponent],
   imports: [
     CommonModule,
     ThemeModule,

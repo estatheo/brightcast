@@ -15,7 +15,7 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-        public int ContactListId { get; set; }
+        public int? ContactListId { get; set; }
         public ContactList ContactList { get; set; }
     }
 }

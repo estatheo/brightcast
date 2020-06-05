@@ -6,6 +6,11 @@ import { map } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { User } from '../_models';
+import { Business } from '../_models/business';
+import { Role } from '../_models/role';
+import { UserProfile } from '../_models/userProfile';
+import { Campaign } from '../_models/campaign';
+import { ContactList } from '../_models/contactList';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -24,11 +29,12 @@ export class AccountService {
     }
 
     login(username, password) {
-        return this.http.post<User>(`${environment.apiUrl}/users/authenticate`, { username, password })
+        return this.http.post<User>(`${environment.apiUrl}/user/authenticate`, { username, password })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);
+                this.onboardingCheck()
                 return user;
             }));
     }
@@ -39,21 +45,21 @@ export class AccountService {
         this.userSubject.next(null);
         this.router.navigate(['/auth/login']);
     }
-
+    
     register(user: User) {
-        return this.http.post(`${environment.apiUrl}/users/register`, user);
+        return this.http.post(`${environment.apiUrl}/user/register`, user);
     }
 
     getAll() {
-        return this.http.get<User[]>(`${environment.apiUrl}/users`);
+        return this.http.get<User[]>(`${environment.apiUrl}/user`);
     }
 
     getById(id: string) {
-        return this.http.get<User>(`${environment.apiUrl}/users/${id}`);
+        return this.http.get<User>(`${environment.apiUrl}/user`);
     }
 
     update(id, params) {
-        return this.http.put(`${environment.apiUrl}/users/${id}`, params)
+        return this.http.put(`${environment.apiUrl}/user`, params)
             .pipe(map(x => {
                 // update stored user if the logged in user updated their own record
                 if (id == this.userValue.id) {
@@ -69,7 +75,7 @@ export class AccountService {
     }
 
     delete(id: string) {
-        return this.http.delete(`${environment.apiUrl}/users/${id}`)
+        return this.http.delete(`${environment.apiUrl}/user`)
             .pipe(map(x => {
                 // auto logout if the logged in user deleted their own record
                 if (id == this.userValue.id) {
@@ -77,5 +83,23 @@ export class AccountService {
                 }
                 return x;
             }));
+    }
+
+    onboardingCheck() {
+        return this.http.get(`${environment.apiUrl}/userprofile/onboardingCheck`).subscribe(data => {
+            if(data['onboard']) {
+                this.router.navigate(['/onboarding']);
+            }
+        });
+    }
+
+    onboarding(business: Business, role: Role, userProfile: UserProfile, campaign: Campaign, contactList: ContactList ) {
+        return this.http.post(`${environment.apiUrl}/userProfile/onboarding`, {
+            business,
+            role,
+            userProfile,
+            contactList,
+            campaign,
+        })
     }
 }

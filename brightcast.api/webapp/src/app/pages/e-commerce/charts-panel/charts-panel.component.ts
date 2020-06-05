@@ -17,7 +17,7 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
   private alive = true;
 
   chartPanelSummary: OrderProfitChartSummary[];
-  period: string = 'month';
+  period: string = 'week';
   ordersChartData: OrdersChart;
   profitChartData: ProfitChart;
   @ViewChild('ordersChart', { static: true }) ordersChart: OrdersChartComponent;

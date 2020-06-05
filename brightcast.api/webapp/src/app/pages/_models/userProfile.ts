@@ -1,6 +1,11 @@
 ﻿export class UserProfile {
-    id?: string;
-    username: string;
-    password: string;
-    token?: string;
+    id?: number;
+    firstName?: string;
+    lastName?: string;
+    pictureUrl?: string;
+    Phone?: string;
+    Default?: boolean;
+    UserId?: number;
+    RoleId?: number;
+    BusinessId?: number;
 }

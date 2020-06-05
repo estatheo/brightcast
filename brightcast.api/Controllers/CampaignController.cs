@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
@@ -12,9 +15,10 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class CampaignController : ControllerBase
     {
+        private IUserProfileService _userProfileService;
         private ICampaignService _campaignService;
         private ICampaignSentService _campaignSentService;
         private ICampaignSentStatsService _campaignSentStatsService;
@@ -22,6 +26,7 @@ namespace brightcast.Controllers
         private readonly AppSettings _appSettings;
 
         public CampaignController(
+            IUserProfileService userProfileService,
             ICampaignService campaignService,
             ICampaignSentService campaignSentService,
             ICampaignSentStatsService campaignSentStatsService,
@@ -31,6 +36,7 @@ namespace brightcast.Controllers
             _campaignService = campaignService;
             _campaignSentService = campaignSentService;
             _campaignSentStatsService = campaignSentStatsService;
+            _userProfileService = userProfileService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -63,6 +69,47 @@ namespace brightcast.Controllers
             {
                 // update user 
                 _campaignService.Update(campaign);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody]CampaignModel model)
+        {
+            int userId;
+
+            try
+            {
+                userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest("User not found");
+            }
+
+            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            if (userProfile == null || userProfile.Id == 0)
+            {
+                return NotFound(
+                    new
+                    {
+                        message = "UserProfile Not Found"
+                    });
+            }
+
+            // map model to entity and set id
+            var campaign = _mapper.Map<Campaign>(model);
+            campaign.UserProfileId = userProfile.Id;
+            try
+            {
+                // update user 
+                _campaignService.Create(campaign);
                 return Ok();
             }
             catch (AppException ex)

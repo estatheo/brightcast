@@ -16,6 +16,9 @@ namespace brightcast.Entities
         public int Deleted { get; set; }
 
 
+        public UserProfile UserProfile { get; set; }
+        public int? UserProfileId { get; set; }
         public List<CampaignSent> CampaignSents { get; set; }
+
     }
 }

@@ -14,7 +14,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ContactController : ControllerBase
     {
         private IContactService _contactService;

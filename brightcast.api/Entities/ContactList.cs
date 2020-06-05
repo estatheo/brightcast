@@ -16,7 +16,9 @@ namespace brightcast.Entities
 
         public List<Contact> Contacts { get; } = new List<Contact>();
 
-        public int UserProfileId { get; set; }
+        public int? UserProfileId { get; set; }
         public UserProfile UserProfile { get; set; }
+
+        public List<CampaignSent> CampaignSents { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using brightcast.Models.Campaigns;
 using brightcast.Models.ContactLists;
 using brightcast.Models.Contacts;
 using brightcast.Models.Roles;
+using brightcast.Models.UserProfiles;
 using brightcast.Models.Users;
 
 namespace brightcast.Helpers
@@ -14,9 +15,12 @@ namespace brightcast.Helpers
         public AutoMapperProfile()
         {
             CreateMap<UserModel, User>();
-            CreateMap<RegisterModel, User>();
-            CreateMap<UpdateModel, User>();
-            CreateMap<RegisterProfileModel, User>();
+            CreateMap<UserRegisterModel, User>();
+            CreateMap<UserUpdateModel, User>();
+            CreateMap<UserAuthenticateModel, User>();
+            CreateMap<UserProfileUpdateModel, UserProfile>();
+            CreateMap<UserProfileRegistrationModel, UserProfile>();
+            CreateMap<UserProfileModel, UserProfile>();
             CreateMap<RoleModel, Role>();
             CreateMap<ContactModel, Contact>();
             CreateMap<ContactListModel, ContactList>();

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace brightcast.Models.Users
 {
-    public class AuthenticateModel
+    public class UserRegisterModel
     {
         [Required]
         public string Username { get; set; }

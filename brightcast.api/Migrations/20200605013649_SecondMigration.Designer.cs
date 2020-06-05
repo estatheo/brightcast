@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using brightcast.Helpers;
 
 namespace brightcast.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200605013649_SecondMigration")]
+    partial class SecondMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,7 +97,7 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserProfileId")
+                    b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -136,11 +138,12 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");
-
-                    b.HasIndex("ContactListId");
 
                     b.ToTable("CampaignSents");
                 });
@@ -202,7 +205,7 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ContactListId")
+                    b.Property<int>("ContactListId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -267,7 +270,7 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserProfileId")
+                    b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -353,7 +356,7 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BusinessId")
+                    b.Property<int>("BusinessId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -380,7 +383,7 @@ namespace brightcast.Migrations
                     b.Property<string>("PictureUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoleId")
+                    b.Property<int>("RoleId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -389,7 +392,7 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -405,22 +408,18 @@ namespace brightcast.Migrations
 
             modelBuilder.Entity("brightcast.Entities.Campaign", b =>
                 {
-                    b.HasOne("brightcast.Entities.UserProfile", "UserProfile")
+                    b.HasOne("brightcast.Entities.UserProfile", null)
                         .WithMany("Campaigns")
-                        .HasForeignKey("UserProfileId");
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.CampaignSent", b =>
                 {
-                    b.HasOne("brightcast.Entities.Campaign", "Campaign")
+                    b.HasOne("brightcast.Entities.Campaign", null)
                         .WithMany("CampaignSents")
                         .HasForeignKey("CampaignId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("brightcast.Entities.ContactList", "ContactList")
-                        .WithMany("CampaignSents")
-                        .HasForeignKey("ContactListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -438,29 +437,39 @@ namespace brightcast.Migrations
                 {
                     b.HasOne("brightcast.Entities.ContactList", "ContactList")
                         .WithMany("Contacts")
-                        .HasForeignKey("ContactListId");
+                        .HasForeignKey("ContactListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.ContactList", b =>
                 {
                     b.HasOne("brightcast.Entities.UserProfile", "UserProfile")
                         .WithMany("ContactLists")
-                        .HasForeignKey("UserProfileId");
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.UserProfile", b =>
                 {
                     b.HasOne("brightcast.Entities.Business", "Business")
                         .WithMany("UserProfiles")
-                        .HasForeignKey("BusinessId");
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("brightcast.Entities.Role", "Role")
                         .WithMany("UserProfiles")
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("brightcast.Entities.User", "User")
                         .WithMany("Profiles")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

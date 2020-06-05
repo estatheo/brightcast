@@ -36,7 +36,7 @@ import { UserService } from './mock/users.service';
 import { ElectricityService } from './mock/electricity.service';
 import { SmartTableService } from './mock/smart-table.service';
 import { UserActivityService } from './mock/user-activity.service';
-import { OrdersChartService } from './mock/orders-chart.service';
+import { DashboardService } from './apis/dashboard.service';
 import { ProfitChartService } from './mock/profit-chart.service';
 import { TrafficListService } from './mock/traffic-list.service';
 import { EarningService } from './mock/earning.service';
@@ -76,7 +76,7 @@ const DATA_SERVICES = [
   { provide: ElectricityData, useClass: ElectricityService },
   { provide: SmartTableData, useClass: SmartTableService },
   { provide: UserActivityData, useClass: UserActivityService },
-  { provide: OrdersChartData, useClass: OrdersChartService },
+  { provide: OrdersChartData, useClass: DashboardService },
   { provide: ProfitChartData, useClass: ProfitChartService },
   { provide: TrafficListData, useClass: TrafficListService },
   { provide: EarningData, useClass: EarningService },
@@ -108,7 +108,7 @@ export const NB_CORE_PROVIDERS = [
     strategies: [
       NbDummyAuthStrategy.setup({
         name: 'email',
-        delay: 3000,
+        delay: 1000,
       }),
     ],
     forms: {

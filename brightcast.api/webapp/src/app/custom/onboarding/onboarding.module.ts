@@ -2,9 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AuthRoutingModule } from './auth-routing.module';
-import { LoginComponent } from './login/login.component';
-import { NbAuthModule } from '@nebular/auth';
 import {
   NbAlertModule,
   NbButtonModule,
@@ -15,15 +12,15 @@ import {
   NbSelectModule,
   NbRouteTabsetModule,
   NbStepperModule,
+  NbToastrModule,
 } from '@nebular/theme';
-import { RegisterComponent } from './register/register.component';
-import { ResetComponent } from './reset/reset.component';
-import { RequestPasswordComponent } from './request-password/request-password.component';
 import { ThemeModule } from '../../@theme/theme.module';
+import { OnboardingComponent } from './onboarding.component';
+import { OnboardingRoutingModule } from './onboarding-routing.module';
 
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, ResetComponent,RequestPasswordComponent],
+  declarations: [ OnboardingComponent ],
   imports: [
     CommonModule,
     ThemeModule,
@@ -35,14 +32,12 @@ import { ThemeModule } from '../../@theme/theme.module';
     NbButtonModule,
     NbCheckboxModule,
     NbCardModule,
-    AuthRoutingModule,
     NbTabsetModule,
     NbSelectModule,
     NbRouteTabsetModule,
     NbStepperModule,
-
-    NbAuthModule,
-
+    OnboardingRoutingModule,
+    NbToastrModule
   ]
 })
-export class AuthModule { }
+export class OnboardingModule { }
