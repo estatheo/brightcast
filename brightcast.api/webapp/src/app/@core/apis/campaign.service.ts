@@ -7,21 +7,11 @@ import { OrderProfitChartSummary } from '../data/orders-profit-chart';
 import { of ,  Observable } from 'rxjs';
 import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
 @Injectable()
-export class DashboardService {
+export class CampaignService {
 
   apiURL: string = environment.apiUrl;
   private cache$: Observable<Object>;
-  private year = [
-    '2012',
-    '2013',
-    '2014',
-    '2015',
-    '2016',
-    '2017',
-    '2018',
-    '2019',
-    '2020',
-  ];
+  
 
   constructor(private httpClient: HttpClient) {   
   }
@@ -36,8 +26,24 @@ export class DashboardService {
     return this.cache$;
   }
 
+  refreshData() {
+    this.cache$ = null;
+  }
+
   private requestData() {
-    return this.httpClient.get(`${this.apiURL}/dashboard/data`).pipe(map(response => response));
+    return this.httpClient.get(`${this.apiURL}/campaign/data`).pipe(map(response => response));
+  }
+
+  NewCampaign(campaign) {
+    return this.httpClient.post(`${this.apiURL}/campaign/new`,campaign).pipe(map(response => response))
+  }
+
+  Delete(id) {
+    return this.httpClient.delete(`${this.apiURL}/campaign/${id}`);
+  }
+
+  Update(campaign) {
+    return this.httpClient.put(`${this.apiURL}/campaign/${campaign.id}`, campaign);
   }
 }
   

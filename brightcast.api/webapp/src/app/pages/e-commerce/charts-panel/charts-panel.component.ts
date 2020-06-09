@@ -6,6 +6,7 @@ import { ProfitChartComponent } from './charts/profit-chart.component';
 import { OrdersChart } from '../../../@core/data/orders-chart';
 import { ProfitChart } from '../../../@core/data/profit-chart';
 import { OrderProfitChartSummary, OrdersProfitChartData } from '../../../@core/data/orders-profit-chart';
+import { DashboardService } from '../../../@core/apis/dashboard.service';
 
 @Component({
   selector: 'ngx-ecommerce-charts',
@@ -14,8 +15,10 @@ import { OrderProfitChartSummary, OrdersProfitChartData } from '../../../@core/d
 })
 export class ECommerceChartsPanelComponent implements OnDestroy {
   @Input() chartName: string;
-  private alive = true;
 
+  @Input() option: string;  
+
+  private alive = true;
   chartPanelSummary: OrderProfitChartSummary[];
   period: string = 'week';
   ordersChartData: OrdersChart;
@@ -23,12 +26,12 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
   @ViewChild('ordersChart', { static: true }) ordersChart: OrdersChartComponent;
   @ViewChild('profitChart', { static: true }) profitChart: ProfitChartComponent;
 
-  constructor(private ordersProfitChartService: OrdersProfitChartData) {
-    this.ordersProfitChartService.getOrderProfitChartSummary()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe((summary) => {
-        this.chartPanelSummary = summary;
-      });
+  constructor(private ordersProfitChartService: DashboardService) {
+    // this.ordersProfitChartService.getOrderProfitChartSummary()
+    //   .pipe(takeWhile(() => this.alive))
+    //   .subscribe((summary) => {
+    //     this.chartPanelSummary = summary;
+    //   });
 
     this.getOrdersChartData(this.period);
     // this.getProfitChartData(this.period);
@@ -52,11 +55,6 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
   }
 
   getOrdersChartData(period: string) {
-    this.ordersProfitChartService.getOrdersChartData(period)
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(ordersChartData => {
-        this.ordersChartData = ordersChartData;
-      });
   }
 
   // getProfitChartData(period: string) {

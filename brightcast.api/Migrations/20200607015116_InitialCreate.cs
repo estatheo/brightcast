@@ -18,6 +18,7 @@ namespace brightcast.Migrations
                     Website = table.Column<string>(nullable: true),
                     Address = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
+                    Category = table.Column<string>(nullable: true),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(nullable: true),
@@ -84,9 +85,9 @@ namespace brightcast.Migrations
                     UpdatedBy = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
                     Deleted = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
-                    BusinessId = table.Column<int>(nullable: false),
-                    RoleId = table.Column<int>(nullable: false)
+                    UserId = table.Column<int>(nullable: true),
+                    BusinessId = table.Column<int>(nullable: true),
+                    RoleId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,19 +97,19 @@ namespace brightcast.Migrations
                         column: x => x.BusinessId,
                         principalTable: "Businesses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserProfiles_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserProfiles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -120,6 +121,7 @@ namespace brightcast.Migrations
                     Name = table.Column<string>(nullable: true),
                     Message = table.Column<string>(nullable: true),
                     FileUrl = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(nullable: true),
@@ -151,7 +153,7 @@ namespace brightcast.Migrations
                     UpdatedBy = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
                     Deleted = table.Column<int>(nullable: false),
-                    UserProfileId = table.Column<int>(nullable: false)
+                    UserProfileId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -161,7 +163,7 @@ namespace brightcast.Migrations
                         column: x => x.UserProfileId,
                         principalTable: "UserProfiles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,14 +173,13 @@ namespace brightcast.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Date = table.Column<DateTime>(nullable: false),
-                    CampaignId = table.Column<int>(nullable: false),
-                    ContactListId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
-                    Deleted = table.Column<int>(nullable: false)
+                    Deleted = table.Column<int>(nullable: false),
+                    ContactListId = table.Column<int>(nullable: true),
+                    CampaignId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,7 +189,13 @@ namespace brightcast.Migrations
                         column: x => x.CampaignId,
                         principalTable: "Campaigns",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CampaignSents_ContactLists_ContactListId",
+                        column: x => x.ContactListId,
+                        principalTable: "ContactLists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -206,7 +213,7 @@ namespace brightcast.Migrations
                     UpdatedBy = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
                     Deleted = table.Column<int>(nullable: false),
-                    ContactListId = table.Column<int>(nullable: false)
+                    ContactListId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -216,7 +223,7 @@ namespace brightcast.Migrations
                         column: x => x.ContactListId,
                         principalTable: "ContactLists",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,7 +243,7 @@ namespace brightcast.Migrations
                     UpdatedBy = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
                     Deleted = table.Column<int>(nullable: false),
-                    CampaignSentId = table.Column<int>(nullable: false)
+                    CampaignSentId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -246,7 +253,7 @@ namespace brightcast.Migrations
                         column: x => x.CampaignSentId,
                         principalTable: "CampaignSents",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -258,6 +265,11 @@ namespace brightcast.Migrations
                 name: "IX_CampaignSents_CampaignId",
                 table: "CampaignSents",
                 column: "CampaignId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CampaignSents_ContactListId",
+                table: "CampaignSents",
+                column: "ContactListId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CampaignSentStatses_CampaignSentId",
@@ -302,10 +314,10 @@ namespace brightcast.Migrations
                 name: "CampaignSents");
 
             migrationBuilder.DropTable(
-                name: "ContactLists");
+                name: "Campaigns");
 
             migrationBuilder.DropTable(
-                name: "Campaigns");
+                name: "ContactLists");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");

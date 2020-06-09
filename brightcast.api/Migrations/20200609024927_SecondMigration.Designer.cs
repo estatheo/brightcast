@@ -10,8 +10,8 @@ using brightcast.Helpers;
 namespace brightcast.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200605033608_ThirdMigration")]
-    partial class ThirdMigration
+    [Migration("20200609024927_SecondMigration")]
+    partial class SecondMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -91,6 +91,9 @@ namespace brightcast.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -114,10 +117,10 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CampaignId")
+                    b.Property<int?>("CampaignId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ContactListId")
+                    b.Property<int?>("ContactListId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -154,7 +157,7 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CampaignSentId")
+                    b.Property<int?>("CampaignSentId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -227,6 +230,9 @@ namespace brightcast.Migrations
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Subscribed")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -416,24 +422,18 @@ namespace brightcast.Migrations
                 {
                     b.HasOne("brightcast.Entities.Campaign", "Campaign")
                         .WithMany("CampaignSents")
-                        .HasForeignKey("CampaignId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CampaignId");
 
                     b.HasOne("brightcast.Entities.ContactList", "ContactList")
                         .WithMany("CampaignSents")
-                        .HasForeignKey("ContactListId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactListId");
                 });
 
             modelBuilder.Entity("brightcast.Entities.CampaignSentStats", b =>
                 {
                     b.HasOne("brightcast.Entities.CampaignSent", "CampaignSent")
                         .WithMany("CampaignSentStatses")
-                        .HasForeignKey("CampaignSentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CampaignSentId");
                 });
 
             modelBuilder.Entity("brightcast.Entities.Contact", b =>

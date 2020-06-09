@@ -46,7 +46,7 @@
                     <td *ngIf="item.status == 3" ><div class="status canceled"> Canceled </div></td>
                     <td>
                         <div class="flex-icons">
-                            <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons">
+                            <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">
                             </nb-icon>
                             <nb-icon [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
                                 class="campaign-icons">

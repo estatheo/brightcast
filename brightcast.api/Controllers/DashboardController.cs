@@ -29,6 +29,49 @@ namespace brightcast.Controllers
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
+        private DashboardDataResponse emptyResponse = new DashboardDataResponse()
+        {
+            Delivered = new CardStatModel()
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new int[] {0}
+            },
+            Read = new CardStatModel()
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new int[] {0}
+            },
+            NewSubscribers = new CardStatModel()
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new int[] {0}
+            },
+            Unsubscribed = new CardStatModel()
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new int[] {0}
+            },
+            Replies = new CardStatModel()
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new int[] {0}
+            }
+        };
         public DashboardController (
             ICampaignService campaignService,
             ICampaignSentService campaignSentService,
@@ -77,21 +120,21 @@ namespace brightcast.Controllers
             var campaigns = _campaignService.GetByUserProfileId(userProfile.Id);
             if (campaigns == null || campaigns.Count == 0)
             {
-                return Ok(MapStats(new List<CampaignSentStats>()));
+                return Ok(emptyResponse);
             }
             foreach (var campaign in campaigns.Where(x => x.Deleted == 0))
             {
                 var campaignsSent = _campaignSentService.GetAllByCampaignId(campaign.Id);
                 if (campaignsSent == null || campaignsSent.Count == 0)
                 {
-                    return Ok(MapStats(new List<CampaignSentStats>()));
+                    return Ok(emptyResponse);
                 }
                 foreach (var campaignSent in campaignsSent.Where(x => x.Deleted == 0))
                 {
                     var campaignSentStatsList = _campaignSentStatsService.GetByCampaignSentId(campaignSent.Id);
                     if (campaignSentStatsList == null || campaignSentStatsList.Count == 0)
                     {
-                        return Ok(MapStats(new List<CampaignSentStats>()));
+                        return Ok(emptyResponse);
                     }
 
                     campaignSentStats.AddRange(campaignSentStatsList.Where(x => x.Deleted == 0));

@@ -3,7 +3,7 @@
         <nb-card-header>
             <div class="header-container">
                 <div>
-                    Customer-List
+                    Contact List
                 </div>
                 <div>
                     <button type="button" nbButton status="primary" (click)="openModal()">Create New</button>
@@ -40,7 +40,7 @@
                         <td>{{item.unsubscribed}}</td>
                         <td>
                             <div class="flex-icons">
-                                <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons">
+                                <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">
                                 </nb-icon>
                                 <nb-icon [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
                                     class="campaign-icons">

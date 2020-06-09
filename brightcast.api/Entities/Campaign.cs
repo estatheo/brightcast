@@ -9,6 +9,7 @@ namespace brightcast.Entities
         public string Name { get; set; }
         public string Message { get; set; }
         public string FileUrl { get; set; }
+        public int Status { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }

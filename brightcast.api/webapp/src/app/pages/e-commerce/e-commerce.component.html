@@ -6,9 +6,9 @@
           Delivered
         </div>
         <div class="card-values">
-          <div class="absolute" counto [step]="50" [countTo]="27698" [countFrom]="0" [duration]="4"
-            (countoChange)="absoluteValues1[0] = $event">
-            {{absoluteValues1[0] | number:'1.0-0'}}
+          <div class="absolute" counto [step]="50" [countTo]="absoluteValues[0]" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues[0] = $event">
+            {{absoluteValues[0] | number:'1.0-0'}}
           </div>
           <div class="percentage" [style.color]="percentageValues[0] >= 0 ? '#3DD598' : '#FC5A5A'">
             {{percentageValues[0] >= 0 ? '+' : '' }} {{percentageValues[0] | number:'1.2-2'}}%
@@ -25,9 +25,9 @@
           Read
         </div>
         <div class="card-values">
-          <div class="absolute" counto [step]="50" [countTo]="27632" [countFrom]="0" [duration]="4"
-            (countoChange)="absoluteValues1[1] = $event">
-            {{absoluteValues1[1] | number:'1.0-0'}}
+          <div class="absolute" counto [step]="50" [countTo]="absoluteValues[1]" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues[1] = $event">
+            {{absoluteValues[1] | number:'1.0-0'}}
           </div>
           <div class="percentage" [style.color]="percentageValues[1] >= 0 ? '#3DD598' : '#FC5A5A'">
             {{percentageValues[1] >= 0 ? '+' : '' }} {{percentageValues[1] | number:'1.2-2'}}%
@@ -43,9 +43,9 @@
           New Subscribers
         </div>
         <div class="card-values">
-          <div class="absolute" counto [step]="50" [countTo]="27698" [countFrom]="0" [duration]="4"
-            (countoChange)="absoluteValues1[2] = $event">
-            {{absoluteValues1[2] | number:'1.0-0'}}
+          <div class="absolute" counto [step]="50" [countTo]="absoluteValues[2]" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues[2] = $event">
+            {{absoluteValues[2] | number:'1.0-0'}}
           </div>
           <div class="percentage" [style.color]="percentageValues[2] >= 0 ? '#3DD598' : '#FC5A5A'">
             {{percentageValues[2] >= 0 ? '+' : '' }} {{percentageValues[2] | number:'1.2-2'}}%
@@ -61,9 +61,9 @@
           Unsubscribed
         </div>
         <div class="card-values">
-          <div class="absolute" counto [step]="50" [countTo]="27632" [countFrom]="0" [duration]="4"
-            (countoChange)="absoluteValues1[3] = $event">
-            {{absoluteValues1[3] | number:'1.0-0'}}
+          <div class="absolute" counto [step]="50" [countTo]="absoluteValues[3]" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues[3] = $event">
+            {{absoluteValues[3] | number:'1.0-0'}}
           </div>
           <div class="percentage" [style.color]="percentageValues[3] >= 0 ? '#3DD598' : '#FC5A5A'">
             {{percentageValues[3] >= 0 ? '+' : '' }} {{percentageValues[3] | number:'1.2-2'}}%
@@ -79,9 +79,9 @@
           Replies
         </div>
         <div class="card-values">
-          <div class="absolute" counto [step]="50" [countTo]="27632" [countFrom]="0" [duration]="4"
-            (countoChange)="absoluteValues1[4] = $event">
-            {{absoluteValues1[4] | number:'1.0-0'}}
+          <div class="absolute" counto [step]="50" [countTo]="absoluteValues[4]" [countFrom]="0" [duration]="4"
+            (countoChange)="absoluteValues[4] = $event">
+            {{absoluteValues[4] | number:'1.0-0'}}
           </div>
           <div class="percentage" [style.color]="percentageValues[4] >= 0 ? '#3DD598' : '#FC5A5A'">
             {{percentageValues[4] >= 0 ? '+' : '' }} {{percentageValues[4] | number:'1.2-2'}}%
@@ -96,6 +96,6 @@
 
 <div class="row">
   <div class="col">
-    <ngx-ecommerce-charts chartName="{{selectedChart}}"></ngx-ecommerce-charts>
+    <ngx-ecommerce-charts chartName="{{selectedChart}}" option="{{getOption()}}" ></ngx-ecommerce-charts>
   </div>
 </div>

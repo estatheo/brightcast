@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NbWindowService } from '@nebular/theme';
+import { NbWindowService, NbToastrService } from '@nebular/theme';
 import { CampaignFormComponent } from './campaign-form/campaign-form.component';
-import { CampaignService } from './campaign-form/campaign-form.service';
 import { of as observableOf, Observable } from 'rxjs';
+import { CampaignService} from '../../../@core/apis/campaign.service';
+import { CampaignElement } from '../../_models/campaignElement';
+import { CampaignNewComponent } from './campaign-new/campaign-new.component';
 
 @Component({
   selector: 'ngx-campaign',
@@ -11,46 +13,31 @@ import { of as observableOf, Observable } from 'rxjs';
 })
 export class CampaignComponent implements OnInit {
 
-  constructor(private windowService: NbWindowService, private campaignService: CampaignService) { }
-  data = [
-    {
-      name: "initial",
-      sent: 100,
-      read: 0,
-      response: 0,
-      status: 1,
-    },
-    {
-      name: "Product Launch",
-      sent: 100,
-      read: 1,
-      response: 0,
-      status: 2,
-    },
-    {
-      name: "Marketing",
-      sent: 100,
-      read: 0,
-      response: 0,
-      status: 3,
-    }
-  ];
+  constructor(private windowService: NbWindowService, private toastrService: NbToastrService, private campaignService: CampaignService, private campaignsService: CampaignService) { }
+  data: CampaignElement[];
   ngOnInit(): void {
+    this.campaignsService.data.subscribe((data: CampaignElement[]) => {
+      this.data = data;
+    });
   }
   openModal() {
-    console.log("the modal open button clicked");
-    let event = {
-      sent: 0,
-      read: 0,
-    }
-    let observable = observableOf(event);
-    this.campaignService.setState(observable);
-    this.windowService.open(CampaignFormComponent, { title: 'window' });
+    this.windowService.open(CampaignNewComponent, { title: 'New Campaign', context: { contactListList: this.data[0].contactListList} });
   }
+  
   openModalForEdit(event) {
-    console.log("the event from the Edit: ", event);
-    let observable = observableOf(event);
-    this.campaignService.setState(observable);
-    this.windowService.open(CampaignFormComponent, { title: 'window' });
+    let item: CampaignElement = event;
+    this.windowService.open(CampaignFormComponent, { title: 'Edit Campaign', context: { campaign: item } });
+  }
+
+  delete(id) {
+    this.campaignsService.Delete(id).subscribe(() => {
+      this.toastrService.primary("❌ The campaign has been deleted!", "Deleted!");
+      this.campaignsService.refreshData();
+      this.campaignsService.data.subscribe((data: CampaignElement[]) => {
+        this.data = data;
+      });
+    }, error => {
+      this.toastrService.warning("⚠ There was an error processing the request!", "Error!");
+    })
   }
 }

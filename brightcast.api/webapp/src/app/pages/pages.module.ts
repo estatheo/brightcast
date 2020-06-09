@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NbAuthModule } from '@nebular/auth';
 import { LogoutComponent } from './logout/logout.component';
+import { DashboardService } from '../@core/apis/dashboard.service';
 
 @NgModule({
   imports: [
@@ -35,6 +36,9 @@ import { LogoutComponent } from './logout/logout.component';
     PagesComponent,
     LogoutComponent
   ],
+  providers: [
+    DashboardService
+  ]
 })
 export class PagesModule {
 }

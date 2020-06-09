@@ -18,15 +18,18 @@ import {
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { CampaignComponent } from './campaign/campaign.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CampaignFormComponent } from './campaign/campaign-form/campaign-form.component';
 import { WindowFormComponent } from '../modal-overlays/window/window-form/window-form.component';
-import { CampaignService } from './campaign/campaign-form/campaign-form.service';
+import { CampaignService} from '../../@core/apis/campaign.service';
 import { CustomerFormComponent } from './customer-list/customer-form/customer-form.component';
-import { CustomerService } from './customer-list/customer-form/customer.service';
+import { BrowserModule } from '@angular/platform-browser';
+import { CampaignNewComponent } from './campaign/campaign-new/campaign-new.component';
+import { ContactListService } from '../../@core/apis/contactList.service';
+import { CustomerListEditComponent } from './customer-list/customer-list-edit/customer-list-edit.component';
 
 @NgModule({
-  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CampaignComponent, CampaignFormComponent, CustomerFormComponent],
+  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CustomerListEditComponent, CampaignComponent, CampaignFormComponent, CustomerFormComponent, CampaignNewComponent],
   imports: [
     CommonModule,
     ThemeModule,
@@ -46,6 +49,7 @@ import { CustomerService } from './customer-list/customer-form/customer.service'
     NbStepperModule,
     NbWindowModule.forChild(),
     FormsModule,
+    ReactiveFormsModule,
     NgxDataTableModule,
     MainRoutingModule
   ],
@@ -55,7 +59,7 @@ import { CustomerService } from './customer-list/customer-form/customer.service'
   ],
   providers: [
     CampaignService,
-    CustomerService
+    ContactListService
   ]
 })
 export class MainModule { }

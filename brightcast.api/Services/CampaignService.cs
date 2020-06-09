@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using brightcast.Entities;
 using brightcast.Helpers;
 
@@ -33,7 +34,7 @@ namespace brightcast.Services
 
         public List<Campaign> GetByUserProfileId(int userProfileId)
         {
-            return _context.UserProfiles.Find(userProfileId).Campaigns;
+            return _context.Campaigns.Where(x => x.UserProfileId == userProfileId && x.Deleted == 0).ToList();
         }
 
 

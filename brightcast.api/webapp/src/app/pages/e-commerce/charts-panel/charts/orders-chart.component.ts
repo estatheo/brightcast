@@ -4,6 +4,7 @@ import { delay, takeWhile } from 'rxjs/operators';
 
 import { OrdersChart } from '../../../../@core/data/orders-chart';
 import { LayoutService } from '../../../../@core/utils/layout.service';
+import { DashboardService } from '../../../../@core/apis/dashboard.service';
 
 @Component({
   selector: 'ngx-orders-chart',
@@ -20,13 +21,16 @@ import { LayoutService } from '../../../../@core/utils/layout.service';
 export class OrdersChartComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   @Input()
-  ordersChartData: OrdersChart;
-
+  ordersChartData;
+  @Input()
+  cardOption: String;
   private alive = true;
 
   echartsIntance: any;
   option: any;
 
+  linesData: number[][];
+  chartLabel;
   ngOnChanges(): void {
     if (this.option) {
       this.updateOrdersChartOptions(this.ordersChartData);
@@ -34,7 +38,8 @@ export class OrdersChartComponent implements AfterViewInit, OnDestroy, OnChanges
   }
 
   constructor(private theme: NbThemeService,
-              private layoutService: LayoutService) {
+              private layoutService: LayoutService,
+              private dashboardService: DashboardService) {
     this.layoutService.onSafeChangeLayoutSize()
       .pipe(
         takeWhile(() => this.alive),
@@ -260,16 +265,43 @@ export class OrdersChartComponent implements AfterViewInit, OnDestroy, OnChanges
     };
   }
 
-  updateOrdersChartOptions(ordersChartData: OrdersChart) {
-    const options = this.option;
-    const series = this.getNewSeries(options.series, ordersChartData.linesData);
-    const xAxis = this.getNewXAxis(options.xAxis, ordersChartData.chartLabel);
+  updateOrdersChartOptions(ordersChartData) {
+    const options = this.option;      
+    let chartData = {};
+    this.dashboardService.data.subscribe(data => {
+      switch (this.cardOption) {
+        case 'delivered':
+          chartData['chartLabel'] = data['delivered']['chartLabels'];
+          chartData['linesData'] = [data['delivered']['chartValues']];
+          break;
+        case 'read':
+          chartData['chartLabel'] = data['read']['chartLabels'];
+          chartData['linesData'] = [data['read']['chartValues']];
+          break;
+        case 'newsubscribers':
+          chartData['chartLabel'] = data['newSubscribers']['chartLabels'];
+          chartData['linesData'] = [data['newSubscribers']['chartValues']];
+          break;
+        case 'unsubscribed':
+          chartData['chartLabel'] = data['unsubscribed']['chartLabels'];
+          chartData['linesData'] = [data['unsubscribed']['chartValues']];
+          break;
+        case 'replies':
+          chartData['chartLabel'] = data['replies']['chartLabels'];
+          chartData['linesData'] = [data['replies']['chartValues']];
+          break;
+        default:
+          break;
+      }
+      const series = this.getNewSeries(options.series, chartData['linesData']);
+      const xAxis = this.getNewXAxis(options.xAxis, chartData['chartLabel']);
 
-    this.option = {
-      ...options,
-      xAxis,
-      series,
-    };
+      this.option = {
+        ...options,
+        xAxis,
+        series,
+      };
+    });       
   }
 
   getNewSeries(series, linesData: number[][]) {

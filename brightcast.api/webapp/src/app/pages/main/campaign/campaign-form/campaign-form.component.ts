@@ -1,46 +1,53 @@
 import { Component } from '@angular/core';
-import { NbWindowRef } from '@nebular/theme';
-import { CampaignService } from './campaign-form.service';
-
+import { NbWindowRef, NbToastrService } from '@nebular/theme';
+import { CampaignService } from '../../../../@core/apis/campaign.service';
+import { FormBuilder, Validators } from '@angular/forms';
+import { CampaignElement } from '../../../_models/campaignElement';
+import { Router } from '@angular/router';
 @Component({
     template: `
-    <form class="form">
-    <div class="form-group">
-      <label for="name" class="label">Name:</label>
-      <input nbInput fullWidth id="name" type="text" value="{{event.read}}">
-      </div>
-      <label for="date" class="label">Delivery Date</label>
-      <input type="date" nbInput fullWidth id="date">
-    
-      <label for="file" class="label">Campaign file</label>
-      <input type="file" nbInput fullWidth id="file">
-    
-      <label class="text-label" for="message">BroadCast Message</label>
-      <textarea nbInput fullWidth id="message"></textarea>
-
+    <form class="form" [formGroup]="form">
       <div class="form-group">
-      <label for="selective_input" class="label">Customer list</label>
-      <nb-select selected="1" id="selective_input" fullWidth>
-          <nb-option value="1">List 1</nb-option>
-          <nb-option value="2">List 2</nb-option>
-      </nb-select>
-    </div>
-  <button type="submit" style="margin-top: 10px" nbButton status="primary" class="button">Save</button>
+        <label for="name" class="label">Name</label>
+        <input nbInput fullWidth id="name" type="text" value="{{campaign.name}}" formControlName="name">
+      </div>    
+      <label for="file" class="label">Media file</label>
+      <input type="file" nbInput fullWidth id="file">    
+      <label class="text-label" for="message">Message</label>
+      <textarea nbInput fullWidth id="message" formControlName="message">{{campaign.message}}</textarea>      
+      <button type="submit" style="margin-top: 10px" nbButton status="primary" class="button" (click)="onSubmit()">Save</button>
     </form>
   `,
     styleUrls: ['campaign-form.component.scss'],
 })
 export class CampaignFormComponent {
 
-    event;
-    constructor(public windowRef: NbWindowRef, private campaignService: CampaignService) {
+    campaign: CampaignElement;
+    form;
+    constructor(private router: Router, private toastrService: NbToastrService, private formBuilder: FormBuilder, public windowRef: NbWindowRef, private campaignService: CampaignService) {
+      this.form = this.formBuilder.group({
+        name: ['', Validators.required],
+        message: ['', Validators.required],
+        contactListId: ['', Validators.required],
+      });
+    }
 
-
-        campaignService.getState().subscribe(event => {
-            console.log("THe event from campaign service: ", event);
-            this.event = event;
-        })
-
+    onSubmit() {
+      this.campaignService.Update({
+        id: this.campaign.id,
+        name: this.form.controls.name.value,
+        message: this.form.controls.message.value,
+        contactListId: parseInt(this.form.controls.contactListId.value),
+        fileUrl: ''
+      }).subscribe(() => {
+        this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+        this.campaignService.refreshData();
+        this.router.navigateByUrl('/',{skipLocationChange: true}).then(() => {
+          this.router.navigate(['/pages/main/campaign'])
+        });
+      }, error => {
+        this.toastrService.danger(error, "There was an error on our side😢");
+      });
     }
 
     close() {
