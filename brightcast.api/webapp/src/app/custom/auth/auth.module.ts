@@ -18,12 +18,13 @@ import {
 } from '@nebular/theme';
 import { RegisterComponent } from './register/register.component';
 import { ResetComponent } from './reset/reset.component';
-import { RequestPasswordComponent } from './request-password/request-password.component';
 import { ThemeModule } from '../../@theme/theme.module';
+import { VerifyComponent } from './verify/verify.component';
+import { NewPasswordComponent } from './new-password/new-password.component';
 
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, ResetComponent,RequestPasswordComponent],
+  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent],
   imports: [
     CommonModule,
     ThemeModule,

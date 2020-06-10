@@ -39,7 +39,8 @@ export class CustomerFormComponent {
           this.toastrService.success("🚀 The Contact List has been added!", "Success!");
           this.contactListService.refreshData();
           this.router.navigateByUrl('/',{skipLocationChange: true}).then(() => {
-            this.router.navigate(['/pages/main/customer-list'])
+            this.router.navigate(['/pages/main/customer-list']);
+            this.close();
           });
         }, error => {
           this.toastrService.danger(error, "There was an error on our side😢");

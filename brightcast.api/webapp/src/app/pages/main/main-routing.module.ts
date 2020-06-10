@@ -4,6 +4,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { MainComponent } from './main/main.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { CampaignComponent } from './campaign/campaign.component';
+import { ContactComponent } from './contact/contact.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,9 @@ const routes: Routes = [
       },
       {
         path: 'campaign', component: CampaignComponent,
+      },
+      {
+        path: 'customer-list/:id/contacts', component: ContactComponent
       }
     ]
   }

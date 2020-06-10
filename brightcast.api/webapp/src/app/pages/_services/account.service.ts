@@ -102,4 +102,16 @@ export class AccountService {
             campaign,
         })
     }
+
+    verify(id) {
+        return this.http.get(`${environment.apiUrl}/user/verify/${id}`);
+    }
+
+    requestPasswordReset(email) {
+        return this.http.post(`${environment.apiUrl}/user/resetPassword`,  {username: email});
+    }
+
+    resetPassword(password, code) {
+        return this.http.post(`${environment.apiUrl}/user/resetPassword/confirm`,  {code: code, password: password});
+    }
 }

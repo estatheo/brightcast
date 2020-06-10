@@ -283,6 +283,42 @@ namespace brightcast.Migrations
                     b.ToTable("ContactLists");
                 });
 
+            modelBuilder.Entity("brightcast.Entities.ResetPassword", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Activated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Deleted")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ResetCode")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResetPasswords");
+                });
+
             modelBuilder.Entity("brightcast.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -344,12 +380,56 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserActivationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserActivationId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserActivationId1");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("brightcast.Entities.UserActivation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Activated")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ActivationCode")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Deleted")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserActivations");
                 });
 
             modelBuilder.Entity("brightcast.Entities.UserProfile", b =>
@@ -446,6 +526,13 @@ namespace brightcast.Migrations
                     b.HasOne("brightcast.Entities.UserProfile", "UserProfile")
                         .WithMany("ContactLists")
                         .HasForeignKey("UserProfileId");
+                });
+
+            modelBuilder.Entity("brightcast.Entities.User", b =>
+                {
+                    b.HasOne("brightcast.Entities.UserActivation", "UserActivation")
+                        .WithMany()
+                        .HasForeignKey("UserActivationId1");
                 });
 
             modelBuilder.Entity("brightcast.Entities.UserProfile", b =>

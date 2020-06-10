@@ -1,8 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 using brightcast.Entities;
 using brightcast.Helpers;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace brightcast.Services
 {
@@ -14,15 +22,22 @@ namespace brightcast.Services
         User Create(User user, string password);
         void Update(User user, string password = null);
         void Delete(int id);
+        Task SendConfirmationEmail(int userId, string email);
+        void ActivateUser(Guid code);
+        Guid? RequestResetPassword(string email);
+        Task SendResetPasswordEmail(Guid code, string email);
+        void ResetPassword(Guid code, string password);
     }
 
     public class UserService : IUserService
     {
         private DataContext _context;
+        private readonly AppSettings _appSettings;
 
-        public UserService(DataContext context)
+        public UserService(DataContext context, IOptions<AppSettings> appSettings)
         {
             _context = context;
+            _appSettings = appSettings.Value;
         }
 
         public User Authenticate(string username, string password)
@@ -74,9 +89,22 @@ namespace brightcast.Services
             user.CreatedAt = DateTime.UtcNow;
             user.CreatedBy = "API";
 
-            user.Deleted = 0;
+            user.Deleted = 1;
 
-            _context.Users.Add(user);
+            var code = Guid.NewGuid();
+            
+            var createdUser = _context.Users.Add(user);
+            _context.SaveChanges();
+
+            _context.UserActivations.Add(new UserActivation()
+            {
+                ActivationCode = code,
+                Activated = false,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "API",
+                Deleted = 0,
+                UserId = user.Id
+            });
             _context.SaveChanges();
 
             return user;
@@ -131,6 +159,74 @@ namespace brightcast.Services
             }
         }
 
+        public void ActivateUser(Guid code)
+        {
+            var userActivation = _context.UserActivations.FirstOrDefault(x => x.ActivationCode == code && x.Deleted == 0 && x.CreatedAt.AddDays(1) >= DateTime.UtcNow);
+            if (userActivation != null)
+            {
+                userActivation.Activated = true;
+                _context.UserActivations.Update(userActivation);
+
+                var user = _context.Users.Find(userActivation.UserId);
+                user.Deleted = 0;
+                _context.Users.Update(user);
+
+                _context.SaveChanges();
+            }
+        }
+
+        public Guid? RequestResetPassword(string email)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Username == email && x.Deleted == 0);
+            if (user != null)
+            {
+                var code = Guid.NewGuid();
+                _context.ResetPasswords.Add(new ResetPassword
+                {
+                    ResetCode = code,
+                    UserId = user.Id,
+                    Activated = false,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = "API",
+                    Deleted = 0
+                });
+
+                _context.SaveChanges();
+
+                return code;
+            }
+
+            return null;
+        }
+
+
+        public void ResetPassword(Guid code, string password)
+        {
+            var resetPassword = _context.ResetPasswords.FirstOrDefault(x =>
+                x.ResetCode == code && x.Deleted == 0 && x.CreatedAt.AddDays(1) >= DateTime.UtcNow);
+
+            if (resetPassword != null)
+            {
+                resetPassword.Activated = true;
+                _context.ResetPasswords.Update(resetPassword);
+
+
+                if (!string.IsNullOrWhiteSpace(password))
+                {
+                    byte[] passwordHash, passwordSalt;
+                    CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+                    var user = _context.Users.Find(resetPassword.UserId);
+
+                    user.PasswordHash = passwordHash;
+                    user.PasswordSalt = passwordSalt;
+                    
+                    _context.Users.Update(user);
+                    _context.SaveChanges();
+                }
+            }
+        }
+
         // private helper methods
 
         private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -162,6 +258,99 @@ namespace brightcast.Services
             }
 
             return true;
+        }
+
+        public async Task SendConfirmationEmail(int userId, string email)
+        {
+            var activationModel = _context.UserActivations.FirstOrDefault(x => x.UserId == userId);
+            if (activationModel != null)
+            {
+                var code = activationModel.ActivationCode;
+
+                var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _appSettings.SendgridApiKey);
+                var p = new 
+                {
+                    personalizations = new Object[]
+                    {
+                        new
+                        {
+                            to = new Object[]
+                            {
+                                new
+                                {
+                                    email = email,
+                                    name = email
+                                }
+                            },
+                            dynamic_template_data = new 
+                            {
+                                url = $"https://brightcast.io/auth/verify/{code}"
+                            },
+                            subject = "Verify your Brightcast account now!"
+                        }
+                    },
+                    from = new
+                    {
+                        email = "hello@brightcast.io",
+                        name = "Brightcast.io"
+                    },
+                    reply_to = new
+                    {
+                        email = "hello@brightcast.io",
+                        name = "Brightcast.io"
+                    },
+                    template_id = "d-7836d34cf64446278de789db1ccdcff8"
+
+                };
+                var httpRsponse = await httpClient.PostAsync("https://api.sendgrid.com/v3/mail/send",
+                    new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json"));
+            }
+        }
+
+        public async Task SendResetPasswordEmail(Guid code, string email)
+        {
+           
+            var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _appSettings.SendgridApiKey);
+            var p = new
+            {
+                personalizations = new Object[]
+                {
+                    new
+                    {
+                        to = new Object[]
+                        {
+                            new
+                            {
+                                email = email,
+                                name = email
+                            }
+                        },
+                        dynamic_template_data = new
+                        {
+                            url = $"https://brightcast.io/auth/verify/{code}"
+                        },
+                        subject = "Reset the password of your Brightcast account!"
+                    }
+                },
+                from = new
+                {
+                    email = "hello@brightcast.io",
+                    name = "Brightcast.io"
+                },
+                reply_to = new
+                {
+                    email = "hello@brightcast.io",
+                    name = "Brightcast.io"
+                },
+                template_id = "d-91fc8978fccc4bb0b4938b1acad7eed9"
+
+            };
+            var httpRsponse = await httpClient.PostAsync("https://api.sendgrid.com/v3/mail/send",
+                new StringContent(JsonConvert.SerializeObject(p), Encoding.UTF8, "application/json"));
         }
     }
 }

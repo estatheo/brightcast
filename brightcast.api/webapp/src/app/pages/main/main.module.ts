@@ -13,7 +13,7 @@ import {
   NbListModule,
   NbRouteTabsetModule,
   NbStepperModule,
-  NbTabsetModule, NbUserModule, NbInputModule, NbSelectModule, NbIconModule, NbLayoutModule, NbWindowModule,
+  NbTabsetModule, NbUserModule, NbInputModule, NbSelectModule, NbIconModule, NbLayoutModule, NbWindowModule, NbCheckboxModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -27,9 +27,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CampaignNewComponent } from './campaign/campaign-new/campaign-new.component';
 import { ContactListService } from '../../@core/apis/contactList.service';
 import { CustomerListEditComponent } from './customer-list/customer-list-edit/customer-list-edit.component';
+import { ContactComponent } from './contact/contact.component';
+import { ContactEditComponent } from './contact/contact-edit/contact-edit.component';
+import { ContactFormComponent } from './contact/contact-form/contact-form.component';
+import { ContactService } from '../../@core/apis/contact.service';
 
 @NgModule({
-  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CustomerListEditComponent, CampaignComponent, CampaignFormComponent, CustomerFormComponent, CampaignNewComponent],
+  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CustomerListEditComponent, CampaignComponent,ContactEditComponent, ContactFormComponent, CampaignFormComponent, CustomerFormComponent, CampaignNewComponent, ContactComponent],
   imports: [
     CommonModule,
     ThemeModule,
@@ -51,7 +55,8 @@ import { CustomerListEditComponent } from './customer-list/customer-list-edit/cu
     FormsModule,
     ReactiveFormsModule,
     NgxDataTableModule,
-    MainRoutingModule
+    MainRoutingModule,
+    NbCheckboxModule
   ],
   entryComponents: [
     WindowFormComponent,
@@ -59,7 +64,8 @@ import { CustomerListEditComponent } from './customer-list/customer-list-edit/cu
   ],
   providers: [
     CampaignService,
-    ContactListService
+    ContactListService,
+    ContactService
   ]
 })
 export class MainModule { }

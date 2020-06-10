@@ -40,7 +40,6 @@ export class CampaignNewComponent {
          message: ['', Validators.required],
          contactListId: ['', Validators.required],
        });
-
     }
 
     onSubmit() {
@@ -53,7 +52,8 @@ export class CampaignNewComponent {
         this.toastrService.success("🚀 The campaign is on the way!", "Success!");
         this.campaignService.refreshData();
         this.router.navigateByUrl('/',{skipLocationChange: true}).then(() => {
-          this.router.navigate(['/pages/main/campaign'])
+          this.router.navigate(['/pages/main/campaign']);
+          this.close();
         });
       }, error => {
         this.toastrService.danger(error, "There was an error on our side😢");

@@ -20,6 +20,7 @@ export class CampaignComponent implements OnInit {
       this.data = data;
     });
   }
+  
   openModal() {
     this.windowService.open(CampaignNewComponent, { title: 'New Campaign', context: { contactListList: this.data[0].contactListList} });
   }

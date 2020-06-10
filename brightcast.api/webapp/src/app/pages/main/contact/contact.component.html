@@ -3,7 +3,7 @@
         <nb-card-header>
             <div class="header-container">
                 <div>
-                    Contact List
+                    Contacts
                 </div>
                 <div>
                     <button type="button" nbButton status="primary" (click)="openModal()">Create New</button>
@@ -15,29 +15,33 @@
                 <thead>
                     <tr>
                         <th style="width: 20%">
-                            <mfDefaultSorter by="name">Name</mfDefaultSorter>
+                            <mfDefaultSorter by="firstName">First Name</mfDefaultSorter>
                         </th>
                         <th style="width: 20%">
-                            <mfDefaultSorter by="contacts">Contacts</mfDefaultSorter>
+                            <mfDefaultSorter by="lastName">Last Name</mfDefaultSorter>
                         </th>
                         <th style="width: 20%">
-                            <mfDefaultSorter by="email">Campaigns</mfDefaultSorter>
+                            <mfDefaultSorter by="phone">Phone</mfDefaultSorter>
                         </th>
                         <th style="width: 20%">
-                            <mfDefaultSorter by="email">Unsubscribed</mfDefaultSorter>
+                            <mfDefaultSorter by="email">Email</mfDefaultSorter>
                         </th>
                         <th style="width: 20%">
-                            <mfDefaultSorter by="email">Action</mfDefaultSorter>
+                            <mfDefaultSorter by="subscribed">Subscribed</mfDefaultSorter>
+                        </th>
+                        <th style="width: 20%">
+                            <mfDefaultSorter by="firstName">Action</mfDefaultSorter>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of mf.data" routerLink="/pages/main/customer-list/{{item.id}}/contacts">
+                    <tr *ngFor="let item of mf.data">
 
-                        <td>{{item.name}}</td>
-                        <td>{{item.contacts}}</td>
-                        <td>{{item.campaigns}}</td>
-                        <td>{{item.unsubscribed}}</td>
+                        <td>{{item.firstName}}</td>
+                        <td>{{item.lastName}}</td>
+                        <td>{{item.phone}}</td>
+                        <td>{{item.email}}</td>
+                        <td>{{item.subscribed}}</td>
                         <td>
                             <div class="flex-icons">
                                 <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">

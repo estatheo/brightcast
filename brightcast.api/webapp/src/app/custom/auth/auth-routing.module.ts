@@ -3,8 +3,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { ResetComponent } from './reset/reset.component';
-import { RequestPasswordComponent } from './request-password/request-password.component';
 import { NbAuthComponent } from '@nebular/auth';
+import { VerifyComponent } from './verify/verify.component';
+import { NewPasswordComponent } from './new-password/new-password.component';
 
 
 const routes: Routes = [
@@ -21,10 +22,13 @@ const routes: Routes = [
         path: 'register', component: RegisterComponent,
       },
       {
+        path: 'verify/:id', component: VerifyComponent,
+      },
+      {
         path: 'reset-password', component: ResetComponent,
       },
       {
-        path: 'request-password', component: RequestPasswordComponent,
+        path: 'new-password/:id', component: NewPasswordComponent,
       }
     ]
   }

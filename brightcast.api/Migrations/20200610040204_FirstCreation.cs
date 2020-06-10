@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace brightcast.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class FirstCreation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -31,6 +31,26 @@ namespace brightcast.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ResetPasswords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ResetCode = table.Column<Guid>(nullable: false),
+                    Activated = table.Column<bool>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(nullable: true),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
+                    Deleted = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ResetPasswords", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -50,6 +70,26 @@ namespace brightcast.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserActivations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ActivationCode = table.Column<Guid>(nullable: false),
+                    Activated = table.Column<bool>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UpdatedBy = table.Column<string>(nullable: true),
+                    UpdatedAt = table.Column<DateTime>(nullable: false),
+                    Deleted = table.Column<int>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserActivations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -62,11 +102,19 @@ namespace brightcast.Migrations
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(nullable: true),
                     UpdatedAt = table.Column<DateTime>(nullable: false),
-                    Deleted = table.Column<int>(nullable: false)
+                    Deleted = table.Column<int>(nullable: false),
+                    UserActivationId1 = table.Column<int>(nullable: true),
+                    UserActivationId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_UserActivations_UserActivationId1",
+                        column: x => x.UserActivationId1,
+                        principalTable: "UserActivations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -208,6 +256,7 @@ namespace brightcast.Migrations
                     LastName = table.Column<string>(nullable: true),
                     Phone = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
+                    Subscribed = table.Column<bool>(nullable: false),
                     CreatedBy = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     UpdatedBy = table.Column<string>(nullable: true),
@@ -300,6 +349,11 @@ namespace brightcast.Migrations
                 name: "IX_UserProfiles_UserId",
                 table: "UserProfiles",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_UserActivationId1",
+                table: "Users",
+                column: "UserActivationId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -309,6 +363,9 @@ namespace brightcast.Migrations
 
             migrationBuilder.DropTable(
                 name: "Contacts");
+
+            migrationBuilder.DropTable(
+                name: "ResetPasswords");
 
             migrationBuilder.DropTable(
                 name: "CampaignSents");
@@ -330,6 +387,9 @@ namespace brightcast.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "UserActivations");
         }
     }
 }

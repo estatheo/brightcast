@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
@@ -35,9 +38,17 @@ namespace brightcast.Controllers
         [HttpGet("ofList/{id}/")]
         public IActionResult GetAll(int id)
         {
-            var users = _contactService.GetAllByContactListId(id);
-            var model = _mapper.Map<IList<ContactListModel>>(users);
-            return Ok(model);
+            var contacts = _contactService.GetAllByContactListId(id);
+            return Ok(contacts.Select(x => new ContactModel()
+            {
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Id = x.Id,
+                ContactListId = x.ContactListId ?? default,
+                Email = x.Email,
+                Phone = x.Phone,
+                Subscribed = x.Subscribed
+            }));
         }
 
         [HttpGet("{id}")]
@@ -67,6 +78,25 @@ namespace brightcast.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("new")]
+        public IActionResult Create([FromBody] ContactModel model)
+        {
+            //todo add check if userprofile == contactlist.userprofile
+            
+            try
+            {
+                _contactService.Create(_mapper.Map<Contact>(model));
+
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

@@ -43,7 +43,8 @@ export class CampaignFormComponent {
         this.toastrService.success("🚀 The campaign has been updated!", "Success!");
         this.campaignService.refreshData();
         this.router.navigateByUrl('/',{skipLocationChange: true}).then(() => {
-          this.router.navigate(['/pages/main/campaign'])
+          this.router.navigate(['/pages/main/campaign']);
+          this.close();
         });
       }, error => {
         this.toastrService.danger(error, "There was an error on our side😢");

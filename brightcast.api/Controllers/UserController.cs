@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
@@ -68,7 +69,7 @@ namespace brightcast.Controllers
 
         [AllowAnonymous]
         [HttpPost("register")]
-        public IActionResult Register([FromBody]UserRegisterModel model)
+        public async Task<IActionResult> Register([FromBody]UserRegisterModel model)
         {
             // map model to entity
             var user = _mapper.Map<User>(model);
@@ -76,7 +77,9 @@ namespace brightcast.Controllers
             try
             {
                 // create user
-                _userService.Create(user, model.Password);
+                var result = _userService.Create(user, model.Password);
+                await _userService.SendConfirmationEmail(result.Id, result.Username);
+
                 return Ok();
             }
             catch (AppException ex)
@@ -84,6 +87,15 @@ namespace brightcast.Controllers
                 // return error message if there was an exception
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("verify/{code}")]
+        public IActionResult Verify(Guid code)
+        {
+            _userService.ActivateUser(code);
+
+            return Ok();
         }
 
         //[HttpGet]
@@ -103,8 +115,32 @@ namespace brightcast.Controllers
         //    return Ok(model);
         //}
 
+        [AllowAnonymous]
+        [HttpPost("resetPassword/confirm")]
+        public IActionResult ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            _userService.ResetPassword(model.Code, model.Password);
 
-        
+            return Ok();
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("resetPassword")]
+        public IActionResult RequestResetPassword([FromBody] UserUpdateModel model)
+        {
+            var code = _userService.RequestResetPassword(model.Username);
+
+            if (code == null)
+            {
+                return NotFound("User not found");
+            }
+
+            _userService.SendResetPasswordEmail(code ?? Guid.Empty, model.Username);
+
+            return Ok();
+        }
+
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UserUpdateModel model)

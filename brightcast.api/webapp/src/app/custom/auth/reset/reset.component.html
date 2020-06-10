@@ -6,9 +6,9 @@
         <form>
             <div class="form-group">
                 <label for="exampleInputEmail1" class="label">Your email</label>
-                <input type="email" class="form-control" nbInput id="exampleInputEmail1" placeholder="Enter your email">
+                <input type="email" class="form-control" nbInput id="exampleInputEmail1" #email placeholder="Enter your email">
             </div>
-            <button type="submit" fullWidth nbButton status="primary" class="button">Reset Password</button>
+            <button type="submit" fullWidth nbButton status="primary" class="button" (click)="reset(email.value)">Reset Password</button>
             <div class="login-bottom-container">
                 <div>
                     <p>Dont have an account? <span class="login-black" routerLink="/auth/register"> Sign up</span></p>

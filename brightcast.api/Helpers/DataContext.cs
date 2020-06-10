@@ -20,6 +20,8 @@ namespace brightcast.Helpers
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserActivation> UserActivations { get; set; }
+        public DbSet<ResetPassword> ResetPasswords { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Contact> Contacts { get; set; }
