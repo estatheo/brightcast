@@ -14,6 +14,7 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-        public List<UserProfile> UserProfiles { get; set; }
+        public UserProfile UserProfiles { get; set; }
+        public int UserProfileId { get; set; }
     }
 }

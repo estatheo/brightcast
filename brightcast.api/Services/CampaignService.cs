@@ -11,6 +11,10 @@ namespace brightcast.Services
         Campaign GetById(int id);
         List<Campaign> GetByUserProfileId(int userProfileId);
         Campaign Create(Campaign campaign);
+
+        CampaignContactList Add(CampaignContactList ccl);
+        List<CampaignContactList> GetCcl(int campaignId);
+
         void Update(Campaign campaign);
         void Delete(int id);
 
@@ -37,11 +41,8 @@ namespace brightcast.Services
             return _context.Campaigns.Where(x => x.UserProfileId == userProfileId && x.Deleted == 0).ToList();
         }
 
-
         public Campaign Create(Campaign campaign)
         {
-            // validation
-
 
             campaign.CreatedAt = DateTime.UtcNow;
             campaign.CreatedBy = "API";
@@ -54,6 +55,19 @@ namespace brightcast.Services
             return campaign;
         }
 
+        public CampaignContactList Add(CampaignContactList ccl)
+        {
+            _context.CampaignContactLists.Add(ccl);
+            _context.SaveChanges();
+
+            return ccl;
+        }
+
+        public List<CampaignContactList> GetCcl(int campaignId)
+        {
+            return _context.CampaignContactLists.Where(x => x.CampaignId == campaignId).ToList();
+        }
+
         public void Update(Campaign campaignParam)
         {
             var campaign = _context.Campaigns.Find(campaignParam.Id);
@@ -61,7 +75,6 @@ namespace brightcast.Services
             if (campaign == null || campaign.Deleted == 1)
                 throw new AppException("Campaign not found");
 
-            // update Name if it has changed
             if (!string.IsNullOrWhiteSpace(campaignParam.Name) && campaignParam.Name != campaign.Name)
             {
                 campaign.Name = campaignParam.Name;
@@ -76,9 +89,7 @@ namespace brightcast.Services
             {
                 campaign.FileUrl = campaignParam.FileUrl;
             }
-
-            // update user properties if provided
-
+            
             campaign.UpdatedBy = campaignParam.UpdatedBy;
 
             campaign.UpdatedAt = campaignParam.UpdatedAt;

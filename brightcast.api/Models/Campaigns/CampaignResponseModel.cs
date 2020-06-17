@@ -14,7 +14,7 @@ namespace brightcast.Models.Campaigns
         public int Sent { get; set; }
         public int Read { get; set; }
         public int Response { get; set; }
-        public List<ContactListModel> ContactListList { get; set; }
+        public List<int> ContactListIds { get; set; }
 
         
     }

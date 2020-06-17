@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AccountService } from '../../pages/_services';
@@ -10,7 +10,9 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./onboarding.component.scss']
 })
 export class OnboardingComponent implements OnInit {
-
+  userPicture: FormData;
+  businessLogo: FormData;
+  docData: FormData;
   model;
   form1: any;
   form2: any;
@@ -45,32 +47,74 @@ export class OnboardingComponent implements OnInit {
     });
   }
 
+  upload(files) {
+    if (files.length === 0) {
+      return;
+    }
+
+    this.docData = new FormData();
+
+    for (let file of files) {
+      this.docData.append(file.name, file);
+    }
+  }
+  
+  uploadImage(files, isBusiness) {
+    if (files.length === 0) {
+      return;
+    }
+
+    if(isBusiness) {
+      this.businessLogo = new FormData();
+
+      for (let file of files) {
+        this.businessLogo.append(file.name, file);
+      }  
+    } else {
+      this.userPicture = new FormData();
+
+      for (let file of files) {
+        this.userPicture.append(file.name, file);
+      }  
+    }
+    
+  }
+
+
   onSubmit() {
-    this.accountService.onboarding({
-      address: this.form2.controls.address.value,
-      category: this.form2.controls.category.value,
-      email:this.form2.controls.email.value,
-      name: this.form2.controls.name.value,
-      website: this.form2.controls.website.value,
-      membership: "free"  }, {
-        name: 'user',
-        scope: ['user', this.form1.controls.role.value],
-      }, {
-        Default: true,
-        Phone: this.form1.controls.phone.value,
-        firstName: this.form1.controls.firstName.value,
-        lastName: this.form1.controls.lastName.value,
-        pictureUrl: 'test'
-      }, {
-        name: this.form4.controls.name.value,
-        message: this.form4.controls.message.value,
-        fileUrl: 'test'
-      }, {
-        name: this.form3.controls.contactListName.value,
-        fileUrl: 'test'
-      }).subscribe(result => {this.router.navigate(['pages/dashboard']);}, error => {
-        this.toastrService.danger(error, "There was an error on our side😢");
-      })
+
+    this.accountService.uploadImage(this.userPicture).subscribe(up => {
+      this.accountService.uploadImage(this.businessLogo).subscribe(bl => {
+        this.accountService.uploadDoc(this.docData).subscribe(dd => {
+          this.accountService.onboarding({
+            address: this.form2.controls.address.value,
+            category: this.form2.controls.category.value,
+            email:this.form2.controls.email.value,
+            name: this.form2.controls.name.value,
+            website: this.form2.controls.website.value,
+            membership: "free"  }, {
+              name: 'user',
+              scope: ['user', this.form1.controls.role.value],
+            }, {
+              Default: true,
+              Phone: this.form1.controls.phone.value,
+              firstName: this.form1.controls.firstName.value,
+              lastName: this.form1.controls.lastName.value,
+              pictureUrl: up['name']
+            }, {
+              name: this.form4.controls.name.value,
+              message: this.form4.controls.message.value,
+              fileUrl: 'test'
+            }, {
+              name: this.form3.controls.contactListName.value,
+              fileUrl: 'test'
+            }).subscribe(result => {this.router.navigate(['pages/dashboard']);}, error => {
+              this.toastrService.danger(error, "There was an error on our side😢");
+          });
+        });
+      });     
+    });
+
   }
 
   loadCampaigns() {

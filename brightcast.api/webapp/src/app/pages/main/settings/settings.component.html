@@ -2,7 +2,7 @@
     <div class="settings-container">
         <nb-card>
             <nb-card-header>User Settings</nb-card-header>
-            <nb-card-body>
+            <nb-card-body *ngIf="dataReady">
                 <div class="toggler">
                     <div class="toggle-btn">
                         <button nbButton matripple status="{{btnstuatus[0]}}" (click)="toggle()">Personal</button>
@@ -11,70 +11,88 @@
                         <button nbButton matripple status="{{btnstuatus[1]}}" (click)="toggle()">Business</button>
                     </div>
                 </div>
-                <form *ngIf="settingClass[0] == 'personal'" class="setting-form">
+                <form *ngIf="settingClass[0] == 'personal'" class="setting-form" [formGroup]="form1" (ngSubmit)="onSubmitPersonal()" >
                     <div class="form-group">
-                        <label for="exampleInputEmail1" class="label">First Name</label>
-                        <input [disabled]="edit" type="email" nbInput fullWidth id="exampleInputEmail1"
-                            placeholder="Email" value="test">
+                        <label for="firstName" class="label">First Name</label>
+                        <input type="text" nbInput fullWidth formControlName="firstName" value="{{user?.firstName}}">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1" class="label">Last Name</label>
-                        <input [disabled]="edit" type="email" nbInput fullWidth id="exampleInputEmail1"
-                            placeholder="Email" value="test">
+                        <label for="lastName" class="label">Last Name</label>
+                        <input type="text" nbInput fullWidth formControlName="lastName" placeholder="Last Name" value="{{user?.lastName}}">
                     </div>
                     <div class="form-group">
-                        <label for="selective_input" class="label">Role</label>
-                        <nb-select [disabled]="edit" selected="1" id="selective_input" fullWidth>
-                            <nb-option value="1">Founder</nb-option>
-                            <nb-option value="2">CEO</nb-option>
+                        <label for="picture" class="label">Avatar Picture</label>
+                        <input type="file" #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files, false)" nbInput fullWidth formControlName="picture" placeholder="Avatar">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="label">Phone</label>
+                        <input type="phone" nbInput fullWidth formControlName="phone" placeholder="Phone" value="{{user?.phone}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="label">Role</label>
+                        <nb-select selected="1" formControlName="role" fullWidth value="{{user?.role}}">
+                            <nb-option value="Founder">Founder</nb-option>
+                            <nb-option value="COO">COO</nb-option>
+                            <nb-option value="HeadofOperations">Head of Operations</nb-option>
+                            <nb-option value="CustomerSuccessManager">Customer Success Manager</nb-option>
+                            <nb-option value="HeadofMarketing">Head of Marketing</nb-option>
+                            <nb-option value="MarketingManager">Marketing Manager</nb-option>
+                            <nb-option value="SocialMediaManager">Social Media Manager</nb-option>
                         </nb-select>
                     </div>
                     <div class="btns-container">
-                        <button nbButton matripple ghost status="info" (click)="toggleEdit()">
-                            Edit
-                        </button>
                         <div>
-                            <button type="submit" nbButton status="primary">Save</button>
+                            <button type="submit" nbButton status="primary" [disabled]="!form1.valid">Save</button>
                         </div>
                     </div>
                 </form>
 
-                <form *ngIf="settingClass[0] == 'business'" class="setting-form">
+                <form *ngIf="settingClass[0] == 'business'" class="setting-form" [formGroup]="form2" (ngSubmit)="onSubmitBusiness()">
                     <div class="form-group">
-                        <label for="exampleInputEmail1" class="label">Business Name</label>
-                        <input type="email" [disabled]="edit1" nbInput fullWidth id="exampleInputEmail1"
-                            placeholder="Business" value="test">
+                        <label for="name" class="label">Business Name</label>
+                        <input type="text" nbInput fullWidth formControlName="name" placeholder="Business" value="{{business?.name}}">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1" class="label">Business Logo</label>
-                        <input type="file" [disabled]="edit1" nbInput fullWidth id="exampleInputEmail1"
-                            placeholder="Website" value="test">
+                        <label for="logo" class="label">Business Logo</label>
+                        <input type="file" #businessLogo type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(businessLogo.files, true)" nbInput fullWidth formControlName="logo" placeholder="Logo">
                     </div>
                     <div class="form-group">
-                        <label for="logo" class="label">Website</label>
-                        <input type="email" [disabled]="edit1" nbInput fullWidth id="logo" placeholder="logo">
+                        <label for="email" class="label">Email</label>
+                        <input type="email" nbInput fullWidth formControlName="email" placeholder="Email" value="{{business?.email}}">
                     </div>
                     <div class="form-group">
-                        <label for="selective_input" class="label">Business Category</label>
-                        <nb-select selected="1" [disabled]="edit1" id="selective_input" fullWidth>
-                            <nb-option value="1">Sports </nb-option>
-                            <nb-option value="2">Automtive</nb-option>
-                            <nb-option value="2">Fashion</nb-option>
-                            <nb-option value="2">Education</nb-option>
-                            <nb-option value="2">Entertainment</nb-option>
+                        <label for="website" class="label">Website</label>
+                        <input type="text" nbInput fullWidth formControlName="website" placeholder="Website" value="{{business?.website}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="address" class="label">Address</label>
+                        <input type="text" nbInput fullWidth formControlName="address" placeholder="Address" value="{{business?.address}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="category" class="label">Business Category</label>
+                        <nb-select selected="1" formControlName="category" fullWidth value="{{business?.category}}">
+                            <nb-option value="Automotive">Automotive</nb-option>
+                            <nb-option value="BeautySpaAndSalon">Beauty, Spa & Salon</nb-option>
+                            <nb-option value="ClothingAndApparel">Clothing & Apparel</nb-option>
+                            <nb-option value="Eduction">Eduction</nb-option>
+                            <nb-option value="Entertainment">Entertainment</nb-option>
+                            <nb-option value="EventPlanningServices">Event Planning & Services</nb-option>
+                            <nb-option value="FinanceAndBanking">Finance & Banking</nb-option>
+                            <nb-option value="FoodAndGrocery">Food & Grocery</nb-option>
+                            <nb-option value="HotelAndLodging">Hotel & Lodging</nb-option>
+                            <nb-option value="MedicalAndHealth">Medical & Health</nb-option>
+                            <nb-option value="NonProfit">Non-Profit</nb-option>
+                            <nb-option value="ProfessionalServices">Professional Services</nb-option>
+                            <nb-option value="PublicService">Public Service</nb-option>
+                            <nb-option value="Restaurant">Restaurant</nb-option>
+                            <nb-option value="ShoppingAndRetail">Shopping & Retail</nb-option>
+                            <nb-option value="TravelAndTransportation">Travel & Transportation</nb-option>
+                            <nb-option value="Other">Other</nb-option>
                         </nb-select>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1" class="label">Bio</label>
-                        <input type="email" [disabled]="edit1" nbInput fullWidth id="exampleInputEmail1"
-                            placeholder="Bio" value="test">
-                    </div>
                     <div class="btns-container">
-                        <button nbButton matripple ghost status="info" (click)="toggleEdit1()" class="button">
-                            Edit
-                        </button>
                         <div>
-                            <button type="submit" nbButton matripple status="primary" class="button">Save</button>
+                            <button type="submit" nbButton matripple status="primary" class="button" [disabled]="!form2.valid" >Save</button>
                         </div>
                     </div>
                 </form>

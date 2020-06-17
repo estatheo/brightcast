@@ -16,10 +16,16 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-
-        public UserProfile UserProfile { get; set; }
         public int? UserProfileId { get; set; }
-        public List<CampaignSent> CampaignSents { get; set; }
+        public UserProfile UserProfile { get; set; }
+
+        public ICollection<TemplateMessage> TemplateMessages { get; set; }
+        public ICollection<CampaignMessage> CampaignMessages { get; set; }
+        public ICollection<ReceiveMessage> ReceiveMessages { get; set; }
+
+        public ICollection<CampaignSent> CampaignSents { get; set; }
+
+        public ICollection<CampaignContactList> CampaignContactLists { get; set; }
 
     }
 }

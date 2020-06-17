@@ -10,7 +10,7 @@ using brightcast.Helpers;
 namespace brightcast.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20200610040204_FirstCreation")]
+    [Migration("20200616042040_FirstCreation")]
     partial class FirstCreation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,6 +110,88 @@ namespace brightcast.Migrations
                     b.ToTable("Campaigns");
                 });
 
+            modelBuilder.Entity("brightcast.Entities.CampaignContactList", b =>
+                {
+                    b.Property<int>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContactListId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CampaignId", "ContactListId");
+
+                    b.HasIndex("ContactListId");
+
+                    b.ToTable("CampaignContactLists");
+                });
+
+            modelBuilder.Entity("brightcast.Entities.CampaignMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date_Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Sent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Deleted")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Error_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Error_Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MessageSid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("To")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("CampaignMessages");
+                });
+
             modelBuilder.Entity("brightcast.Entities.CampaignSent", b =>
                 {
                     b.Property<int>("Id")
@@ -117,10 +199,10 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CampaignId")
+                    b.Property<int>("CampaignId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ContactListId")
+                    b.Property<int>("ContactListId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -157,7 +239,7 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CampaignSentId")
+                    b.Property<int>("CampaignSentId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -207,7 +289,7 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ContactListId")
+                    b.Property<int>("ContactListId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -275,7 +357,7 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserProfileId")
+                    b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -283,6 +365,73 @@ namespace brightcast.Migrations
                     b.HasIndex("UserProfileId");
 
                     b.ToTable("ContactLists");
+                });
+
+            modelBuilder.Entity("brightcast.Entities.ReceiveMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date_Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Sent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Deleted")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Error_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Error_Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MessageSid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("To")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("ReceiveMessages");
                 });
 
             modelBuilder.Entity("brightcast.Entities.ResetPassword", b =>
@@ -318,6 +467,8 @@ namespace brightcast.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("ResetPasswords");
                 });
 
@@ -349,9 +500,82 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("UserProfileId")
+                        .IsUnique();
+
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("brightcast.Entities.TemplateMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date_Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Sent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date_Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Deleted")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Error_Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Error_Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MessageSid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("To")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("TemplateMessages");
                 });
 
             modelBuilder.Entity("brightcast.Entities.User", b =>
@@ -382,18 +606,10 @@ namespace brightcast.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserActivationId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UserActivationId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Username")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserActivationId1");
 
                     b.ToTable("Users");
                 });
@@ -431,6 +647,8 @@ namespace brightcast.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("UserActivations");
                 });
 
@@ -441,7 +659,7 @@ namespace brightcast.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("BusinessId")
+                    b.Property<int>("BusinessId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -468,23 +686,18 @@ namespace brightcast.Migrations
                     b.Property<string>("PictureUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RoleId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BusinessId");
-
-                    b.HasIndex("RoleId");
 
                     b.HasIndex("UserId");
 
@@ -498,58 +711,148 @@ namespace brightcast.Migrations
                         .HasForeignKey("UserProfileId");
                 });
 
+            modelBuilder.Entity("brightcast.Entities.CampaignContactList", b =>
+                {
+                    b.HasOne("brightcast.Entities.Campaign", "Campaign")
+                        .WithMany("CampaignContactLists")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("brightcast.Entities.ContactList", "ContactList")
+                        .WithMany("CampaignContactLists")
+                        .HasForeignKey("ContactListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("brightcast.Entities.CampaignMessage", b =>
+                {
+                    b.HasOne("brightcast.Entities.Campaign", "Campaign")
+                        .WithMany("CampaignMessages")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("brightcast.Entities.Contact", "Contact")
+                        .WithMany("CampaignMessages")
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("brightcast.Entities.CampaignSent", b =>
                 {
                     b.HasOne("brightcast.Entities.Campaign", "Campaign")
                         .WithMany("CampaignSents")
-                        .HasForeignKey("CampaignId");
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("brightcast.Entities.ContactList", "ContactList")
                         .WithMany("CampaignSents")
-                        .HasForeignKey("ContactListId");
+                        .HasForeignKey("ContactListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.CampaignSentStats", b =>
                 {
                     b.HasOne("brightcast.Entities.CampaignSent", "CampaignSent")
                         .WithMany("CampaignSentStatses")
-                        .HasForeignKey("CampaignSentId");
+                        .HasForeignKey("CampaignSentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.Contact", b =>
                 {
                     b.HasOne("brightcast.Entities.ContactList", "ContactList")
                         .WithMany("Contacts")
-                        .HasForeignKey("ContactListId");
+                        .HasForeignKey("ContactListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.ContactList", b =>
                 {
                     b.HasOne("brightcast.Entities.UserProfile", "UserProfile")
                         .WithMany("ContactLists")
-                        .HasForeignKey("UserProfileId");
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("brightcast.Entities.User", b =>
+            modelBuilder.Entity("brightcast.Entities.ReceiveMessage", b =>
                 {
-                    b.HasOne("brightcast.Entities.UserActivation", "UserActivation")
-                        .WithMany()
-                        .HasForeignKey("UserActivationId1");
+                    b.HasOne("brightcast.Entities.Campaign", "Campaign")
+                        .WithMany("ReceiveMessages")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("brightcast.Entities.Contact", "Contact")
+                        .WithMany("ReceiveMessages")
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("brightcast.Entities.ResetPassword", b =>
+                {
+                    b.HasOne("brightcast.Entities.User", "User")
+                        .WithMany("ResetPassword")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("brightcast.Entities.Role", b =>
+                {
+                    b.HasOne("brightcast.Entities.UserProfile", "UserProfiles")
+                        .WithOne("Role")
+                        .HasForeignKey("brightcast.Entities.Role", "UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("brightcast.Entities.TemplateMessage", b =>
+                {
+                    b.HasOne("brightcast.Entities.Campaign", "Campaign")
+                        .WithMany("TemplateMessages")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("brightcast.Entities.Contact", "Contact")
+                        .WithMany("TemplateMessages")
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("brightcast.Entities.UserActivation", b =>
+                {
+                    b.HasOne("brightcast.Entities.User", "User")
+                        .WithMany("UserActivation")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("brightcast.Entities.UserProfile", b =>
                 {
                     b.HasOne("brightcast.Entities.Business", "Business")
                         .WithMany("UserProfiles")
-                        .HasForeignKey("BusinessId");
-
-                    b.HasOne("brightcast.Entities.Role", "Role")
-                        .WithMany("UserProfiles")
-                        .HasForeignKey("RoleId");
+                        .HasForeignKey("BusinessId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("brightcast.Entities.User", "User")
-                        .WithMany("Profiles")
-                        .HasForeignKey("UserId");
+                        .WithMany("UserProfiles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

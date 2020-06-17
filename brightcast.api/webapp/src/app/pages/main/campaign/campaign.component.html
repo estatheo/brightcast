@@ -11,7 +11,7 @@
 
     </nb-card-header>
     <nb-card-body>
-        <table class="table table-striped" [mfData]="data" #mf="mfDataTable" [mfRowsOnPage]="15">
+        <table class="table table-striped" [mfData]="data?.campaigns" #mf="mfDataTable" [mfRowsOnPage]="15">
             <thead>
                 <tr>
                     <th style="width: 20%">
@@ -51,9 +51,9 @@
                             <nb-icon [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
                                 class="campaign-icons">
                             </nb-icon>
-                            <nb-icon [icon]="'refresh'" pack="eva" class="campaign-icons">
-                            </nb-icon>
-                            <nb-icon [icon]="'paper-plane'" pack="eva" class="campaign-icons">
+                            <!-- <nb-icon [icon]="'refresh'" pack="eva" class="campaign-icons">
+                            </nb-icon> --> 
+                            <nb-icon [icon]="'paper-plane'" pack="eva" class="campaign-icons" (click)="send(item)">
                             </nb-icon>
                         </div>
                     </td>

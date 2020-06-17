@@ -44,7 +44,7 @@ namespace brightcast.Controllers
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Id = x.Id,
-                ContactListId = x.ContactListId ?? default,
+                ContactListId = x.ContactListId,
                 Email = x.Email,
                 Phone = x.Phone,
                 Subscribed = x.Subscribed

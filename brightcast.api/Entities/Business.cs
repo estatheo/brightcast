@@ -18,6 +18,6 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-        public List<UserProfile> UserProfiles { get; set; }
+        public ICollection<UserProfile> UserProfiles { get; set; }
     }
 }

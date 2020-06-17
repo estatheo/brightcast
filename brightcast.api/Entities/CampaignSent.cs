@@ -13,15 +13,14 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-        public List<CampaignSentStats> CampaignSentStatses { get; set; }
-
-
-        public int? ContactListId { get; set; }
+        
+        public int ContactListId { get; set; }
         public ContactList ContactList { get; set; }
 
-        public int? CampaignId { get; set; }
+        public int CampaignId { get; set; }
         public Campaign Campaign { get; set; }
-        
+
+        public ICollection<CampaignSentStats> CampaignSentStatses { get; set; }
 
     }
 }

@@ -4,6 +4,6 @@
     membership?: string;
     website?: string;
     address?: string;
-    email?: boolean;
+    email?: string;
     category?: string;
 }

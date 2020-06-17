@@ -34,7 +34,7 @@ export class AccountService {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));
                 this.userSubject.next(user);
-                this.onboardingCheck()
+                this.onboardingCheck();
                 return user;
             }));
     }
@@ -58,8 +58,12 @@ export class AccountService {
         return this.http.get<User>(`${environment.apiUrl}/user`);
     }
 
+    getSettingsData() {
+        return this.http.get(`${environment.apiUrl}/userprofile/settings/data`);
+    }
+
     update(id, params) {
-        return this.http.put(`${environment.apiUrl}/user`, params)
+        return this.http.put(`${environment.apiUrl}/userprofile/updateProfile`, params)
             .pipe(map(x => {
                 // update stored user if the logged in user updated their own record
                 if (id == this.userValue.id) {
@@ -72,6 +76,10 @@ export class AccountService {
                 }
                 return x;
             }));
+    }
+
+    updateBusiness(params) {
+        return this.http.put(`${environment.apiUrl}/userprofile/updateBusiness`, params);
     }
 
     delete(id: string) {
@@ -114,4 +122,13 @@ export class AccountService {
     resetPassword(password, code) {
         return this.http.post(`${environment.apiUrl}/user/resetPassword/confirm`,  {code: code, password: password});
     }
+
+    uploadImage(form: FormData) {
+        return this.http.post(`${environment.apiUrl}/file/uploadImage`, form);
+    }
+
+    uploadDoc(form: FormData) {
+        return this.http.post(`${environment.apiUrl}/file/uploadDoc`, form);
+    }
+
 }

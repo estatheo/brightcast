@@ -17,18 +17,15 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-
-        public int? UserId { get; set; }
         public User User { get; set; }
+        public int UserId { get; set; }
 
-        public int? BusinessId { get; set; }
         public Business Business { get; set; }
+        public int BusinessId { get; set; }
 
-        public int? RoleId { get; set; }
         public Role Role { get; set; }
 
-        public List<ContactList> ContactLists { get; set; }
-
-        public List<Campaign> Campaigns { get; set; }
+        public ICollection<ContactList> ContactLists { get; set; }
+        public ICollection<Campaign> Campaigns { get; set; }
     }
 }

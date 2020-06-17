@@ -45,5 +45,9 @@ export class CampaignService {
   Update(campaign) {
     return this.httpClient.put(`${this.apiURL}/campaign/${campaign.id}`, campaign);
   }
+
+  SendCampaign(campaign) {
+    return this.httpClient.post(`${this.apiURL}/campaign/send`,campaign).pipe(map(response => response))
+  }
 }
   

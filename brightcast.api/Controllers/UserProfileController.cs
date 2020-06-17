@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -6,6 +7,7 @@ using System.Text;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
+using brightcast.Models.Businesses;
 using brightcast.Models.Onboarding;
 using brightcast.Models.UserProfiles;
 using brightcast.Models.Users;
@@ -113,27 +115,35 @@ namespace brightcast.Controllers
             try
             {
                 var businessModel = _mapper.Map<Business>(model.Business);
-                var roleModel = _mapper.Map<Role>(model.Role);
+                //var roleModel = _mapper.Map<Role>(model.Role);
                 var contactListModel = _mapper.Map<ContactList>(model.ContactList);
                 var campaignModel = _mapper.Map<Campaign>(model.Campaign);
 
                 var businessId = _businessService.Create(businessModel).Id;
-                var roleId = _roleService.Create(roleModel).Id;
+                //var roleId = _roleService.Create(roleModel).Id;
 
                 //map model to entity
                 var profile = _mapper.Map<UserProfile>(model.UserProfile);
                 profile.UserId = userId;
                 profile.BusinessId = businessId;
-                profile.RoleId = roleId;
+                //profile.Role = _roleService.GetById(roleId);
 
                 // create userProfile
                 var userProfileId = _userProfileService.Create(profile).Id;
 
                 contactListModel.UserProfileId = userProfileId;
-                _contactListService.Create(contactListModel);
+                var contactList = _contactListService.Create(contactListModel);
 
                 campaignModel.UserProfileId = userProfileId;
-                _campaignService.Create(campaignModel);
+                var campaign =_campaignService.Create(campaignModel);
+
+                _campaignService.Add(new CampaignContactList()
+                {
+                    Campaign = campaign,
+                    CampaignId = campaign.Id,
+                    ContactList = contactList,
+                    ContactListId = contactList.Id
+                });
 
                 return Ok();
             }
@@ -143,6 +153,100 @@ namespace brightcast.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("settings/data")]
+        public IActionResult GetSettingsData()
+        {
+            int userId;
+
+            try
+            {
+                userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest("User not found");
+            }
+            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            if (userProfile == null || userProfile.Id == 0)
+            {
+                return NotFound(
+                    new
+                    {
+                        message = "UserProfile Not Found"
+                    });
+            }
+
+            var business = _businessService.GetById(userProfile.BusinessId);
+
+            return Ok(new
+            {
+                user = new UserProfileModel
+                {
+                    FirstName = userProfile.FirstName,
+                    LastName = userProfile.LastName,
+                    Phone = userProfile.Phone,
+                    Id = userProfile.Id,
+                    PictureUrl = userProfile.PictureUrl,
+                    Role = "",
+                    Scope = new List<string>()
+                },
+                business = new BusinessModel
+                {
+                    Id = business.Id,
+                    Email = business.Email,
+                    Address = business.Address,
+                    Category = business.Category,
+                    Membership = business.Membership,
+                    Name = business.Name,
+                    Website = business.Website
+                }
+            });
+        }
+
+        [HttpPut("updateBusiness")]
+        public IActionResult UpdateBusiness([FromBody] BusinessModel model)
+        {
+            int userId;
+
+            try
+            {
+                userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest("User not found");
+            }
+            var currentUserProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            if (currentUserProfile == null || currentUserProfile.Id == 0)
+            {
+                return NotFound(
+                    new
+                    {
+                        message = "UserProfile Not Found"
+                    });
+            }
+
+            //check the user has access to the business
+
+            // map model to entity and set id
+            var business = _mapper.Map<Business>(model);
+
+            try
+            {
+                // update user 
+                _businessService.Update(business);
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
 
         [HttpGet]
         public IActionResult GetUserProfile()

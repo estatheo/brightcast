@@ -98,22 +98,6 @@ namespace brightcast.Controllers
             return Ok();
         }
 
-        //[HttpGet]
-        //public IActionResult GetAll()
-        //{
-        //    var users = _userService.GetAll();
-        //    var model = _mapper.Map<IList<UserModel>>(users);
-        //    return Ok(model);
-        //}
-
-        //[HttpGet("{id}")]
-        //public IActionResult GetById(int id)
-        //{
-        //    var user = _userService.GetById(id);
-
-        //    var model = _mapper.Map<UserModel>(user);
-        //    return Ok(model);
-        //}
 
         [AllowAnonymous]
         [HttpPost("resetPassword/confirm")]
@@ -140,7 +124,6 @@ namespace brightcast.Controllers
 
             return Ok();
         }
-
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody]UserUpdateModel model)

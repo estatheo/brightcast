@@ -75,10 +75,16 @@
     background-color: #101426;
 }
 
-::ng-deep .nb-theme-default p {
-    color: #ffffff;
-}
+// ::ng-deep .nb-theme-default p {
+//     color: #ffffff;
+// }
 
 ::ng-deep .nb-theme-default nb-checkbox.status-basic .text {
     color: #ffffff;
+}
+
+::ng-deep .nb-theme-default .login-container {
+    background-color: white;
+    border: 5px solid #017fdc;
+    border-radius: 50px;
 }

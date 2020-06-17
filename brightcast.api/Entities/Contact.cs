@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace brightcast.Entities
 {
@@ -16,7 +17,11 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-        public int? ContactListId { get; set; }
+        public int ContactListId { get; set; }
         public ContactList ContactList { get; set; }
+
+        public ICollection<TemplateMessage> TemplateMessages { get; set; }
+        public ICollection<CampaignMessage> CampaignMessages { get; set; }
+        public ICollection<ReceiveMessage> ReceiveMessages { get; set; }
     }
 }

@@ -15,10 +15,9 @@ namespace brightcast.Entities
         public DateTime UpdatedAt { get; set; }
         public int Deleted { get; set; }
 
-        public UserActivation UserActivation { get; set; }
-        public int UserActivationId { get; set; }
-
-        public List<UserProfile> Profiles { get; set; }
+        public ICollection<UserActivation> UserActivation { get; set; }
+        public ICollection<ResetPassword> ResetPassword { get; set; }
+        public ICollection<UserProfile> UserProfiles { get; set; }
 
     }
 }

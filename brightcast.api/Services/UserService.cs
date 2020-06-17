@@ -286,7 +286,7 @@ namespace brightcast.Services
                             },
                             dynamic_template_data = new 
                             {
-                                url = $"https://brightcast.io/auth/verify/{code}"
+                                url = $"{_appSettings.UiBaseUrl}/auth/verify/{code}"
                             },
                             subject = "Verify your Brightcast account now!"
                         }
@@ -331,7 +331,7 @@ namespace brightcast.Services
                         },
                         dynamic_template_data = new
                         {
-                            url = $"https://brightcast.io/auth/verify/{code}"
+                            url = $"{_appSettings.UiBaseUrl}/auth/new-password/{code}"
                         },
                         subject = "Reset the password of your Brightcast account!"
                     }

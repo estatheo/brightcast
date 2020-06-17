@@ -4,6 +4,7 @@ import { ContactListElement } from '../../../_models/contactListElement';
 import { ContactListService } from '../../../../@core/apis/contactList.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AccountService } from '../../../_services';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
         <input nbInput fullWidth id="name" type="text"  value="{{contactList.name}}" formControlName="name">
     </div>
     <label for="file" class="label">Contacts file</label>
-    <input type="file" nbInput fullWidth id="file">
+    <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
 
 
     <button type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
@@ -21,9 +22,10 @@ import { Router } from '@angular/router';
     styleUrls: ['customer-list-edit.component.scss'],
 })
 export class CustomerListEditComponent {
+    image: FormData;
     contactList: ContactListElement;
     form;
-    constructor(private router: Router, private formBuilder: FormBuilder, public windowRef: NbWindowRef, private contactListService: ContactListService, private toastrService: NbToastrService) {
+    constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, public windowRef: NbWindowRef, private contactListService: ContactListService, private toastrService: NbToastrService) {
         this.form = this.formBuilder.group({
             name: ['', Validators.required],
             fileUrl: ['', Validators.required]
@@ -34,12 +36,25 @@ export class CustomerListEditComponent {
         this.windowRef.close();
     }
 
+    uploadImage(files) {
+      if (files.length === 0) {
+        return;
+      }  
+
+      this.image = new FormData();
+
+      for (let file of files) {
+        this.image.append(file.name, file);
+      }
+      
+    }
+
     onSubmit() {
-        console.log(this.contactList);
+      this.accountService.uploadImage(this.image).subscribe(im => {
         this.contactListService.Update({
           id: this.contactList.id,
           name: this.form.controls.name.value,
-          fileUrl: ''
+          fileUrl: im['name']
         }).subscribe(() => {
             this.toastrService.success("🚀 The Contact List has been updated!", "Success!");
             this.contactListService.refreshData();
@@ -48,6 +63,7 @@ export class CustomerListEditComponent {
             });
           }, error => {
             this.toastrService.danger(error, "There was an error on our side😢");
-          })
-      }
+        });
+      });
+    }
 }

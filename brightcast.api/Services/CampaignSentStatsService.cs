@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using brightcast.Entities;
 using brightcast.Helpers;
 
@@ -33,7 +34,7 @@ namespace brightcast.Services
 
         public List<CampaignSentStats> GetByCampaignSentId(int campaignSentId)
         {
-            return _context.CampaignSents.Find(campaignSentId).CampaignSentStatses;
+            return _context.CampaignSents.Find(campaignSentId)?.CampaignSentStatses?.ToList();
         }
 
 

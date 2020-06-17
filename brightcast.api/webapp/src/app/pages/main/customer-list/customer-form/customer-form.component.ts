@@ -3,6 +3,7 @@ import { NbWindowRef, NbToastrService } from '@nebular/theme';
 import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ContactListService } from '../../../../@core/apis/contactList.service';
+import { AccountService } from '../../../_services';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { ContactListService } from '../../../../@core/apis/contactList.service';
         <input nbInput fullWidth id="name" type="text" value="" formControlName="name">
     </div>
     <label for="file" class="label">Contacts file</label>
-    <input type="file" nbInput fullWidth id="file">
+    <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
 
 
     <button type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
@@ -21,9 +22,10 @@ import { ContactListService } from '../../../../@core/apis/contactList.service';
 })
 export class CustomerFormComponent {
 
+    image: FormData;
     event;
     form;
-    constructor(private router: Router, private formBuilder: FormBuilder, public windowRef: NbWindowRef, private toastrService: NbToastrService, private contactListService: ContactListService) {
+    constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, public windowRef: NbWindowRef, private toastrService: NbToastrService, private contactListService: ContactListService) {
         this.form = this.formBuilder.group({
             name: ['', Validators.required],
             message: ['', Validators.required],
@@ -31,10 +33,24 @@ export class CustomerFormComponent {
           });
     }
 
+    uploadImage(files) {
+      if (files.length === 0) {
+        return;
+      }  
+
+      this.image = new FormData();
+
+      for (let file of files) {
+        this.image.append(file.name, file);
+      }
+      
+    }
+
     onSubmit() {
+      this.accountService.uploadImage(this.image).subscribe(im => {
         this.contactListService.NewContactList({
           name: this.form.controls.name.value,
-          fileUrl: ''
+          fileUrl: im['name']
         }).subscribe(() => {
           this.toastrService.success("🚀 The Contact List has been added!", "Success!");
           this.contactListService.refreshData();
@@ -45,8 +61,10 @@ export class CustomerFormComponent {
         }, error => {
           this.toastrService.danger(error, "There was an error on our side😢");
         });
-      }
+      });
 
+    }
+    
     close() {
         this.windowRef.close();
     }
