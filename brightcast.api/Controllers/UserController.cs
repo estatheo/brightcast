@@ -103,9 +103,13 @@ namespace brightcast.Controllers
         [HttpPost("resetPassword/confirm")]
         public IActionResult ResetPassword([FromBody] ResetPasswordModel model)
         {
-            _userService.ResetPassword(model.Code, model.Password);
 
-            return Ok();
+            if (_userService.ResetPassword(model.Code, model.Password))
+            {
+                return Ok();
+            }
+
+            return BadRequest("The new password token is expired!");
         }
 
 

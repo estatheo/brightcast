@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Businesses;
 using brightcast.Models.Onboarding;
 using brightcast.Models.UserProfiles;
-using brightcast.Models.Users;
 using brightcast.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace brightcast.Controllers
 {
@@ -24,14 +21,16 @@ namespace brightcast.Controllers
     [Route("api/[controller]")]
     public class UserProfileController : ControllerBase
     {
-        private IUserService _userService;
-        private IUserProfileService _userProfileService;
-        private IBusinessService _businessService;
-        private IRoleService _roleService;
-        private IContactListService _contactListService;
-        private ICampaignService _campaignService;
-        private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly IBusinessService _businessService;
+        private readonly ICampaignService _campaignService;
+        private readonly IContactListService _contactListService;
+        private readonly IContactService _contactService;
+        private readonly IMapper _mapper;
+        private readonly IUserProfileService _userProfileService;
+        private readonly IUserService _userService;
+        private readonly CsvParser parser;
+        private IRoleService _roleService;
 
         public UserProfileController(
             IUserService userService,
@@ -39,21 +38,24 @@ namespace brightcast.Controllers
             IMapper mapper,
             IRoleService roleService,
             IContactListService contactListService,
+            IContactService contactService,
             ICampaignService campaignService,
             IBusinessService businessService,
             IOptions<AppSettings> appSettings
-            )
+        )
         {
             _userService = userService;
             _userProfileService = userProfileService;
             _roleService = roleService;
             _contactListService = contactListService;
+            _contactService = contactService;
             _campaignService = campaignService;
             _businessService = businessService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+            parser = new CsvParser(appSettings);
         }
-        
+
         [HttpGet("onboardingCheck")]
         public IActionResult OnBoardingCheck()
         {
@@ -70,15 +72,14 @@ namespace brightcast.Controllers
 
             try
             {
-                var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+                var userProfile = _userProfileService.GetAllByUserId(userId)
+                    .FirstOrDefault(x => x.Default && x.Deleted == 0);
                 if (userProfile == null || userProfile.Id == 0)
-                {
                     return Ok(
                         new
                         {
                             onboard = true
                         });
-                }
             }
             catch (Exception)
             {
@@ -97,7 +98,7 @@ namespace brightcast.Controllers
         }
 
         [HttpPost("onboarding")]
-        public IActionResult RegisterProfile([FromBody] OnboardingRegistrationModel model)
+        public async Task<IActionResult> RegisterProfile([FromBody] OnboardingRegistrationModel model)
         {
             int userId;
 
@@ -110,7 +111,6 @@ namespace brightcast.Controllers
                 return BadRequest("User not found");
             }
 
-            
 
             try
             {
@@ -134,10 +134,22 @@ namespace brightcast.Controllers
                 contactListModel.UserProfileId = userProfileId;
                 var contactList = _contactListService.Create(contactListModel);
 
-                campaignModel.UserProfileId = userProfileId;
-                var campaign =_campaignService.Create(campaignModel);
+                var contacts = await parser.ParseFile(contactList.FileUrl);
 
-                _campaignService.Add(new CampaignContactList()
+                contacts.ForEach(x => _contactService.Create(new Contact
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    ContactListId = contactList.Id,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    Subscribed = x.Subscribed
+                }));
+
+                campaignModel.UserProfileId = userProfileId;
+                var campaign = _campaignService.Create(campaignModel);
+
+                _campaignService.Add(new CampaignContactList
                 {
                     Campaign = campaign,
                     CampaignId = campaign.Id,
@@ -150,7 +162,7 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 
@@ -167,16 +179,16 @@ namespace brightcast.Controllers
             {
                 return BadRequest("User not found");
             }
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             var business = _businessService.GetById(userProfile.BusinessId);
 
@@ -218,16 +230,16 @@ namespace brightcast.Controllers
             {
                 return BadRequest("User not found");
             }
-            var currentUserProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            var currentUserProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (currentUserProfile == null || currentUserProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             //check the user has access to the business
 
@@ -243,7 +255,7 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 
@@ -261,22 +273,33 @@ namespace brightcast.Controllers
             {
                 return BadRequest("User not found");
             }
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
-            return Ok(userProfile);
+            var response = new UserProfileModel
+            {
+                Id = userProfile.Id,
+                FirstName = userProfile.FirstName,
+                LastName = userProfile.LastName,
+                Phone = userProfile.Phone,
+                PictureUrl = userProfile.PictureUrl,
+                Role = userProfile.Role?.Name,
+                Scope = userProfile.Role?.Scope?.Split(',').ToList()
+            };
+
+            return Ok(response);
         }
 
         [HttpPut("updateProfile")]
-        public IActionResult UpdateProfile([FromBody]UserProfileUpdateModel model)
+        public IActionResult UpdateProfile([FromBody] UserProfileUpdateModel model)
         {
             int userId;
 
@@ -288,20 +311,20 @@ namespace brightcast.Controllers
             {
                 return BadRequest("User not found");
             }
-            var currentUserProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            var currentUserProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (currentUserProfile == null || currentUserProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             // map model to entity and set id
             var profile = _mapper.Map<UserProfile>(model);
-            
+
             profile.UserId = userId;
             profile.Id = currentUserProfile.Id;
             try
@@ -313,10 +336,10 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
-        
+
 
         [HttpDelete]
         public IActionResult Delete(int id)
@@ -331,16 +354,16 @@ namespace brightcast.Controllers
             {
                 return BadRequest("User not found");
             }
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             _userService.Delete(userProfile.Id);
             return Ok();

@@ -13,7 +13,7 @@ import { AccountService } from '../../../_services';
         <input nbInput fullWidth id="name" type="text" value="" formControlName="name">
     </div>
     <label for="file" class="label">Contacts file</label>
-    <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
+    <input #image type="file" multiple accept=".csv" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
 
 
     <button type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
@@ -22,7 +22,7 @@ import { AccountService } from '../../../_services';
 })
 export class CustomerFormComponent {
 
-    image: FormData;
+    doc: FormData;
     event;
     form;
     constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, public windowRef: NbWindowRef, private toastrService: NbToastrService, private contactListService: ContactListService) {
@@ -38,16 +38,16 @@ export class CustomerFormComponent {
         return;
       }  
 
-      this.image = new FormData();
+      this.doc = new FormData();
 
       for (let file of files) {
-        this.image.append(file.name, file);
+        this.doc.append(file.name, file);
       }
       
     }
 
     onSubmit() {
-      this.accountService.uploadImage(this.image).subscribe(im => {
+      this.accountService.uploadDoc(this.doc).subscribe(im => {
         this.contactListService.NewContactList({
           name: this.form.controls.name.value,
           fileUrl: im['name']

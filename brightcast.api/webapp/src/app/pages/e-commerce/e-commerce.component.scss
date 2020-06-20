@@ -46,3 +46,8 @@
 .card-selected {
     opacity: 1;
 }
+
+::ng-deep .nb-theme-default nb-card-body { 
+    min-width: 10rem;
+    padding: 1rem 1rem;
+}

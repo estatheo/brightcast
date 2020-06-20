@@ -5,6 +5,8 @@ import { CustomerFormComponent } from './customer-form/customer-form.component';
 import { ContactListService } from '../../../@core/apis/contactList.service';
 import { ContactListElement } from '../../_models/contactListElement';
 import { CustomerListEditComponent } from './customer-list-edit/customer-list-edit.component';
+import { Router } from '@angular/router';
+import { ContactService } from '../../../@core/apis/contact.service';
 
 @Component({
   selector: 'ngx-customer-list',
@@ -15,7 +17,7 @@ export class CustomerListComponent implements OnInit {
 
   data: ContactListElement[];
 
-  constructor(private windowService: NbWindowService, private toastrService: NbToastrService, private contactListService: ContactListService) { }
+  constructor(private windowService: NbWindowService, private toastrService: NbToastrService, private router: Router, private contactListService: ContactListService, private contactService: ContactService) { }
 
   ngOnInit(): void {
     this.contactListService.data.subscribe((data: ContactListElement[]) => {
@@ -35,11 +37,13 @@ export class CustomerListComponent implements OnInit {
     this.contactListService.Delete(id).subscribe(() => {
       this.toastrService.primary("❌ The Contact List has been deleted!", "Deleted!");
       this.contactListService.refreshData();
+      this.contactService.refreshData();
       this.contactListService.data.subscribe((data: ContactListElement[]) => {
         this.data = data;
+        this.router.navigate(['pages/main/customer-list']);
       });
     }, error => {
-      this.toastrService.warning("⚠ There was an error processing the request!", "Error!");
+      this.toastrService.danger("⚠ There was an error processing the request!", "Error!");
     })
   }
 }

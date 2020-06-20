@@ -32,12 +32,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let item of mf.data" routerLink="/pages/main/customer-list/{{item.id}}/contacts">
+                    <tr *ngFor="let item of mf.data" class="list-row">
 
-                        <td>{{item.name}}</td>
-                        <td>{{item.contacts}}</td>
-                        <td>{{item.campaigns}}</td>
-                        <td>{{item.unsubscribed}}</td>
+                        <td routerLink="/pages/main/customer-list/{{item.id}}/contacts">{{item.name}}</td>
+                        <td routerLink="/pages/main/customer-list/{{item.id}}/contacts">{{item.contacts}}</td>
+                        <td routerLink="/pages/main/customer-list/{{item.id}}/contacts">{{item.campaigns}}</td>
+                        <td routerLink="/pages/main/customer-list/{{item.id}}/contacts">{{item.unsubscribed}}</td>
                         <td>
                             <div class="flex-icons">
                                 <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">

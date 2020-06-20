@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
-using brightcast.Models.Campaigns;
 using brightcast.Models.Dashboard;
 using brightcast.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -21,58 +18,59 @@ namespace brightcast.Controllers
     [Authorize]
     public class DashboardController : ControllerBase
     {
-        private IUserService _userService;
-        private IUserProfileService _userProfileService;
-        private ICampaignService _campaignService;
-        private ICampaignSentService _campaignSentService;
-        private ICampaignSentStatsService _campaignSentStatsService;
-        private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly ICampaignSentService _campaignSentService;
+        private readonly ICampaignSentStatsService _campaignSentStatsService;
+        private readonly ICampaignService _campaignService;
+        private IMapper _mapper;
+        private readonly IUserProfileService _userProfileService;
+        private IUserService _userService;
 
-        private DashboardDataResponse emptyResponse = new DashboardDataResponse()
+        private readonly DashboardDataResponse emptyResponse = new DashboardDataResponse
         {
-            Delivered = new CardStatModel()
+            Delivered = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
                 ChartPoints = 1,
-                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
-                ChartValues = new int[] {0}
+                ChartLabels = new[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new[] {0}
             },
-            Read = new CardStatModel()
+            Read = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
                 ChartPoints = 1,
-                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
-                ChartValues = new int[] {0}
+                ChartLabels = new[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new[] {0}
             },
-            NewSubscribers = new CardStatModel()
+            NewSubscribers = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
                 ChartPoints = 1,
-                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
-                ChartValues = new int[] {0}
+                ChartLabels = new[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new[] {0}
             },
-            Unsubscribed = new CardStatModel()
+            Unsubscribed = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
                 ChartPoints = 1,
-                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
-                ChartValues = new int[] {0}
+                ChartLabels = new[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new[] {0}
             },
-            Replies = new CardStatModel()
+            Replies = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
                 ChartPoints = 1,
-                ChartLabels = new String[] {DateTime.UtcNow.ToString("d")},
-                ChartValues = new int[] {0}
+                ChartLabels = new[] {DateTime.UtcNow.ToString("d")},
+                ChartValues = new[] {0}
             }
         };
-        public DashboardController (
+
+        public DashboardController(
             ICampaignService campaignService,
             ICampaignSentService campaignSentService,
             ICampaignSentStatsService campaignSentStatsService,
@@ -89,7 +87,7 @@ namespace brightcast.Controllers
             _userService = userService;
             _userProfileService = userProfileService;
         }
-        
+
         [HttpGet("data")]
         public IActionResult GetDataByUserId()
         {
@@ -98,51 +96,41 @@ namespace brightcast.Controllers
             try
             {
                 userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
-            } 
-            catch(Exception)
+            }
+            catch (Exception)
             {
                 return BadRequest("User not found");
             }
-            
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             var campaignSentStats = new List<CampaignSentStats>();
 
             var campaigns = _campaignService.GetByUserProfileId(userProfile.Id);
-            if (campaigns == null || campaigns.Count == 0)
-            {
-                return Ok(emptyResponse);
-            }
+            if (campaigns == null || campaigns.Count == 0) return Ok(emptyResponse);
             foreach (var campaign in campaigns.Where(x => x.Deleted == 0))
             {
                 var campaignsSent = _campaignSentService.GetAllByCampaignId(campaign.Id);
-                if (campaignsSent == null || campaignsSent.Count == 0)
-                {
-                    return Ok(emptyResponse);
-                }
+                if (campaignsSent == null || campaignsSent.Count == 0) return Ok(emptyResponse);
                 foreach (var campaignSent in campaignsSent.Where(x => x.Deleted == 0))
                 {
                     var campaignSentStatsList = _campaignSentStatsService.GetByCampaignSentId(campaignSent.Id);
-                    if (campaignSentStatsList == null || campaignSentStatsList.Count == 0)
-                    {
-                        return Ok(emptyResponse);
-                    }
+                    if (campaignSentStatsList == null || campaignSentStatsList.Count == 0) return Ok(emptyResponse);
 
                     campaignSentStats.AddRange(campaignSentStatsList.Where(x => x.Deleted == 0));
                 }
             }
 
             var response = MapStats(campaignSentStats);
-            
+
             return Ok(response);
         }
 
@@ -151,48 +139,53 @@ namespace brightcast.Controllers
         {
             var result = new DashboardDataResponse();
 
-            result.Delivered = new CardStatModel()
+            result.Delivered = new CardStatModel
             {
                 Value = list.Sum(x => x.Delivered),
-                Percentage = (float)((list.Sum(x => x.Delivered) - list
+                Percentage = (list.Sum(x => x.Delivered) - list
                     .Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered)) * 100) / (float)list
+                    .Sum(x => x.Delivered)) * 100 / (float) list
                     .Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                     .Sum(x => x.Delivered),
                 ChartPoints = 7,
-                ChartValues = new int[] {list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered),
-                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered),
-                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered),
-                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered),
-                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered), 
-                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
-                    .Sum(x => x.Delivered), 
-                    list.Sum(x => x.Delivered)},
-                ChartLabels = new string[]
+                ChartValues = new[]
                 {
-                    DateTime.UtcNow.Subtract(new TimeSpan(6,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(4,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(3,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(2,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(1,0,0,0)).DayOfWeek.ToString(),
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
+                        .Sum(x => x.Delivered),
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).Date)
+                        .Sum(x => x.Delivered),
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).Date)
+                        .Sum(x => x.Delivered),
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).Date)
+                        .Sum(x => x.Delivered),
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).Date)
+                        .Sum(x => x.Delivered),
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
+                        .Sum(x => x.Delivered),
+                    list.Sum(x => x.Delivered)
+                },
+                ChartLabels = new[]
+                {
+                    DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).DayOfWeek.ToString(),
                     DateTime.UtcNow.DayOfWeek.ToString()
                 }
             };
 
-            result.Read = new CardStatModel()
+            result.Read = new CardStatModel
             {
                 Value = list.Sum(x => x.Read),
                 Percentage = list.Sum(x => x.Read) - list
                     .Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                     .Sum(x => x.Read),
                 ChartPoints = 7,
-                ChartValues = new int[] {list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
+                ChartValues = new[]
+                {
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
                         .Sum(x => x.Read),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).Date)
                         .Sum(x => x.Read),
@@ -204,27 +197,30 @@ namespace brightcast.Controllers
                         .Sum(x => x.Read),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                         .Sum(x => x.Read),
-                    list.Sum(x => x.Read)},
-                ChartLabels = new string[]
+                    list.Sum(x => x.Read)
+                },
+                ChartLabels = new[]
                 {
-                    DateTime.UtcNow.Subtract(new TimeSpan(6,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(4,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(3,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(2,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(1,0,0,0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).DayOfWeek.ToString(),
                     DateTime.UtcNow.DayOfWeek.ToString()
                 }
             };
 
-            result.NewSubscribers = new CardStatModel()
+            result.NewSubscribers = new CardStatModel
             {
                 Value = list.Sum(x => x.NewSubscriber),
                 Percentage = list.Sum(x => x.NewSubscriber) - list
                     .Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                     .Sum(x => x.NewSubscriber),
                 ChartPoints = 7,
-                ChartValues = new int[] {list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
+                ChartValues = new[]
+                {
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
                         .Sum(x => x.NewSubscriber),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).Date)
                         .Sum(x => x.NewSubscriber),
@@ -236,27 +232,30 @@ namespace brightcast.Controllers
                         .Sum(x => x.NewSubscriber),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                         .Sum(x => x.NewSubscriber),
-                    list.Sum(x => x.NewSubscriber)},
-                ChartLabels = new string[]
+                    list.Sum(x => x.NewSubscriber)
+                },
+                ChartLabels = new[]
                 {
-                    DateTime.UtcNow.Subtract(new TimeSpan(6,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(4,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(3,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(2,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(1,0,0,0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).DayOfWeek.ToString(),
                     DateTime.UtcNow.DayOfWeek.ToString()
                 }
             };
 
-            result.Unsubscribed = new CardStatModel()
+            result.Unsubscribed = new CardStatModel
             {
                 Value = list.Sum(x => x.Unsubscribed),
                 Percentage = list.Sum(x => x.Unsubscribed) - list
                     .Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                     .Sum(x => x.Unsubscribed),
                 ChartPoints = 7,
-                ChartValues = new int[] {list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
+                ChartValues = new[]
+                {
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
                         .Sum(x => x.Unsubscribed),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).Date)
                         .Sum(x => x.Unsubscribed),
@@ -268,27 +267,30 @@ namespace brightcast.Controllers
                         .Sum(x => x.Unsubscribed),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                         .Sum(x => x.Unsubscribed),
-                    list.Sum(x => x.Unsubscribed)},
-                ChartLabels = new string[]
+                    list.Sum(x => x.Unsubscribed)
+                },
+                ChartLabels = new[]
                 {
-                    DateTime.UtcNow.Subtract(new TimeSpan(6,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(4,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(3,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(2,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(1,0,0,0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).DayOfWeek.ToString(),
                     DateTime.UtcNow.DayOfWeek.ToString()
                 }
             };
 
-            result.Replies = new CardStatModel()
+            result.Replies = new CardStatModel
             {
                 Value = list.Sum(x => x.Replies),
                 Percentage = list.Sum(x => x.Replies) - list
                     .Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                     .Sum(x => x.Replies),
                 ChartPoints = 7,
-                ChartValues = new int[] {list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
+                ChartValues = new[]
+                {
+                    list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).Date)
                         .Sum(x => x.Replies),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).Date)
                         .Sum(x => x.Replies),
@@ -300,21 +302,21 @@ namespace brightcast.Controllers
                         .Sum(x => x.Replies),
                     list.Where(x => x.Date <= DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).Date)
                         .Sum(x => x.Replies),
-                    list.Sum(x => x.Replies)},
-                ChartLabels = new string[]
+                    list.Sum(x => x.Replies)
+                },
+                ChartLabels = new[]
                 {
-                    DateTime.UtcNow.Subtract(new TimeSpan(6,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(5,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(4,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(3,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(2,0,0,0)).DayOfWeek.ToString(),
-                    DateTime.UtcNow.Subtract(new TimeSpan(1,0,0,0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(6, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(5, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(4, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(3, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(2, 0, 0, 0)).DayOfWeek.ToString(),
+                    DateTime.UtcNow.Subtract(new TimeSpan(1, 0, 0, 0)).DayOfWeek.ToString(),
                     DateTime.UtcNow.DayOfWeek.ToString()
                 }
             };
 
             return result;
         }
-
     }
 }

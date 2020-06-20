@@ -26,7 +26,7 @@ namespace brightcast.Services
         void ActivateUser(Guid code);
         Guid? RequestResetPassword(string email);
         Task SendResetPasswordEmail(Guid code, string email);
-        void ResetPassword(Guid code, string password);
+        bool ResetPassword(Guid code, string password);
     }
 
     public class UserService : IUserService
@@ -200,16 +200,15 @@ namespace brightcast.Services
         }
 
 
-        public void ResetPassword(Guid code, string password)
+        public bool ResetPassword(Guid code, string password)
         {
             var resetPassword = _context.ResetPasswords.FirstOrDefault(x =>
-                x.ResetCode == code && x.Deleted == 0 && x.CreatedAt.AddDays(1) >= DateTime.UtcNow);
+                x.ResetCode == code && x.Deleted == 0 && x.CreatedAt.AddDays(1) >= DateTime.UtcNow && !x.Activated);
 
             if (resetPassword != null)
             {
                 resetPassword.Activated = true;
                 _context.ResetPasswords.Update(resetPassword);
-
 
                 if (!string.IsNullOrWhiteSpace(password))
                 {
@@ -223,8 +222,14 @@ namespace brightcast.Services
                     
                     _context.Users.Update(user);
                     _context.SaveChanges();
+
+                    return true;
                 }
+
+                return false;
             }
+
+            return false;
         }
 
         // private helper methods

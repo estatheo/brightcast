@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Claims;
-using AutoMapper;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Campaigns;
@@ -19,24 +20,30 @@ namespace brightcast.Controllers
     [Route("api/[controller]")]
     public class ContactListController : ControllerBase
     {
-        private IUserProfileService _userProfileService;
-        private IContactListService _contactListService;
-        private IContactService _contactService;
-        private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly ICampaignService _campaignService;
+        private readonly IContactListService _contactListService;
+        private readonly IContactService _contactService;
+        private readonly IMapper _mapper;
+        private readonly IUserProfileService _userProfileService;
+        private readonly CsvParser parser;
 
         public ContactListController(
             IUserProfileService userProfileService,
             IContactListService contactListService,
+            ICampaignService campaignService,
             IContactService contactService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _userProfileService = userProfileService;
             _contactListService = contactListService;
+            _campaignService = campaignService;
             _contactService = contactService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
+
+            parser = new CsvParser(appSettings);
         }
 
 
@@ -57,33 +64,31 @@ namespace brightcast.Controllers
             var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             var contactLists = _contactListService.GetAllByUserProfileId(userProfile.Id);
-            if (contactLists == null || contactLists.Count == 0)
-            {
-                return Ok();
-            }
+            if (contactLists == null || contactLists.Count == 0) return Ok();
 
             var result = new List<ContactListResponseModel>();
 
             foreach (var contactList in contactLists)
             {
                 var listOfContacts = _contactService.GetAllByContactListId(contactList.Id).ToList();
-                result.Add(new ContactListResponseModel()
+
+                result.Add(new ContactListResponseModel
                 {
                     Id = contactList.Id,
                     Name = contactList.Name,
-                    Contacts =  listOfContacts.Count,
-                    Unsubscribed = listOfContacts.Where(x => !x.Subscribed ).ToList().Count
-                }); 
+                    Contacts = listOfContacts.Count,
+                    Unsubscribed = listOfContacts.Where(x => !x.Subscribed).ToList().Count,
+                    Campaigns = _campaignService.GetByContactListId(contactList.Id).Count
+                });
             }
+
             return Ok(result);
         }
 
@@ -96,7 +101,7 @@ namespace brightcast.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]ContactListModel model)
+        public IActionResult Update(int id, [FromBody] ContactListModel model)
         {
             // map model to entity and set id
             var contactList = _mapper.Map<ContactList>(model);
@@ -111,12 +116,12 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 
         [HttpPost("new")]
-        public IActionResult Create(ContactListModel model)
+        public async Task<IActionResult> Create(ContactListModel model)
         {
             int userId;
 
@@ -129,16 +134,16 @@ namespace brightcast.Controllers
                 return BadRequest("User not found");
             }
 
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
+
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
             // map model to entity and set id
             var contactList = _mapper.Map<ContactList>(model);
             contactList.UserProfileId = userProfile.Id;
@@ -146,13 +151,26 @@ namespace brightcast.Controllers
             try
             {
                 // update user 
-                _contactListService.Create(contactList);
+                var entity = _contactListService.Create(contactList);
+
+                var contacts = await parser.ParseFile(contactList.FileUrl);
+
+                contacts.ForEach(x => _contactService.Create(new Contact
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    ContactListId = entity.Id,
+                    Email = x.Email,
+                    Phone = x.Phone,
+                    Subscribed = x.Subscribed
+                }));
+
                 return Ok();
             }
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 

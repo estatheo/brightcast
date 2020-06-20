@@ -41,7 +41,9 @@
                         <td>{{item.lastName}}</td>
                         <td>{{item.phone}}</td>
                         <td>{{item.email}}</td>
-                        <td>{{item.subscribed}}</td>
+                        <td *ngIf="item.subscribed">✔️</td>
+                        <td *ngIf="!item.subscribed">❌</td>
+                    
                         <td>
                             <div class="flex-icons">
                                 <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">

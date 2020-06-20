@@ -45,7 +45,7 @@ export class ContactComponent implements OnInit {
 
   delete(id) {
     this.contactService.Delete(id).subscribe(() => {
-      this.toastrService.primary("❌ The campaign has been deleted!", "Deleted!");
+      this.toastrService.primary("❌ The contact has been deleted!", "Deleted!");
       this.contactService.refreshData();
       this.contactService.data.subscribe((data: Contact[]) => {
         this.data = data;

@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="form-heading">
+        <img class="logo-img" src="assets/logo/logo.png" />
+    </div>
+    <h3 *ngIf="routeValue === 'register'">
+        Thank you for joining our community, we're delighted to have you with us! <br/><br/>Please confirm your Brightcast Account by verifying your email address. 🎊
+    </h3>
+    <h3 *ngIf="routeValue === 'password'">
+        No need to worry, you can reset your Brightcast password by clicking the link in your email! ✨ 
+    </h3>
+    <button type="submit"  nbButton status="primary" class="button" routerLink="/auth">Login</button>
+</div>
+

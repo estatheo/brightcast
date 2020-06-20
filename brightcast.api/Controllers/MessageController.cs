@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
-using brightcast.Models.Campaigns;
-using brightcast.Models.ContactLists;
 using brightcast.Models.Twilio;
 using brightcast.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -24,15 +21,15 @@ namespace brightcast.Controllers
     [Route("api/[controller]")]
     public class MessageController : ControllerBase
     {
-        private IUserProfileService _userProfileService;
-        private ICampaignService _campaignService;
+        private readonly AppSettings _appSettings;
         private ICampaignSentService _campaignSentService;
         private ICampaignSentStatsService _campaignSentStatsService;
+        private readonly ICampaignService _campaignService;
         private IContactListService _contactListService;
         private IContactService _contactService;
-        private IMessageService _messageService;
         private IMapper _mapper;
-        private readonly AppSettings _appSettings;
+        private readonly IMessageService _messageService;
+        private IUserProfileService _userProfileService;
 
         public MessageController(
             IUserProfileService userProfileService,
@@ -79,7 +76,6 @@ namespace brightcast.Controllers
             {
                 return BadRequest();
             }
-
         }
 
         [AllowAnonymous]
@@ -94,7 +90,7 @@ namespace brightcast.Controllers
 
                 if (model.ErrorCode == null)
                 {
-                    _messageService.AddReceiveMessage(new ReceiveMessage()
+                    _messageService.AddReceiveMessage(new ReceiveMessage
                     {
                         Body = model.Body,
                         Date_Created = model.DateCreated,
@@ -117,16 +113,19 @@ namespace brightcast.Controllers
                     var requestModel = new FormUrlEncodedContent(
                         new List<KeyValuePair<string, string>>
                         {
-                            new KeyValuePair<string, string>("From",$"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body",$"{campaign.Message}"),
-                            new KeyValuePair<string, string>("StatusCallback",$"{_appSettings.ApiBaseUrl}/api/message/callback/campaign"),
-                            new KeyValuePair<string, string>("To",$"{model.From}"),
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{campaign.Message}"),
+                            new KeyValuePair<string, string>("StatusCallback",
+                                $"{_appSettings.ApiBaseUrl}/api/message/callback/campaign"),
+                            new KeyValuePair<string, string>("To", $"{model.From}")
                         }
                     );
-                    var req = new HttpRequestMessage(HttpMethod.Post, $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json") { Content = requestModel };
+                    var req = new HttpRequestMessage(HttpMethod.Post,
+                            $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
+                        {Content = requestModel};
 
                     req.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
-                        System.Text.ASCIIEncoding.ASCII.GetBytes(
+                        Encoding.ASCII.GetBytes(
                             $"{_appSettings.TwilioAccountSID}:{_appSettings.TwilioAuthToken}")));
 
                     var result = await client.SendAsync(req);
@@ -135,7 +134,7 @@ namespace brightcast.Controllers
                         JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
                             await result.Content.ReadAsStringAsync());
 
-                    _messageService.AddCampaignMessage(new CampaignMessage()
+                    _messageService.AddCampaignMessage(new CampaignMessage
                     {
                         MessageSid = resultModel.Sid,
                         Body = resultModel.Body,
@@ -157,7 +156,6 @@ namespace brightcast.Controllers
             {
                 return BadRequest();
             }
-
         }
 
         [AllowAnonymous]
@@ -168,7 +166,7 @@ namespace brightcast.Controllers
             {
                 var template = _messageService.GetCampaignMessageByMessageId(model.MessageSid);
 
-                if (template != null )
+                if (template != null)
                 {
                     template.Status = model.MessageStatus;
                     template.Error_Code = model.ErrorCode;
@@ -181,10 +179,9 @@ namespace brightcast.Controllers
                 }
                 else
                 {
-
                     var templateMessage = _messageService.GetLastByTo(model.To);
 
-                    _messageService.AddCampaignMessage(new CampaignMessage()
+                    _messageService.AddCampaignMessage(new CampaignMessage
                     {
                         Body = model.Body,
                         To = model.To,
@@ -207,8 +204,6 @@ namespace brightcast.Controllers
             {
                 return BadRequest();
             }
-
         }
-
     }
 }

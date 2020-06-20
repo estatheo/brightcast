@@ -40,10 +40,10 @@
                     <td>{{item.sent}}</td>
                     <td>{{item.read}}</td>
                     <td>{{item.response}}</td>
-                    <td *ngIf="item.status == 0" ><div class="status created"> Created </div></td>
-                    <td *ngIf="item.status == 1" ><div class="status submitted"> Submitted </div></td>
-                    <td *ngIf="item.status == 2" ><div class="status completed"> Completed </div></td>
-                    <td *ngIf="item.status == 3" ><div class="status canceled"> Canceled </div></td>
+                    <td *ngIf="item.status == 0" ><input type="text" nbInput fullWidth status="warning" shape="round" class="status created" placeholder="Created" fieldSize="small"></td>
+                    <td *ngIf="item.status == 1" ><input type="text" nbInput fullWidth status="primary" shape="round" class="status submitted" placeholder="Submitted" fieldSize="small"></td>
+                    <td *ngIf="item.status == 2" ><input type="text" nbInput fullWidth status="success" shape="round" class="status completed" placeholder="Completed" fieldSize="small"></td>
+                    <td *ngIf="item.status == 3" ><input type="text" nbInput fullWidth status="danger" shape="round" class="status canceled" placeholder="Canceled" fieldSize="small"></td>
                     <td>
                         <div class="flex-icons">
                             <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">

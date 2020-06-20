@@ -10,6 +10,7 @@ namespace brightcast.Services
     {
         Campaign GetById(int id);
         List<Campaign> GetByUserProfileId(int userProfileId);
+        List<Campaign> GetByContactListId(int contactListId);
         Campaign Create(Campaign campaign);
 
         CampaignContactList Add(CampaignContactList ccl);
@@ -39,6 +40,20 @@ namespace brightcast.Services
         public List<Campaign> GetByUserProfileId(int userProfileId)
         {
             return _context.Campaigns.Where(x => x.UserProfileId == userProfileId && x.Deleted == 0).ToList();
+        }
+
+        public List<Campaign> GetByContactListId(int contactListId)
+        {
+            var campaignIds = _context.CampaignContactLists.Where(x => x.ContactListId == contactListId).Select(x => x.CampaignId).ToList();
+
+            var result = new List<Campaign>();
+
+            foreach (var campaignId in campaignIds)
+            {
+                result.Add(_context.Campaigns.Find(campaignId));
+            }
+
+            return result;
         }
 
         public Campaign Create(Campaign campaign)

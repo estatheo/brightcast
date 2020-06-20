@@ -46,6 +46,10 @@ export class AccountService {
         this.router.navigate(['/auth/login']);
     }
     
+    getUserProfile() {
+        return this.http.get(`${environment.apiUrl}/userprofile`);
+    }
+    
     register(user: User) {
         return this.http.post(`${environment.apiUrl}/user/register`, user);
     }

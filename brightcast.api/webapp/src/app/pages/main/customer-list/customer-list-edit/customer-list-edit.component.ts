@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NbWindowRef, NbToastrService } from '@nebular/theme';
 import { ContactListElement } from '../../../_models/contactListElement';
 import { ContactListService } from '../../../../@core/apis/contactList.service';
@@ -21,15 +21,18 @@ import { AccountService } from '../../../_services';
 </form>`,
     styleUrls: ['customer-list-edit.component.scss'],
 })
-export class CustomerListEditComponent {
+export class CustomerListEditComponent implements OnInit{
     image: FormData;
     contactList: ContactListElement;
     form;
     constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, public windowRef: NbWindowRef, private contactListService: ContactListService, private toastrService: NbToastrService) {
-        this.form = this.formBuilder.group({
-            name: ['', Validators.required],
-            fileUrl: ['', Validators.required]
-          });
+        
+    }
+
+    ngOnInit(){
+      this.form = this.formBuilder.group({
+        name: [this.contactList.name, Validators.required],
+      });
     }
 
     close() {

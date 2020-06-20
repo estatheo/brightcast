@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Campaigns;
-using brightcast.Models.ContactLists;
 using brightcast.Models.Contacts;
 using brightcast.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +16,9 @@ namespace brightcast.Controllers
     [Route("api/[controller]")]
     public class ContactController : ControllerBase
     {
-        private IContactService _contactService;
-        private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly IContactService _contactService;
+        private readonly IMapper _mapper;
 
         public ContactController(
             IContactService contactService,
@@ -39,7 +35,7 @@ namespace brightcast.Controllers
         public IActionResult GetAll(int id)
         {
             var contacts = _contactService.GetAllByContactListId(id);
-            return Ok(contacts.Select(x => new ContactModel()
+            return Ok(contacts.Select(x => new ContactModel
             {
                 FirstName = x.FirstName,
                 LastName = x.LastName,
@@ -60,7 +56,7 @@ namespace brightcast.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]ContactModel model)
+        public IActionResult Update(int id, [FromBody] ContactModel model)
         {
             // map model to entity and set id
             var contact = _mapper.Map<Contact>(model);
@@ -75,7 +71,7 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 
@@ -83,7 +79,7 @@ namespace brightcast.Controllers
         public IActionResult Create([FromBody] ContactModel model)
         {
             //todo add check if userprofile == contactlist.userprofile
-            
+
             try
             {
                 _contactService.Create(_mapper.Map<Contact>(model));
@@ -93,7 +89,7 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 

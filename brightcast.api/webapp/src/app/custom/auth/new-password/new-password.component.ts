@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService, AlertService } from '../../../pages/_services';
 import { first } from 'rxjs/operators';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-new-password',
@@ -22,7 +23,8 @@ export class NewPasswordComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private accountService: AccountService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private toastrService: NbToastrService
   ) { }
 
   ngOnInit(): void {
@@ -64,20 +66,20 @@ export class NewPasswordComponent implements OnInit {
     this.alertText = '';
 
     this.loading = true;
-        this.accountService.resetPassword(this.f.password.value, this.code)
-            .pipe(first())
-            .subscribe(
-                data => {                    
-                    this.alertService.success('Password Reset successful', { keepAfterRouteChange: true });
-                    this.router.navigate(['../login'], { relativeTo: this.route });
-                },
-                error => {
-                    this.alertText = error;
-                      this.authError = true;
-                      setTimeout(() =>  this.onClose(), 2000);
-                    this.alertService.error(error);
-                    this.loading = false;
-                });
+    this.accountService.resetPassword(this.f.password.value, this.code)
+        .subscribe(
+            data => {                    
+                this.toastrService.success("✔ The Password Has been reseted!", "Success!");
+                this.router.navigate(['auth/password/confirm'], { relativeTo: this.route });
+            },
+            error => {
+                this.toastrService.danger("❌ The request password token is expired!", "Error!");
+                this.alertText = error;
+                  this.authError = true;
+                  setTimeout(() =>  this.onClose(), 2000);
+                this.alertService.error(error);
+                this.loading = false;
+            });
   }
 
 }

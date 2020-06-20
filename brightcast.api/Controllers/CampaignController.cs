@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
@@ -24,15 +25,15 @@ namespace brightcast.Controllers
     [Route("api/[controller]")]
     public class CampaignController : ControllerBase
     {
-        private IUserProfileService _userProfileService;
-        private ICampaignService _campaignService;
-        private ICampaignSentService _campaignSentService;
-        private ICampaignSentStatsService _campaignSentStatsService;
-        private IContactListService _contactListService;
-        private IContactService _contactService;
-        private IMessageService _messageService;
-        private IMapper _mapper;
         private readonly AppSettings _appSettings;
+        private readonly ICampaignSentService _campaignSentService;
+        private readonly ICampaignSentStatsService _campaignSentStatsService;
+        private readonly ICampaignService _campaignService;
+        private readonly IContactListService _contactListService;
+        private readonly IContactService _contactService;
+        private readonly IMapper _mapper;
+        private readonly IMessageService _messageService;
+        private readonly IUserProfileService _userProfileService;
 
         public CampaignController(
             IUserProfileService userProfileService,
@@ -71,23 +72,21 @@ namespace brightcast.Controllers
                 return BadRequest("User not found");
             }
 
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default );
+            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
-            
+
             var campaigns = _campaignService.GetByUserProfileId(userProfile.Id);
             if (campaigns == null || campaigns.Count == 0)
-            {
-                return Ok(new 
+                return Ok(new
                 {
-                    contactLists =  _contactListService.GetAllByUserProfileId(userProfile.Id).Select(x=> new ContactListModel()
+                    contactLists = _contactListService.GetAllByUserProfileId(userProfile.Id).Select(x =>
+                        new ContactListModel
                         {
                             Name = x.Name,
                             FileUrl = x.FileUrl,
@@ -95,12 +94,11 @@ namespace brightcast.Controllers
                         }).ToList(),
                     campaigns = new List<CampaignResponseModel>()
                 });
-            }
 
             var result = new
             {
                 contactLists = _contactListService.GetAllByUserProfileId(userProfile.Id).Select(x =>
-                    new ContactListModel()
+                    new ContactListModel
                     {
                         Name = x.Name,
                         FileUrl = x.FileUrl,
@@ -112,27 +110,23 @@ namespace brightcast.Controllers
             foreach (var campaign in campaigns)
             {
                 var campaignsSent = _campaignSentService.GetAllByCampaignId(campaign.Id);
-                var values = new []{0,0,0};
+                var values = new[] {0, 0, 0};
                 if (campaignsSent != null)
-                {
                     foreach (var campaignSent in campaignsSent)
                     {
                         values[0] += _contactService.GetAllByContactListId(campaignSent.ContactListId)
                             .Count;
                         var stats = _campaignSentStatsService.GetByCampaignSentId(campaignSent.Id);
                         if (stats != null)
-                        {
                             foreach (var campaignSentStatse in stats)
                             {
                                 values[1] += campaignSentStatse.Read;
                                 values[2] += campaignSentStatse.Replies;
                             }
-                        }
                     }
-                }
-                
 
-                result.campaigns.Add(new CampaignResponseModel()
+
+                result.campaigns.Add(new CampaignResponseModel
                 {
                     FileUrl = campaign.FileUrl,
                     Id = campaign.Id,
@@ -145,6 +139,7 @@ namespace brightcast.Controllers
                     ContactListIds = _campaignService.GetCcl(campaign.Id).Select(x => x.ContactListId).ToList()
                 });
             }
+
             return Ok(result);
         }
 
@@ -157,7 +152,7 @@ namespace brightcast.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody]CampaignModel model)
+        public IActionResult Update(int id, [FromBody] CampaignModel model)
         {
             // map model to entity and set id
             var campaign = _mapper.Map<Campaign>(model);
@@ -172,12 +167,12 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody]CampaignModel model)
+        public IActionResult Create([FromBody] CampaignModel model)
         {
             int userId;
 
@@ -190,16 +185,15 @@ namespace brightcast.Controllers
                 return BadRequest("User not found");
             }
 
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             // map model to entity and set id
             var campaign = _mapper.Map<Campaign>(model);
@@ -213,7 +207,7 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 
@@ -232,16 +226,15 @@ namespace brightcast.Controllers
                 return BadRequest("User not found");
             }
 
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             try
             {
@@ -250,22 +243,24 @@ namespace brightcast.Controllers
 
                 foreach (var contact in contacts)
                 {
-                    
                     var client = new HttpClient();
 
                     var requestModel = new FormUrlEncodedContent(
-                    new List<KeyValuePair<string, string>>
+                        new List<KeyValuePair<string, string>>
                         {
-                            new KeyValuePair<string, string>("From",$"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body",$"{_appSettings.TwilioTemplateMessage}"),
-                            new KeyValuePair<string, string>("StatusCallback",$"{_appSettings.ApiBaseUrl}/api/message/callback/template"),
-                            new KeyValuePair<string, string>("To",$"whatsapp:{contact.Phone}"),
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage}"),
+                            new KeyValuePair<string, string>("StatusCallback",
+                                $"{_appSettings.ApiBaseUrl}/api/message/callback/template"),
+                            new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
                         }
                     );
-                    var req = new HttpRequestMessage(HttpMethod.Post, $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json") { Content = requestModel };
-                    
+                    var req = new HttpRequestMessage(HttpMethod.Post,
+                            $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
+                        {Content = requestModel};
+
                     req.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
-                        System.Text.ASCIIEncoding.ASCII.GetBytes(
+                        Encoding.ASCII.GetBytes(
                             $"{_appSettings.TwilioAccountSID}:{_appSettings.TwilioAuthToken}")));
 
                     var result = await client.SendAsync(req);
@@ -274,7 +269,7 @@ namespace brightcast.Controllers
                         JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
                             await result.Content.ReadAsStringAsync());
 
-                    _messageService.AddTemplateMessage(new TemplateMessage()
+                    _messageService.AddTemplateMessage(new TemplateMessage
                     {
                         MessageSid = resultModel.Sid,
                         Body = resultModel.Body,
@@ -292,7 +287,7 @@ namespace brightcast.Controllers
 
                     var campaign = _campaignService.GetById(model.Id);
 
-                    campaign.Status = 1;
+                    campaign.Status = 2;
 
                     _campaignService.Update(campaign);
                 }
@@ -306,7 +301,7 @@ namespace brightcast.Controllers
         }
 
         [HttpPost("new")]
-        public IActionResult CreateAndSend([FromBody]CampaignSendModel model)
+        public IActionResult CreateAndSend([FromBody] CampaignSendModel model)
         {
             int userId;
 
@@ -319,20 +314,19 @@ namespace brightcast.Controllers
                 return BadRequest("User not found");
             }
 
-            var userProfile = _userProfileService.GetAllByUserId(userId).FirstOrDefault(x => x.Default && x.Deleted == 0);
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
             if (userProfile == null || userProfile.Id == 0)
-            {
                 return NotFound(
                     new
                     {
                         message = "UserProfile Not Found"
                     });
-            }
 
             try
             {
-                var campaign = _campaignService.Create(new Campaign()
+                var campaign = _campaignService.Create(new Campaign
                 {
                     Name = model.Name,
                     FileUrl = model.FileUrl,
@@ -341,18 +335,9 @@ namespace brightcast.Controllers
                     UserProfileId = userProfile.Id
                 });
 
-
-                //todo: loop for each contactlist
-                _campaignSentService.Create(new CampaignSent()
-                {
-                    CampaignId = campaign.Id,
-                    ContactListId = model.ContactListIds.FirstOrDefault(),
-                    Date = DateTime.UtcNow
-                });
-
                 var contactList = _contactListService.GetById(model.ContactListIds.FirstOrDefault());
 
-                _campaignService.Add(new CampaignContactList()
+                _campaignService.Add(new CampaignContactList
                 {
                     Campaign = campaign,
                     CampaignId = campaign.Id,
@@ -365,7 +350,7 @@ namespace brightcast.Controllers
             catch (AppException ex)
             {
                 // return error message if there was an exception
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new {message = ex.Message});
             }
         }
 

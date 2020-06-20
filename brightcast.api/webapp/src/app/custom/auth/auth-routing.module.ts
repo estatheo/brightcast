@@ -6,6 +6,7 @@ import { ResetComponent } from './reset/reset.component';
 import { NbAuthComponent } from '@nebular/auth';
 import { VerifyComponent } from './verify/verify.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
+import { CommunicationPageComponent } from './communication-page/communication-page.component';
 
 
 const routes: Routes = [
@@ -19,16 +20,19 @@ const routes: Routes = [
         path: 'login', component: LoginComponent
       },
       {
-        path: 'register', component: RegisterComponent,
+        path: 'register', component: RegisterComponent
       },
       {
-        path: 'verify/:id', component: VerifyComponent,
+        path: 'verify/:id', component: VerifyComponent
       },
       {
-        path: 'reset-password', component: ResetComponent,
+        path: 'reset-password', component: ResetComponent
       },
       {
-        path: 'new-password/:id', component: NewPasswordComponent,
+        path: 'new-password/:id', component: NewPasswordComponent
+      },
+      {
+        path: ':route/confirm', component: CommunicationPageComponent
       }
     ]
   }

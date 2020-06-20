@@ -1,6 +1,6 @@
 
 
-    <nb-alert status="danger" *ngIf="authError" closable (close)="onClose()">{{alertText}}</nb-alert>
+<nb-alert status="danger" *ngIf="authError" closable (close)="onClose()">{{alertText}}</nb-alert>
 <div class="login">
     <div class="login-container">
         <div class="form-heading">
@@ -19,9 +19,9 @@
                     <div *ngIf="f.password.errors.required">Password is required</div>
                 </div>
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <nb-checkbox>Remember Me</nb-checkbox>
-            </div>
+            </div> -->
             <button type="submit" fullWidth nbButton status="primary" class="button">Login</button>
             <div class="login-bottom-container">
                 <div>

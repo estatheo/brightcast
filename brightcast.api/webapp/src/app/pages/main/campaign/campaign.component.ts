@@ -26,9 +26,8 @@ export class CampaignComponent implements OnInit {
     this.windowService.open(CampaignNewComponent, { title: 'New Campaign', context: { contactListList: this.data.contactLists} });
   }
   
-  openModalForEdit(event) {
-    let item: CampaignElement = event;
-    this.windowService.open(CampaignFormComponent, { title: 'Edit Campaign', context: { campaign: item } });
+  openModalForEdit(event) {   
+    this.windowService.open(CampaignFormComponent, { title: 'Edit Campaign', context: { contactListList: this.data.contactLists, campaign: event } });
   }
 
   delete(id) {
@@ -39,7 +38,7 @@ export class CampaignComponent implements OnInit {
         this.data = data;
       });
     }, error => {
-      this.toastrService.warning("⚠ There was an error processing the request!", "Error!");
+      this.toastrService.danger("⚠ There was an error processing the request!", "Error!");
     })
   }
 
@@ -47,7 +46,7 @@ export class CampaignComponent implements OnInit {
     this.campaignsService.SendCampaign(campaign).subscribe(result => {
 
     }, error => {
-      this.toastrService.warning("⚠ There was an error processing the request!", "Error!");
+      this.toastrService.danger("⚠ There was an error processing the request!", "Error!");
     });
   }
 }

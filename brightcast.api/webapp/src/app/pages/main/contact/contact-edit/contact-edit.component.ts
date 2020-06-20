@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NbWindowRef, NbToastrService } from '@nebular/theme';
 import { ContactListElement } from '../../../_models/contactListElement';
 import { ContactListService } from '../../../../@core/apis/contactList.service';
@@ -35,7 +35,7 @@ import { ContactService } from '../../../../@core/apis/contact.service';
 </form>`,
     styleUrls: ['contact-edit.component.scss'],
 })
-export class ContactEditComponent {
+export class ContactEditComponent implements OnInit {
     contactElement: Contact;
     form;
     constructor(private router: Router, private formBuilder: FormBuilder, public windowRef: NbWindowRef, private contactService: ContactService, private toastrService: NbToastrService) {
@@ -46,6 +46,10 @@ export class ContactEditComponent {
           email: ['', Validators.required],
           subscribed: ['', Validators.required]
         });
+    }
+
+    ngOnInit(){        
+      this.form.patchValue(this.contactElement);
     }
 
     close() {

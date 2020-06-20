@@ -5,6 +5,9 @@ import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { AccountService } from '../../../pages/_services';
+import { User } from '../../../pages/_models';
+import { UserProfile } from '../../../pages/_models/userProfile';
 
 @Component({
   selector: 'ngx-header',
@@ -15,7 +18,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
   userPictureOnly: boolean = false;
-  user: any;
+  user: UserProfile;
 
   themes = [
     {
@@ -43,7 +46,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private sidebarService: NbSidebarService,
     private menuService: NbMenuService,
     private themeService: NbThemeService,
-    private userService: UserData,
+    private userService: AccountService,
     private layoutService: LayoutService,
     private breakpointService: NbMediaBreakpointsService) {
   }
@@ -51,9 +54,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;
 
-    this.userService.getUsers()
+    this.userService.getUserProfile()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((users: any) => this.user = users.nick);
+      .subscribe((user: UserProfile) => this.user = user);
 
     const { xl } = this.breakpointService.getBreakpointsMap();
     this.themeService.onMediaQueryChange()

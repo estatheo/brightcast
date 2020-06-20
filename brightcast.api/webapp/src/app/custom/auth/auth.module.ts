@@ -21,10 +21,11 @@ import { ResetComponent } from './reset/reset.component';
 import { ThemeModule } from '../../@theme/theme.module';
 import { VerifyComponent } from './verify/verify.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
+import { CommunicationPageComponent } from './communication-page/communication-page.component';
 
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent],
+  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent, CommunicationPageComponent],
   imports: [
     CommonModule,
     ThemeModule,
