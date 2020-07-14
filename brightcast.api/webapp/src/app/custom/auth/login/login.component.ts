@@ -29,9 +29,16 @@ export class LoginComponent extends NbLoginComponent {
   }
 
   ngOnInit(): void {
+    var username: string = '';
+    var password: string = '';
+    if (localStorage.getItem('username') && localStorage.getItem('rememberme') === 'true') {
+      username = localStorage.getItem('username');
+    //  password = CryptoJS.AES.decrypt(localStorage.getItem('password'), 'brightcast').toString();
+    }
     this.form = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      username: [username, Validators.required],
+      password: [password, Validators.required],
+      isRememberme: [(localStorage.getItem('rememberme') === 'true' ? 'true' : '')]
     });
 
     // get return url from route parameters or default to '/'
@@ -57,6 +64,10 @@ export class LoginComponent extends NbLoginComponent {
     if (this.form.invalid) {
         return;
     }
+
+    // set rememberme in localStorage
+    localStorage.setItem('rememberme', this.f.isRememberme.value);
+
     this.authError = false; 
     this.alertText = '';
 

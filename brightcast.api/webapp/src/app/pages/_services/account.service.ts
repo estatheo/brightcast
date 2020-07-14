@@ -33,6 +33,10 @@ export class AccountService {
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('user', JSON.stringify(user));
+                if (localStorage.getItem('rememberme') === 'true') {
+                    localStorage.setItem('username', username);
+                //    localStorage.setItem('password', CryptoJS.AES.encrypt(user.password, 'brightcast').toString());
+                }
                 this.userSubject.next(user);
                 this.onboardingCheck();
                 return user;
