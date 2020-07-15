@@ -16,7 +16,7 @@ import { AccountService } from '../../../_services';
       <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
       <label class="text-label" for="message">Message</label>
       <textarea nbInput fullWidth id="message" formControlName="message"></textarea>
-      <div class="form-group">
+      <div class="form-group" *ngIf="contactListList != null && contactListList !== undefined && contactListList.length">
         <label for="selective_input" class="label">Contact list</label>
         <nb-select id="selective_input" fullWidth formControlName="contactListId">
           <nb-option *ngFor="let list of contactListList" [value]="list.id">{{list.name}}</nb-option>
@@ -48,9 +48,9 @@ export class CampaignNewComponent implements OnInit {
         message: ['', Validators.required],
         contactListId: [
           this.contactListList != null &&
-          this.contactListList !== undefined ? this.contactListList[0].id : 0],
+          this.contactListList !== undefined &&
+          this.contactListList.length ? this.contactListList[0].id : 0],
       });
-
     }
 
     uploadImage(files) {
@@ -63,7 +63,6 @@ export class CampaignNewComponent implements OnInit {
       for (const file of files) {
         this.image.append(file.name, file);
       }
-
     }
 
     onSubmit() {
