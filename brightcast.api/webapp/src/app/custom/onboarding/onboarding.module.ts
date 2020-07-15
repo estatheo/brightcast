@@ -13,6 +13,7 @@ import {
   NbRouteTabsetModule,
   NbStepperModule,
   NbToastrModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
 import { ThemeModule } from '../../@theme/theme.module';
 import { OnboardingComponent } from './onboarding.component';
@@ -37,7 +38,8 @@ import { OnboardingRoutingModule } from './onboarding-routing.module';
     NbRouteTabsetModule,
     NbStepperModule,
     OnboardingRoutingModule,
-    NbToastrModule
-  ]
+    NbToastrModule,
+    NbSpinnerModule,
+  ],
 })
 export class OnboardingModule { }

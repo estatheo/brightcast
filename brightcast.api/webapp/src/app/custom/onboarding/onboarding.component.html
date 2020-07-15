@@ -151,7 +151,7 @@
                 </div>
                 
                 <button nbButton nbStepperPrevious class="btn-navi">prev</button>
-                <button nbButton (click)="onSubmit()" class="btn-navi">Submit</button>
+                <button [nbSpinner]="loading" nbSpinnerStatus="success" nbButton (click)="onSubmit()" class="btn-navi">Submit</button>
             </nb-step>
         </nb-stepper>
     </nb-card-body>

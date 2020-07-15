@@ -7,9 +7,10 @@ import { NbToastrService } from '@nebular/theme';
 @Component({
   selector: 'ngx-onboarding',
   templateUrl: './onboarding.component.html',
-  styleUrls: ['./onboarding.component.scss']
+  styleUrls: ['./onboarding.component.scss'],
 })
 export class OnboardingComponent implements OnInit {
+  loading = false;
   userPicture: FormData;
   businessLogo: FormData;
   docData: FormData;
@@ -18,7 +19,11 @@ export class OnboardingComponent implements OnInit {
   form2: any;
   form3: any;
   form4: any;
-  constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, private toastrService: NbToastrService) { }
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private accountService: AccountService,
+    private toastrService: NbToastrService) { }
 
   ngOnInit(): void {
     this.form1 = this.formBuilder.group({
@@ -26,7 +31,7 @@ export class OnboardingComponent implements OnInit {
       lastName: ['', Validators.required],
       picture: ['', Validators.required],
       phone: ['', Validators.required],
-      role: ['', Validators.required]
+      role: ['', Validators.required],
     });
     this.form2 = this.formBuilder.group({
       name: ['', Validators.required],
@@ -34,16 +39,16 @@ export class OnboardingComponent implements OnInit {
       email: ['', Validators.required],
       website: ['', Validators.required],
       address: ['', Validators.required],
-      category: ['', Validators.required]
+      category: ['', Validators.required],
     });
     this.form3 = this.formBuilder.group({
       contactListName: ['', Validators.required],
-      contactList: ['', Validators.required]
+      contactList: ['', Validators.required],
     });
     this.form4 = this.formBuilder.group({
       name: ['', Validators.required],
       message: ['', Validators.required],
-      file: ['', Validators.required]
+      file: ['', Validators.required],
     });
   }
 
@@ -54,34 +59,48 @@ export class OnboardingComponent implements OnInit {
 
     this.docData = new FormData();
 
-    for (let file of files) {
+    for (const file of files) {
       this.docData.append(file.name, file);
     }
   }
-  
+
   uploadImage(files, isBusiness) {
     if (files.length === 0) {
       return;
     }
 
-    if(isBusiness) {
+    if (isBusiness) {
       this.businessLogo = new FormData();
 
-      for (let file of files) {
+      for (const file of files) {
         this.businessLogo.append(file.name, file);
-      }  
+      }
     } else {
       this.userPicture = new FormData();
 
-      for (let file of files) {
+      for (const file of files) {
         this.userPicture.append(file.name, file);
-      }  
+      }
     }
-    
   }
 
 
   onSubmit() {
+    /*
+    if (this.userPicture === undefined) {
+      this.toastrService.info('Please select your avatar picture.', 'Note');
+      return;
+    }
+    if (this.businessLogo === undefined) {
+      this.toastrService.info('Please select business logo.', 'Note');
+      return;
+    }
+    if (this.docData === undefined) {
+      this.toastrService.info('Please select your contactlist file.', 'Note');
+      return;
+    }
+    */
+    this.loading = true;
 
     this.accountService.uploadImage(this.userPicture).subscribe(up => {
       this.accountService.uploadImage(this.businessLogo).subscribe(bl => {
@@ -89,10 +108,10 @@ export class OnboardingComponent implements OnInit {
           this.accountService.onboarding({
             address: this.form2.controls.address.value,
             category: this.form2.controls.category.value,
-            email:this.form2.controls.email.value,
+            email: this.form2.controls.email.value,
             name: this.form2.controls.name.value,
             website: this.form2.controls.website.value,
-            membership: "free"  }, {
+            membership: 'free'  }, {
               name: 'user',
               scope: ['user', this.form1.controls.role.value],
             }, {
@@ -100,21 +119,24 @@ export class OnboardingComponent implements OnInit {
               Phone: this.form1.controls.phone.value,
               firstName: this.form1.controls.firstName.value,
               lastName: this.form1.controls.lastName.value,
-              pictureUrl: up['name']
+              pictureUrl: up['name'],
             }, {
               name: this.form4.controls.name.value,
               message: this.form4.controls.message.value,
-              fileUrl: 'test'
+              fileUrl: 'test',
             }, {
               name: this.form3.controls.contactListName.value,
-              fileUrl: 'test'
-            }).subscribe(result => {this.router.navigate(['pages/dashboard']);}, error => {
-              this.toastrService.danger(error, "There was an error on our side😢");
+              fileUrl: 'test',
+            }).subscribe(result => {this.router.navigate(['pages/dashboard']); }, error => {
+              this.toastrService.danger('There was an error on our side😢', 'Error');
+              this.loading = false;
           });
         });
-      });     
+      });
     });
-
+    setTimeout(() => {
+      this.loading = false;
+    }, 5000);
   }
 
   loadCampaigns() {
