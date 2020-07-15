@@ -4,14 +4,19 @@ import { Component } from '@angular/core';
   selector: 'ngx-footer',
   styleUrls: ['./footer.component.scss'],
   template: `
-    <span class="created-by">
+    <span class="col-md-4 col-sm-12 created-by">
       © 2020 brightcast.io - All Rights Reserved.
     </span>
-    <div class="socials">
-      <a href="#" target="_blank" class="ion ion-social-github"></a>
-      <a href="#" target="_blank" class="ion ion-social-facebook"></a>
-      <a href="#" target="_blank" class="ion ion-social-twitter"></a>
-      <a href="#" target="_blank" class="ion ion-social-linkedin"></a>
+    <ul class="col-md-4 col-sm-6 terms-conditions">
+      <li>
+        <a href="#" target="_blank" >Terms of Use</a>
+      </li>
+      <li>
+        <a href="#" target="_blank" >Conditions</a>
+      </li>
+    </ul>
+    <div class="col-md-4 col-sm-6 socials">
+      <a href="https://linkedin.com/" target="_blank" class="ion ion-social-linkedin"></a>
     </div>
   `,
 })
