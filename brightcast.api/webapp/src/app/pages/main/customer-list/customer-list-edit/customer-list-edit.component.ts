@@ -8,28 +8,34 @@ import { AccountService } from '../../../_services';
 
 
 @Component({
-    template: `<form class="form" [formGroup]="form">
-    <div class="form-group">
-        <label for="name" class="label">Contact List Name</label>
-        <input nbInput fullWidth id="name" type="text"  value="{{contactList.name}}" formControlName="name">
-    </div>
-    <label for="file" class="label">Contacts file</label>
-    <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
-
-
-    <button type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
-</form>`,
+    template: `
+    <form class="form" [formGroup]="form">
+      <div class="form-group">
+          <label for="name" class="label">Contact List Name</label>
+          <input nbInput fullWidth id="name" type="text"  value="{{contactList.name}}" formControlName="name">
+      </div>
+      <label for="file" class="label">Contacts file</label>
+      <input #docfile type="file" multiple accept=".csv" (change)="upload(docfile.files)" nbInput fullWidth id="file">
+      <button type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
+    </form>
+    `,
     styleUrls: ['customer-list-edit.component.scss'],
 })
-export class CustomerListEditComponent implements OnInit{
-    image: FormData;
+export class CustomerListEditComponent implements OnInit {
+    docData: FormData;
     contactList: ContactListElement;
     form;
-    constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, public windowRef: NbWindowRef, private contactListService: ContactListService, private toastrService: NbToastrService) {
-        
+    constructor(
+      private router: Router,
+      private formBuilder: FormBuilder,
+      private accountService: AccountService,
+      public windowRef: NbWindowRef,
+      private contactListService: ContactListService,
+      private toastrService: NbToastrService) {
+
     }
 
-    ngOnInit(){
+    ngOnInit() {
       this.form = this.formBuilder.group({
         name: [this.contactList.name, Validators.required],
       });
@@ -39,33 +45,33 @@ export class CustomerListEditComponent implements OnInit{
         this.windowRef.close();
     }
 
-    uploadImage(files) {
+    upload(files) {
       if (files.length === 0) {
         return;
-      }  
-
-      this.image = new FormData();
-
-      for (let file of files) {
-        this.image.append(file.name, file);
       }
-      
+
+      this.docData = new FormData();
+
+      for (const file of files) {
+        this.docData.append(file.name, file);
+      }
     }
 
     onSubmit() {
-      this.accountService.uploadImage(this.image).subscribe(im => {
+      this.accountService.uploadDoc(this.docData).subscribe(csvfile => {
         this.contactListService.Update({
           id: this.contactList.id,
           name: this.form.controls.name.value,
-          fileUrl: im['name']
+          fileUrl: csvfile['name'],
         }).subscribe(() => {
-            this.toastrService.success("🚀 The Contact List has been updated!", "Success!");
+            this.toastrService.success('🚀 The Contact List has been updated!', 'Success!');
             this.contactListService.refreshData();
-            this.router.navigateByUrl('/',{skipLocationChange: true}).then(() => {
-              this.router.navigate(['/pages/main/customer-list'])
+            this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+              this.router.navigate(['/pages/main/customer-list']);
+              this.close();
             });
           }, error => {
-            this.toastrService.danger(error, "There was an error on our side😢");
+            this.toastrService.danger(error, 'There was an error on our side😢');
         });
       });
     }
