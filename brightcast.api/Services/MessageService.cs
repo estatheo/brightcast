@@ -17,6 +17,7 @@ namespace brightcast.Services
         CampaignMessage AddCampaignMessage(CampaignMessage entity);
         CampaignMessage GetCampaignMessageByMessageId(string messageId);
         CampaignMessage UpdateCampaignMessage(CampaignMessage entity);
+        Boolean CheckReceivedCampaignMessage(TemplateMessage entity);
     }
 
     public class MessageService : IMessageService
@@ -112,6 +113,12 @@ namespace brightcast.Services
         {
             return _context.TemplateMessages.Where(x => x.To == to && x.Deleted == 0).OrderByDescending(x => x.CreatedAt)
                 .FirstOrDefault();
+        }
+
+        // Check if the user already received campaign message, once he recevied return true
+        public Boolean CheckReceivedCampaignMessage(TemplateMessage entity)
+        {
+            return _context.CampaignMessages.Any(x => x.ContactId == entity.ContactId && x.CampaignId == entity.CampaignId);
         }
     }
 }
