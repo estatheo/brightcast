@@ -88,7 +88,7 @@ namespace brightcast.Controllers
 
                 var campaign = _campaignService.GetById(templateMessage.CampaignId);
 
-                if (model.ErrorCode == null)
+                if (model.ErrorCode == null && _messageService.CheckReceivedCampaignMessage(templateMessage) == false)
                 {
                     _messageService.AddReceiveMessage(new ReceiveMessage
                     {
