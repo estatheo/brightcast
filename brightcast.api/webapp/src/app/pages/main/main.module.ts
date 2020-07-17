@@ -5,7 +5,7 @@ import { MainRoutingModule } from './main-routing.module';
 import { SettingsComponent } from './settings/settings.component';
 import { MainComponent } from './main/main.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
-import { NgxDataTableModule } from "angular-9-datatable";
+import { NgxDataTableModule } from 'angular-9-datatable';
 import {
   NbAccordionModule,
   NbButtonModule,
@@ -13,7 +13,15 @@ import {
   NbListModule,
   NbRouteTabsetModule,
   NbStepperModule,
-  NbTabsetModule, NbUserModule, NbInputModule, NbSelectModule, NbIconModule, NbLayoutModule, NbWindowModule, NbCheckboxModule,
+  NbTabsetModule,
+  NbUserModule,
+  NbInputModule,
+  NbSelectModule,
+  NbIconModule,
+  NbLayoutModule,
+  NbWindowModule,
+  NbCheckboxModule,
+  NbTooltipModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -33,7 +41,18 @@ import { ContactFormComponent } from './contact/contact-form/contact-form.compon
 import { ContactService } from '../../@core/apis/contact.service';
 
 @NgModule({
-  declarations: [SettingsComponent, MainComponent, CustomerListComponent, CustomerListEditComponent, CampaignComponent,ContactEditComponent, ContactFormComponent, CampaignFormComponent, CustomerFormComponent, CampaignNewComponent, ContactComponent],
+  declarations: [
+    SettingsComponent,
+    MainComponent,
+    CustomerListComponent,
+    CustomerListEditComponent,
+    CampaignComponent,
+    ContactEditComponent,
+    ContactFormComponent,
+    CampaignFormComponent,
+    CustomerFormComponent,
+    CampaignNewComponent,
+    ContactComponent],
   imports: [
     CommonModule,
     ThemeModule,
@@ -56,7 +75,8 @@ import { ContactService } from '../../@core/apis/contact.service';
     ReactiveFormsModule,
     NgxDataTableModule,
     MainRoutingModule,
-    NbCheckboxModule
+    NbCheckboxModule,
+    NbTooltipModule,
   ],
   entryComponents: [
     WindowFormComponent,
@@ -65,7 +85,7 @@ import { ContactService } from '../../@core/apis/contact.service';
   providers: [
     CampaignService,
     ContactListService,
-    ContactService
-  ]
+    ContactService,
+  ],
 })
 export class MainModule { }

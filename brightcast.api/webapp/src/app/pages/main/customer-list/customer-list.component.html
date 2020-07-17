@@ -40,9 +40,9 @@
                         <td routerLink="/pages/main/customer-list/{{item.id}}/contacts">{{item.unsubscribed}}</td>
                         <td>
                             <div class="flex-icons">
-                                <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">
+                                <nb-icon nbTooltip="Delete ContactList" nbTooltipIcon="trash-2" [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">
                                 </nb-icon>
-                                <nb-icon [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
+                                <nb-icon nbTooltip="Edit ContactList" nbTooltipIcon="edit-outline" [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
                                     class="campaign-icons">
                                 </nb-icon>
                             </div>

@@ -46,14 +46,14 @@
                     <td *ngIf="item.status == 3" ><input type="text" nbInput fullWidth status="danger" shape="round" class="status canceled" placeholder="Canceled" fieldSize="small"></td>
                     <td>
                         <div class="flex-icons">
-                            <nb-icon [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">
+                            <nb-icon nbTooltip="Delete Campaign" nbTooltipIcon="trash-2" [icon]="'trash-2'" pack="eva" class="campaign-icons" (click)="delete(item.id)">
                             </nb-icon>
-                            <nb-icon [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
+                            <nb-icon nbTooltip="Edit Campaign" nbTooltipIcon="edit-outline" [icon]="'edit-outline'" pack="eva" (click)="openModalForEdit(item)"
                                 class="campaign-icons">
                             </nb-icon>
                             <!-- <nb-icon [icon]="'refresh'" pack="eva" class="campaign-icons">
                             </nb-icon> --> 
-                            <nb-icon [icon]="'paper-plane'" pack="eva" class="campaign-icons" (click)="send(item)">
+                            <nb-icon nbTooltip="Send Campaign Messages To Members in Contact List" nbTooltipIcon="paper-plane" [icon]="'paper-plane'" pack="eva" class="campaign-icons" (click)="send(item)">
                             </nb-icon>
                         </div>
                     </td>
