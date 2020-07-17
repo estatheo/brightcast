@@ -1,7 +1,7 @@
 <nb-card class="col-md-12 col-lg-12 col-xxxl-12">
     <nb-card-body>
-        <nb-stepper orientation="horizontal">
-            <nb-step [label]="labelOne">
+        <nb-stepper orientation="horizontal" [linear]="linearMode">
+            <nb-step [label]="labelOne" [stepControl]="form1">
                 <ng-template #labelOne> Step 1 </ng-template>
                 <div class="step-heading">
                     It's Getting Personal
@@ -12,19 +12,19 @@
                         <form [formGroup]="form1" >
                             <div class="form-group">
                                 <label for="firstName" class="label">First Name</label>
-                                <input type="text" nbInput fullWidth formControlName="firstName" placeholder="First Name">
+                                <input type="text" nbInput fullWidth formControlName="firstName" placeholder="First Name" required>
                             </div>
                             <div class="form-group">
                                 <label for="lastName" class="label">Last Name</label>
-                                <input type="text" nbInput fullWidth formControlName="lastName" placeholder="Last Name">
+                                <input type="text" nbInput fullWidth formControlName="lastName" placeholder="Last Name" required>
                             </div>
                             <div class="form-group">
                                 <label for="picture" class="label">Avatar Picture</label>
-                                <input type="file" #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files, false)" nbInput fullWidth formControlName="picture" placeholder="Avatar">
+                                <input type="file" #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files, false)" nbInput fullWidth formControlName="picture" placeholder="Avatar" required>
                             </div>
                             <div class="form-group">
                                 <label for="phone" class="label">Phone</label>
-                                <input type="phone" nbInput fullWidth formControlName="phone" placeholder="Phone">
+                                <input type="phone" nbInput fullWidth formControlName="phone" placeholder="Phone" required>
                             </div>
                             <div class="form-group">
                                 <label for="role" class="label">Role</label>
@@ -44,7 +44,7 @@
                 <button nbButton disabled nbStepperNext class="btn-navi">prev</button>
                 <button nbButton nbStepperNext class="btn-navi">next</button>
             </nb-step>
-            <nb-step [label]="labelTwo">
+            <nb-step [label]="labelTwo" [stepControl]="form2">
                 <ng-template #labelTwo>Step 2</ng-template>
                 <div class="step-heading">
                     Your Company Details
@@ -54,7 +54,7 @@
                         <form [formGroup]="form2">
                             <div class="form-group">
                                 <label for="name" class="label">Business Name</label>
-                                <input type="text" nbInput fullWidth formControlName="name" placeholder="Business">
+                                <input type="text" nbInput fullWidth formControlName="name" placeholder="Business" required>
                             </div>
                             <div class="form-group">
                                 <label for="email" class="label">Business Contact Email</label>
@@ -62,11 +62,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="website" class="label">Website</label>
-                                <input type="text" nbInput fullWidth formControlName="website" placeholder="Website">
+                                <input type="text" nbInput fullWidth formControlName="website" placeholder="Website" required>
                             </div>
                             <div class="form-group">
                                 <label for="address" class="label">Address</label>
-                                <input type="text" nbInput fullWidth formControlName="address" placeholder="Address">
+                                <input type="text" nbInput fullWidth formControlName="address" placeholder="Address" required>
                             </div>
                             <div class="form-group">
                                 <label for="category" class="label">Business Category</label>
@@ -98,7 +98,7 @@
                 <button nbButton nbStepperPrevious class="btn-navi">prev</button>
                 <button nbButton nbStepperNext class="btn-navi">next</button>
             </nb-step>
-            <nb-step [label]="labelThree">
+            <nb-step [label]="labelThree" [stepControl]="form3">
                 <ng-template #labelThree>Step 3</ng-template>
                 <div class="step-heading">                
                     Create your first Contact List
@@ -109,7 +109,7 @@
                             <div class="form-group">
                                 <label for="contactListName" class="label">Contact List Name</label>
                                 <input type="text" nbInput fullWidth formControlName="contactListName"
-                                    placeholder="Contact List Name" />
+                                    placeholder="Contact List Name" required />
                             </div>
                             <div class="form-group">
                                 <p class="download-description">Download the <a href="https://brightcaststrgprd.blob.core.windows.net/assets/ContactList.csv" download="template.csv" target="_blank">.csv template</a>, add your contacts and reupload the file!</p>

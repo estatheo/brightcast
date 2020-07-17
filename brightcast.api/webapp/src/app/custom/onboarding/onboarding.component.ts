@@ -27,6 +27,8 @@ export class OnboardingComponent implements OnInit {
     private toastrService: NbToastrService) { }
 
   ngOnInit(): void {
+    this.toastrService.info('', 'You should fill all input fields.', { duration: 5000 });
+
     this.form1 = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -94,20 +96,6 @@ export class OnboardingComponent implements OnInit {
 
 
   onSubmit() {
-    /*
-    if (this.userPicture === undefined) {
-      this.toastrService.info('Please select your avatar picture.', 'Note');
-      return;
-    }
-    if (this.businessLogo === undefined) {
-      this.toastrService.info('Please select business logo.', 'Note');
-      return;
-    }
-    if (this.docData === undefined) {
-      this.toastrService.info('Please select your contactlist file.', 'Note');
-      return;
-    }
-    */
     this.loading = true;
 
     if (this.mediaData == null || this.mediaData == undefined) {
