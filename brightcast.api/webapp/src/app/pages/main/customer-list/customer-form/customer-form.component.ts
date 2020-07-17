@@ -12,6 +12,9 @@ import { AccountService } from '../../../_services';
         <label for="name" class="label" >Contact List Name</label>
         <input nbInput fullWidth id="name" type="text" value="" formControlName="name">
     </div>
+    <nb-alert outline="warning">
+      <p>Download the <a href="https://brightcaststrgprd.blob.core.windows.net/assets/ContactList.csv" download="template.csv" target="blank" style="color: hotpink;">.csv template</a>, add your contacts and reupload the file!</p>
+    </nb-alert>
     <label for="file" class="label">Contacts file</label>
     <input #image type="file" multiple accept=".csv" (change)="uploadImage(image.files)" nbInput fullWidth id="file">
 

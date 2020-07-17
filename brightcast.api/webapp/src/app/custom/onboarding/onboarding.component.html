@@ -115,6 +115,9 @@
                                 <input type="text" nbInput fullWidth formControlName="contactListName"
                                     placeholder="Contact List Name" required />
                             </div>
+                            <nb-alert outline="warning">
+                                <p>Download the <a href="https://brightcaststrgprd.blob.core.windows.net/assets/ContactList.csv" download="template.csv" target="blank" style="color: hotpink;">.csv template</a>, add your contacts and reupload the file!</p>
+                            </nb-alert>
                             <div class="form-group">
                                 <label for="contactList">Contact List</label>
                                 <input #file type="file" multiple accept=".csv" (change)="upload(file.files)" nbInput fullWidth formControlName="contactList"

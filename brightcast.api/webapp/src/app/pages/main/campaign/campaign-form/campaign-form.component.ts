@@ -14,13 +14,13 @@ import { ContactList } from '../../../_models/contactList';
         <input nbInput fullWidth id="name" type="text" value="{{campaign.name}}" formControlName="name">
       </div>
       <label for="file" class="label" >Media file</label>
-      <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" filename="campaign?.fileUrl" nbInput fullWidth nbInput fullWidth id="file">
+      <input #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files)" filename="campaign?.fileUrl" nbInput fullWidth id="file">
       <label class="text-label" for="message">Message</label>
       <textarea nbInput fullWidth id="message" formControlName="message">{{campaign.message}}</textarea>
       <div class="form-group">
         <label for="selective_input" class="label">Contact list</label>
         <nb-select id="selective_input" fullWidth formControlName="contactListId">
-            <nb-option *ngFor="let list of contactListList" [value]="list.id">{{list.name}}</nb-option>
+          <nb-option *ngFor="let list of contactListList" [value]="list.id">{{list.name}}</nb-option>
         </nb-select>
       </div>
       <button type="submit" style="margin-top: 10px" nbButton status="primary" class="button" (click)="onSubmit()">Save</button>
@@ -50,7 +50,8 @@ export class CampaignFormComponent implements OnInit {
         message: [this.campaign.message, Validators.required],
         contactListId: [
           this.campaign.contactListIds != null &&
-          this.campaign.contactListIds !== undefined ? this.campaign.contactListIds[0] : 0],
+          this.campaign.contactListIds !== undefined &&
+          this.campaign.contactListIds.length ? this.campaign.contactListIds[0] : 0],
       });
     }
 

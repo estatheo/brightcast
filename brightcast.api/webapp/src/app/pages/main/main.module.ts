@@ -22,6 +22,7 @@ import {
   NbWindowModule,
   NbCheckboxModule,
   NbTooltipModule,
+  NbAlertModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -77,6 +78,7 @@ import { ContactService } from '../../@core/apis/contact.service';
     MainRoutingModule,
     NbCheckboxModule,
     NbTooltipModule,
+    NbAlertModule,
   ],
   entryComponents: [
     WindowFormComponent,
