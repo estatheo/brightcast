@@ -32,14 +32,14 @@ export class OnboardingComponent implements OnInit {
       lastName: ['', Validators.required],
       picture: ['', Validators.required],
       phone: ['', Validators.required],
-      role: ['', Validators.required],
+      role: ['Founder', Validators.required],
     });
     this.form2 = this.formBuilder.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
       website: ['', Validators.required],
       address: ['', Validators.required],
-      category: ['', Validators.required],
+      category: ['Automotive', Validators.required],
     });
     this.form3 = this.formBuilder.group({
       contactListName: ['', Validators.required],
