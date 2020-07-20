@@ -16,6 +16,10 @@ export const routes: Routes = [
     path: 'onboarding',
     loadChildren: './custom/onboarding/onboarding.module#OnboardingModule', canActivate: [AuthGuard]
   },
+  {
+    path: 'signup_contact/:id',
+    loadChildren: './custom/contact-signup/contact-signup.module#ContactSignupModule',
+  },
   { path: '', redirectTo: 'pages', pathMatch: 'full' },
   { path: '**', redirectTo: 'pages' },
 ];

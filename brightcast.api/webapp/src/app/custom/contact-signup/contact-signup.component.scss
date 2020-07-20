@@ -1,0 +1,91 @@
+.login {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    }
+.logo-img {
+    width: 14rem;
+}
+ .logo {
+     position: fixed;
+     top: 20px;
+     left: 20px;
+ }   
+    .login-container {
+      align-self: center;
+      width: 30rem;
+        background-color: #222b45;
+        padding-top: 2rem;
+        padding-left: 5rem;
+        padding-right: 5rem;
+        padding-bottom: 3rem;
+    }
+    .form-heading {
+        font-size: 2em;
+        text-align: center;
+        color: #017fdc;
+        margin-bottom: 20px;
+        font-weight: 650;
+    }
+.form-control{
+    height: 3em;
+}
+    .login-logo-image{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .login-text {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+    .login-submit-btn {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+.login-bottom-container{
+    padding-top: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    
+    p {
+        margin: 0;
+    }
+}
+.login-black {
+    color: #017fdc;
+    cursor: pointer;    
+}
+
+.button {
+    background-color: #017fdc !important;
+}
+
+.more {
+    line-height: 24px;
+}
+
+::ng-deep .nb-theme-dark nb-card-body {
+    background-color: #101426; 
+}
+
+::ng-deep .nb-theme-dark nb-card-header {
+    background-color: #101426;
+}
+
+// ::ng-deep .nb-theme-default p {
+//     color: #ffffff;
+// }
+
+::ng-deep .nb-theme-dark nb-checkbox.status-basic .text {
+    color: #ffffff;
+}
+
+::ng-deep .nb-theme-default .login-container {
+    background-color: white;
+    border: 5px solid #017fdc;
+    border-radius: 50px;
+}
