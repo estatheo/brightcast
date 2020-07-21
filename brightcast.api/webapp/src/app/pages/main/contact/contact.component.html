@@ -5,7 +5,8 @@
                 <div>
                     Contacts
                 </div>
-                <div>
+                <div class="buttons-row">
+                    <button type="button" [cdkCopyToClipboard]="shareLink" nbButton status="danger" (click)="copyLink()" style="margin-right: 2rem;">Share Link</button>
                     <button type="button" nbButton status="primary" (click)="openModal()">Create New</button>
                 </div>
             </div>

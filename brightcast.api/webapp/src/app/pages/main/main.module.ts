@@ -23,6 +23,7 @@ import {
   NbCheckboxModule,
   NbTooltipModule,
   NbAlertModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -40,6 +41,7 @@ import { ContactComponent } from './contact/contact.component';
 import { ContactEditComponent } from './contact/contact-edit/contact-edit.component';
 import { ContactFormComponent } from './contact/contact-form/contact-form.component';
 import { ContactService } from '../../@core/apis/contact.service';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
   declarations: [
@@ -79,6 +81,8 @@ import { ContactService } from '../../@core/apis/contact.service';
     NbCheckboxModule,
     NbTooltipModule,
     NbAlertModule,
+    NbSpinnerModule,
+    ClipboardModule,
   ],
   entryComponents: [
     WindowFormComponent,

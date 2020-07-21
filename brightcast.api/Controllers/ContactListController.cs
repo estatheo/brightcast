@@ -83,6 +83,7 @@ namespace brightcast.Controllers
                 {
                     Id = contactList.Id,
                     Name = contactList.Name,
+                    KeyString = contactList.KeyString,
                     Contacts = listOfContacts.Count,
                     Unsubscribed = listOfContacts.Where(x => !x.Subscribed).ToList().Count,
                     Campaigns = _campaignService.GetByContactListId(contactList.Id).Count
@@ -95,9 +96,24 @@ namespace brightcast.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _contactListService.GetById(id);
-            var model = _mapper.Map<CampaignModel>(user);
+            var contactList = _contactListService.GetById(id);
+            var listOfContacts = _contactService.GetAllByContactListId(contactList.Id).ToList();
+
+            var model = new ContactListResponseModel{
+                Id = contactList.Id,
+                Name = contactList.Name,
+                KeyString = contactList.KeyString,
+                Contacts = listOfContacts.Count,
+                Unsubscribed = listOfContacts.Where(x => !x.Subscribed).ToList().Count,
+                Campaigns = _campaignService.GetByContactListId(contactList.Id).Count
+            };
             return Ok(model);
+        }
+
+        [HttpGet("key/{keyString}")]
+        public IActionResult GetId(string keyString)
+        {
+            return Ok(_contactListService.GetIdByKeyString(keyString));
         }
 
         [HttpPut("{id}")]

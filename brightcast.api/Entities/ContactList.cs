@@ -18,7 +18,7 @@ namespace brightcast.Entities
 
         public int UserProfileId { get; set; }
         public UserProfile UserProfile { get; set; }
-
+        public string KeyString { get; set; }
         public ICollection<CampaignSent> CampaignSents { get; set; }
 
         public ICollection<CampaignContactList> CampaignContactLists { get; set; }
