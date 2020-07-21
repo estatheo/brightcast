@@ -19,12 +19,13 @@ import { AccountService } from '../../../_services';
       </nb-alert>
       <label for="file" class="label">Contacts file</label>
       <input #docfile type="file" multiple accept=".csv" (change)="upload(docfile.files)" nbInput fullWidth id="file">
-      <button type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
+      <button [nbSpinner]="loading" nbSpinnerStatus="success" type="submit" style="margin-top: 10px" nbButton status="primary" (click)="onSubmit()">Save</button>
     </form>
     `,
     styleUrls: ['customer-list-edit.component.scss'],
 })
 export class CustomerListEditComponent implements OnInit {
+    loading = false;
     docData: FormData;
     contactList: ContactListElement;
     form;
@@ -61,6 +62,8 @@ export class CustomerListEditComponent implements OnInit {
     }
 
     onSubmit() {
+      this.loading = true;
+
       this.accountService.uploadDoc(this.docData).subscribe(csvfile => {
         this.contactListService.Update({
           id: this.contactList.id,
@@ -75,7 +78,12 @@ export class CustomerListEditComponent implements OnInit {
             });
           }, error => {
             this.toastrService.danger(error, 'There was an error on our side😢');
+            this.loading = false;
         });
       });
+
+      setTimeout(() => {
+        this.loading = false;
+      }, 7000);
     }
 }
