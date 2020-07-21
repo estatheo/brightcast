@@ -1,5 +1,7 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Linq;
 using brightcast.Entities;
 using brightcast.Helpers;
@@ -9,6 +11,7 @@ namespace brightcast.Services
     public interface IContactListService
     {
         ContactList GetById(int id);
+        int GetIdByKeyString(string keyString);
         List<ContactList> GetAllByUserProfileId(int userProfileId);
         ContactList Create(ContactList contactList);
         void Update(ContactList contactList);
@@ -32,6 +35,13 @@ namespace brightcast.Services
             return contactList != null && contactList.Deleted == 0 ? contactList : null;
         }
 
+        public int GetIdByKeyString(string keyString)
+        {
+            var contactList = _context.ContactLists.FirstOrDefault(x => x.KeyString == keyString);
+
+            return contactList != null && contactList.Deleted == 0 ? contactList.Id : 0;
+        }
+
         public List<ContactList> GetAllByUserProfileId(int userProfileId)
         {
 
@@ -43,11 +53,11 @@ namespace brightcast.Services
         {
             // validation
 
-
             contactList.CreatedAt = DateTime.UtcNow;
             contactList.CreatedBy = "API";
 
             contactList.Deleted = 0;
+            contactList.KeyString = MD5Hash(String.Join((char)contactList.Id, contactList.Name, contactList.CreatedAt)).Substring(0, 10);
 
             _context.ContactLists.Add(contactList);
             _context.SaveChanges();
@@ -94,6 +104,26 @@ namespace brightcast.Services
                 _context.SaveChanges();
             }
         }
+        // Generate MD5 hash string for contactlists to be identified
+        public static string MD5Hash(string text)
+        {
+            MD5 md5 = new MD5CryptoServiceProvider();
 
+            //compute hash from the bytes of text  
+            md5.ComputeHash(ASCIIEncoding.ASCII.GetBytes(text));
+
+            //get hash result after compute it  
+            byte[] result = md5.Hash;
+
+            StringBuilder strBuilder = new StringBuilder();
+            for (int i = 0; i < result.Length; i++)
+            {
+                //change it into 2 hexadecimal digits  
+                //for each byte  
+                strBuilder.Append(result[i].ToString("x2"));
+            }
+
+            return strBuilder.ToString();
+        }
     }
 }

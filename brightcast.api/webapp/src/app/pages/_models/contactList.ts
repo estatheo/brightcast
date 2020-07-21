@@ -2,4 +2,5 @@
     id?: number;
     name?: string;
     fileUrl?: string;
+    keyString?: string;
 }

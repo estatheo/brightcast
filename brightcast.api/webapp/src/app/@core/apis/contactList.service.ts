@@ -8,16 +8,16 @@ export class ContactListService {
 
   apiURL: string = environment.apiUrl;
   private cache$: Observable<Object>;
-  
 
-  constructor(private httpClient: HttpClient) {   
+
+  constructor(private httpClient: HttpClient) {
   }
 
   get data() {
-    if( !this.cache$ ) {
+    if ( !this.cache$ ) {
       this.cache$ = this.requestData().pipe(
         publishReplay(1),
-        refCount()
+        refCount(),
       );
     }
     return this.cache$;
@@ -31,8 +31,15 @@ export class ContactListService {
     return this.httpClient.get(`${this.apiURL}/contactList/data`).pipe(map(response => response));
   }
 
+  GetContactList(id) {
+    return this.httpClient.get(`${this.apiURL}/contactList/${id}`).pipe(map(response => response));
+  }
+
+  GetContactListId(keyString) {
+    return this.httpClient.get(`${this.apiURL}/contactList/key/${keyString}`).pipe(map(response => response));
+  }
   NewContactList(contactList) {
-    return this.httpClient.post(`${this.apiURL}/contactList/new`,contactList).pipe(map(response => response))
+    return this.httpClient.post(`${this.apiURL}/contactList/new`, contactList).pipe(map(response => response));
   }
 
   Delete(id) {
@@ -43,4 +50,3 @@ export class ContactListService {
     return this.httpClient.put(`${this.apiURL}/contactList/${contactList.id}`, contactList);
   }
 }
-  

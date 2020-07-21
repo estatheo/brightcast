@@ -3,6 +3,7 @@ import { NbToastrService } from '@nebular/theme';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ContactService } from '../../@core/apis/contact.service';
+import { ContactListService } from '../../@core/apis/contactList.service';
 
 @Component({
   selector: 'ngx-register',
@@ -14,7 +15,8 @@ export class ContactSignupComponent implements OnInit {
   form: FormGroup;
   loading = false;
   submitted = false;
-  contactListId: string;
+  contactListId: number = 0;
+  contactListKeyString: string;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -22,11 +24,17 @@ export class ContactSignupComponent implements OnInit {
     private router: Router,
     private toastrService: NbToastrService,
     private contactService: ContactService,
+    private contactListSevice: ContactListService,
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(p => this.contactListId = p['id'] );
-    this.toastrService.info('', this.contactListId);
+    this.route.params.subscribe(p => this.contactListKeyString = p['id'] );
+    this.contactListSevice.GetContactListId(this.contactListKeyString).subscribe((data: number) => {
+      this.contactListId = data;
+      if (this.contactListId === 0) {
+        this.toastrService.danger('Sorry, your contact list link url is incorrect.', 'Link Error');
+      }
+    });
     this.form = this.formBuilder.group({
       email: ['', Validators.required],
       firstName: ['', Validators.required],
@@ -39,21 +47,22 @@ export class ContactSignupComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
 
-    this.contactService.NewContact({
-      firstName: this.form.controls.firstName.value,
-      lastName: this.form.controls.lastName.value,
-      phone: this.form.controls.phone.value,
-      email: this.form.controls.email.value,
-      subscribed: this.form.controls.subscribed.value,
-      contactListId: parseInt(this.contactListId, 10),
-    }).subscribe(() => {
-      this.toastrService.success('🚀 The Contact has been added!', 'Success!');
-      this.contactService.refreshData();
-      this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
-        this.router.navigate([`/pages/main/customer-list/${this.contactListId}/contacts`]);
+    if (this.contactListId === 0) {
+      this.toastrService.danger('Sorry, your contact list link url is incorrect.', 'Link Error');
+    } else {
+      this.contactService.NewContact({
+        firstName: this.form.controls.firstName.value,
+        lastName: this.form.controls.lastName.value,
+        phone: this.form.controls.phone.value,
+        email: this.form.controls.email.value,
+        subscribed: this.form.controls.subscribed.value,
+        contactListId: this.contactListId,
+      }).subscribe(() => {
+        this.toastrService.success('🚀 The Contact has been added!', 'Success!');
+        this.contactService.refreshData();
+      }, error => {
+        this.toastrService.danger(error, 'There was an error on our side😢');
       });
-    }, error => {
-      this.toastrService.danger(error, 'There was an error on our side😢');
-    });
+    }
   }
 }

@@ -19,6 +19,7 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { ContactSignupComponent } from './contact-signup.component';
 import { ContactSignupRoutingModule } from './contact-signup-routing.module';
 import { ContactService } from '../../@core/apis/contact.service';
+import { ContactListService } from '../../@core/apis/contactList.service';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { ContactService } from '../../@core/apis/contact.service';
   ],
   providers: [
     ContactService,
+    ContactListService,
   ],
 })
 export class ContactSignupModule { }

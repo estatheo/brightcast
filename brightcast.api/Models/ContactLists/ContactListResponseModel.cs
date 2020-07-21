@@ -7,6 +7,6 @@ namespace brightcast.Models.ContactLists
         public int Contacts { get; set; }
         public int Campaigns { get; set; }
         public int Unsubscribed { get; set; }
-
+        public string KeyString { get; set; }
     }
 }
