@@ -33,7 +33,7 @@ export class ContactComponent implements OnInit {
       this.contactListId = p['id'];
       this.contactListService.GetContactList(this.contactListId).subscribe((data: ContactList) => {
         this.contactList = data;
-        this.shareLink = location.host + '/signup_contact/' + this.contactList.keyString;
+        this.shareLink = location.protocol + '//' + location.host + '/signup_contact/' + this.contactList.keyString;
       });
 
       this.contactService.SetContactListId(this.contactListId);
