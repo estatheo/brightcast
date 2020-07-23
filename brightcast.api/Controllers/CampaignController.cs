@@ -226,7 +226,7 @@ namespace brightcast.Controllers
             }
             catch (Exception)
             {
-                return BadRequest("User not found");
+                return BadRequest(new { message = "User not found" });
             }
 
             var userProfile = _userProfileService.GetAllByUserId(userId)
