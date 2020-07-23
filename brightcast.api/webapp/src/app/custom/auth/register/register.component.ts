@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NbToastrService } from '@nebular/theme';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService, AlertService } from '../../../pages/_services';
 import { first } from 'rxjs/operators';
@@ -7,22 +8,21 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 @Component({
   selector: 'ngx-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
 
   form: FormGroup;
   loading = false;
   submitted = false;
-  authError: boolean = false;
-  alertText = '';
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private accountService: AccountService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private toastrService: NbToastrService,
   ) { }
 
   ngOnInit(): void {
@@ -30,19 +30,14 @@ export class RegisterComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
       cb: [false, Validators.pattern('true')],
-      password2: ['']},{validator: this.checkPasswords });
+      password2: ['']}, {validator: this.checkPasswords });
   }
 
-  onClose() {
-    this.authError = false;
-    this.alertText = '';
-  }
-  
   checkPasswords(group: FormGroup) { // here we have the 'passwords' group
-    let pass = group.get('password').value;
-    let confirmPass = group.get('password2').value;
+    const pass = group.get('password').value;
+    const confirmPass = group.get('password2').value;
 
-    return pass === confirmPass ? null : { notSame: true }     
+    return pass === confirmPass ? null : { notSame: true };
   }
 
   // convenience getter for easy access to form fields
@@ -56,26 +51,23 @@ export class RegisterComponent implements OnInit {
 
     // stop here if form is invalid
     if (this.form.invalid) {
+      this.toastrService.danger('Incorrect email or password.', 'Error');
       return;
     }
 
-    this.authError = false; 
-    this.alertText = '';
-
     this.loading = true;
-        this.accountService.register(this.form.value)
-            .subscribe(
-                data => {                    
-                    this.alertService.success('Registration successful', { keepAfterRouteChange: true });
-                    this.router.navigate(['auth/register/confirm'], { relativeTo: this.route });
-                },
-                error => {
-                    this.alertText = error;
-                      this.authError = true;
-                      setTimeout(() =>  this.onClose(), 2000);
-                    this.alertService.error(error);
-                    this.loading = false;
-                });
+    this.accountService.register(this.form.value)
+        .subscribe(
+            data => {
+              //  this.alertService.success('Registration successful', { keepAfterRouteChange: true });
+                this.toastrService.success('Registered successfully. We have sent you an email. Please verify it\'s you.', 'Success', {duration: 7000});
+                this.router.navigate(['auth/register/confirm'], { relativeTo: this.route });
+                this.loading = false;
+            },
+            error => {
+                this.toastrService.danger(error, 'Error');
+                this.loading = false;
+            });
   }
 
 }

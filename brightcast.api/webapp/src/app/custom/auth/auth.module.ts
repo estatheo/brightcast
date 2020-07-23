@@ -15,6 +15,8 @@ import {
   NbSelectModule,
   NbRouteTabsetModule,
   NbStepperModule,
+  NbToastrModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
 import { RegisterComponent } from './register/register.component';
 import { ResetComponent } from './reset/reset.component';
@@ -25,7 +27,13 @@ import { CommunicationPageComponent } from './communication-page/communication-p
 
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent, CommunicationPageComponent],
+  declarations: [
+    LoginComponent,
+    RegisterComponent,
+    ResetComponent,
+    VerifyComponent,
+    NewPasswordComponent,
+    CommunicationPageComponent],
   imports: [
     CommonModule,
     ThemeModule,
@@ -42,9 +50,9 @@ import { CommunicationPageComponent } from './communication-page/communication-p
     NbSelectModule,
     NbRouteTabsetModule,
     NbStepperModule,
-
     NbAuthModule,
-
-  ]
+    NbToastrModule,
+    NbSpinnerModule,
+  ],
 })
 export class AuthModule { }

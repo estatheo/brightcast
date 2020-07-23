@@ -78,7 +78,7 @@ namespace brightcast.Services
                 throw new AppException("Password is required");
 
             if (_context.Users.Any(x => x.Username == user.Username))
-                throw new AppException("Username \"" + user.Username + "\" is already taken");
+                throw new AppException("The email address \"" + user.Username + "\" is already in use. Please provide a different one or log in.");
 
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);

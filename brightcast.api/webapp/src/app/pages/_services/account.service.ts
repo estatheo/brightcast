@@ -18,7 +18,7 @@ export class AccountService {
     public user: Observable<User>;
     constructor(
         private router: Router,
-        private http: HttpClient
+        private http: HttpClient,
     ) {
         this.userSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('user')));
         this.user = this.userSubject.asObservable();
@@ -49,11 +49,11 @@ export class AccountService {
         this.userSubject.next(null);
         this.router.navigate(['/auth/login']);
     }
-    
+
     getUserProfile() {
         return this.http.get(`${environment.apiUrl}/userprofile`);
     }
-    
+
     register(user: User) {
         return this.http.post(`${environment.apiUrl}/user/register`, user);
     }
@@ -74,7 +74,7 @@ export class AccountService {
         return this.http.put(`${environment.apiUrl}/userprofile/updateProfile`, params)
             .pipe(map(x => {
                 // update stored user if the logged in user updated their own record
-                if (id == this.userValue.id) {
+                if (id === this.userValue.id) {
                     // update local storage
                     const user = { ...this.userValue, ...params };
                     localStorage.setItem('user', JSON.stringify(user));
@@ -94,7 +94,7 @@ export class AccountService {
         return this.http.delete(`${environment.apiUrl}/user`)
             .pipe(map(x => {
                 // auto logout if the logged in user deleted their own record
-                if (id == this.userValue.id) {
+                if (id === this.userValue.id) {
                     this.logout();
                 }
                 return x;
@@ -103,20 +103,21 @@ export class AccountService {
 
     onboardingCheck() {
         return this.http.get(`${environment.apiUrl}/userprofile/onboardingCheck`).subscribe(data => {
-            if(data['onboard']) {
+            if (data['onboard']) {
                 this.router.navigate(['/onboarding']);
             }
         });
     }
 
-    onboarding(business: Business, role: Role, userProfile: UserProfile, campaign: Campaign, contactList: ContactList ) {
+    onboarding(
+        business: Business, role: Role, userProfile: UserProfile, campaign: Campaign, contactList: ContactList ) {
         return this.http.post(`${environment.apiUrl}/userProfile/onboarding`, {
             business,
             role,
             userProfile,
             contactList,
             campaign,
-        })
+        });
     }
 
     verify(id) {
