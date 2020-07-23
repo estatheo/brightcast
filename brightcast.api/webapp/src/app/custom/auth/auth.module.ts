@@ -16,6 +16,8 @@ import {
   NbRouteTabsetModule,
   NbStepperModule,
   NbLayoutModule,
+  NbToastrModule,
+  NbSpinnerModule,
 } from '@nebular/theme';
 import { RegisterComponent } from './register/register.component';
 import { ResetComponent } from './reset/reset.component';
@@ -27,7 +29,13 @@ import { TermsComponent } from './terms/terms.component';
 
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent, CommunicationPageComponent, TermsComponent],
+  declarations: [
+    LoginComponent,
+    RegisterComponent,
+    ResetComponent,
+    VerifyComponent,
+    NewPasswordComponent,
+    CommunicationPageComponent],
   imports: [
     CommonModule,
     ThemeModule,
@@ -46,7 +54,8 @@ import { TermsComponent } from './terms/terms.component';
     NbStepperModule,
     NbLayoutModule,
     NbAuthModule,
-
-  ]
+    NbToastrModule,
+    NbSpinnerModule,
+  ],
 })
 export class AuthModule { }
