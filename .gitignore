@@ -351,3 +351,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+brightcast.api/Helpers/DataContext.cs
+brightcast.api/appsettings.json
