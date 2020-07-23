@@ -31,6 +31,7 @@ namespace brightcast.Controllers
         private readonly ICampaignService _campaignService;
         private readonly IContactListService _contactListService;
         private readonly IContactService _contactService;
+        private readonly IBusinessService _businessService;
         private readonly IMapper _mapper;
         private readonly IMessageService _messageService;
         private readonly IUserProfileService _userProfileService;
@@ -43,6 +44,7 @@ namespace brightcast.Controllers
             IContactListService contactListService,
             IContactService contactService,
             IMessageService messageService,
+            IBusinessService businessService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -53,6 +55,7 @@ namespace brightcast.Controllers
             _contactListService = contactListService;
             _contactService = contactService;
             _messageService = messageService;
+            _businessService = businessService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -245,11 +248,13 @@ namespace brightcast.Controllers
                 {
                     var client = new HttpClient();
 
+                    var business = _businessService.GetByUserProfileId(userProfile.Id);
+
                     var requestModel = new FormUrlEncodedContent(
                         new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage}"),
+                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage}".Replace("{{1}}",business.Name)),
                             new KeyValuePair<string, string>("StatusCallback",
                                 $"{_appSettings.ApiBaseUrl}/api/message/callback/template"),
                             new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
