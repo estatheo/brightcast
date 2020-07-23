@@ -5,6 +5,7 @@ import { MainComponent } from './main/main.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { CampaignComponent } from './campaign/campaign.component';
 import { ContactComponent } from './contact/contact.component';
+import { ChatComponent } from './campaign/chat/chat.component';
 
 
 const routes: Routes = [
@@ -12,7 +13,7 @@ const routes: Routes = [
     path: '', component: MainComponent,
     children: [
       {
-        path: 'settings', component: SettingsComponent
+        path: 'settings', component: SettingsComponent,
       },
       {
         path: 'customer-list', component: CustomerListComponent,
@@ -21,15 +22,18 @@ const routes: Routes = [
         path: 'campaign', component: CampaignComponent,
       },
       {
-        path: 'customer-list/:id/contacts', component: ContactComponent
-      }
-    ]
-  }
+        path: 'customer-list/:id/contacts', component: ContactComponent,
+      },
+      {
+        path: 'campaign/:id/chat', component: ChatComponent,
+      },
+    ],
+  },
 
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class MainRoutingModule { }
