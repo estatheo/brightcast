@@ -16,7 +16,7 @@ namespace brightcast.Helpers
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sql server database
-            options.UseSqlServer(Configuration.GetConnectionString("localDB"));
+            options.UseSqlServer(Configuration.GetConnectionString("WebApiDatabase"));
 
         }
 
