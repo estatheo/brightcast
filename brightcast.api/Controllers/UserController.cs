@@ -109,7 +109,7 @@ namespace brightcast.Controllers
                 return Ok();
             }
 
-            return BadRequest("The new password token is expired!");
+            return BadRequest(new { message = "The new password token is expired!" });
         }
 
 
@@ -121,7 +121,7 @@ namespace brightcast.Controllers
 
             if (code == null)
             {
-                return NotFound("User not found");
+                return BadRequest(new { message = "User not found." });
             }
 
             _userService.SendResetPasswordEmail(code ?? Guid.Empty, model.Username);
