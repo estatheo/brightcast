@@ -19,6 +19,7 @@ export class CampaignComponent implements OnInit {
     private toastrService: NbToastrService,
     private campaignService: CampaignService,
     private campaignsService: CampaignService) { }
+  loading = false;
   data: any;
   ngOnInit(): void {
     this.campaignsService.refreshData();
@@ -56,14 +57,18 @@ export class CampaignComponent implements OnInit {
   }
 
   send(campaign) {
+    this.loading = true;
     this.campaignsService.SendCampaign(campaign).subscribe(result => {
       this.toastrService.primary('🎉 The campaign has been sent!', 'Success!');
       this.campaignsService.refreshData();
       this.campaignsService.data.subscribe((data: CampaignData) => {
         this.data = data;
       });
+      this.loading = false;
     }, error => {
       this.toastrService.danger('⚠ There was an error processing the request!', 'Error!');
+      this.campaignsService.refreshData();
+      this.loading = false;
     });
   }
 }

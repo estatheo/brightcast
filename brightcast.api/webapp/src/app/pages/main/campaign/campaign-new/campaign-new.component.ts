@@ -22,13 +22,13 @@ import { AccountService } from '../../../_services';
           <nb-option *ngFor="let list of contactListList" [value]="list.id">{{list.name}}</nb-option>
         </nb-select>
       </div>
-      <button type="submit" style="margin-top: 10px" nbButton status="primary" class="button" (click)="onSubmit()">Save</button>
+      <button [nbSpinner]="loading" nbSpinnerStatus="success" type="submit" style="margin-top: 10px" nbButton status="primary" class="button" (click)="onSubmit()">Save</button>
     </form>
   `,
     styleUrls: ['campaign-new.component.scss'],
 })
 export class CampaignNewComponent implements OnInit {
-
+    loading = false;
     image: FormData;
     contactListList: ContactList[];
     form;
@@ -66,6 +66,8 @@ export class CampaignNewComponent implements OnInit {
     }
 
     onSubmit() {
+      this.loading = true;
+
       if (this.image != null || this.image !== undefined) {
         this.accountService.uploadImage(this.image).subscribe(im => {
           this.campaignService.NewCampaign({
@@ -81,8 +83,10 @@ export class CampaignNewComponent implements OnInit {
               this.router.navigate(['/pages/main/campaign']);
               this.close();
             });
+            this.loading = false;
           }, error => {
             this.toastrService.danger(error, 'There was an error on our side😢');
+            this.loading = false;
           });
         });
       } else {
@@ -99,11 +103,12 @@ export class CampaignNewComponent implements OnInit {
             this.router.navigate(['/pages/main/campaign']);
             this.close();
           });
+          this.loading = false;
         }, error => {
           this.toastrService.danger(error, 'There was an error on our side😢');
+          this.loading = false;
         });
       }
-
     }
 
     close() {
