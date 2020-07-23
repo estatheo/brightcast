@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService, AlertService } from '../../../pages/_services';
 import { first } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-register',

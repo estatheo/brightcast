@@ -8,14 +8,14 @@ export class ContactListService {
 
   apiURL: string = environment.apiUrl;
   private cache: Observable<Object>;
-  
+
 
 
   constructor(private httpClient: HttpClient) {
   }
 
   get data() {
-    if( !this.cache ) {
+    if (!this.cache ) {
       this.cache = this.requestData().pipe(
         publishReplay(1),
         refCount(),

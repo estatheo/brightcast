@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using brightcast.Entities;
 using brightcast.Helpers;
 
@@ -7,6 +8,7 @@ namespace brightcast.Services
     public interface IBusinessService
     {
         Business GetById(int id);
+        Business GetByUserProfileId(int userProfileId);
         Business Create(Business business);
         void Update(Business business);
         void Delete(int id);
@@ -28,7 +30,18 @@ namespace brightcast.Services
 
             return business != null && business.Deleted == 0 ? business : null;
         }
-        
+
+        public Business GetByUserProfileId(int userProfileId)
+        {
+            var businessId = _context.UserProfiles.Find(userProfileId).BusinessId;
+            var business = _context.Businesses.Find(businessId);
+
+            return business != null && business.Deleted == 0 ? business : null;
+
+        }
+
+
+
         public Business Create(Business business)
         {
             // validation
