@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AccountService, AlertService } from '../../../pages/_services';
+import { AccountService } from '../../../pages/_services';
 import { first } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 
@@ -21,7 +21,6 @@ export class RegisterComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private accountService: AccountService,
-    private alertService: AlertService,
     private toastrService: NbToastrService,
   ) { }
 
@@ -45,9 +44,6 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
-
-    // reset alerts on submit
-    this.alertService.clear();
 
     // stop here if form is invalid
     if (this.form.invalid) {

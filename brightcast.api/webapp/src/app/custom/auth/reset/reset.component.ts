@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService, AlertService } from '../../../pages/_services';
+import { AccountService } from '../../../pages/_services';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NbToastrService } from '@nebular/theme';
 
@@ -14,7 +14,6 @@ export class ResetComponent implements OnInit {
   submitted = false;
 
   constructor(private accountService: AccountService,
-    private alertService: AlertService,
     private router: Router,
     private route: ActivatedRoute,
     private toastrService: NbToastrService) { }
