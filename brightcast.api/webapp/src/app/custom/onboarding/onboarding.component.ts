@@ -10,6 +10,7 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['./onboarding.component.scss'],
 })
 export class OnboardingComponent implements OnInit {
+  linearMode = true;
   loading = false;
   userPicture: FormData;
   businessLogo: FormData;

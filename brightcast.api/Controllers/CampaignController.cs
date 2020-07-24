@@ -250,8 +250,6 @@ namespace brightcast.Controllers
                 {
                     var client = new HttpClient();
 
-                    var business = _businessService.GetByUserProfileId(userProfile.Id);
-
                     var requestModel = new FormUrlEncodedContent(
                         new List<KeyValuePair<string, string>>
                         {

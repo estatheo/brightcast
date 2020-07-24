@@ -5,7 +5,9 @@ import { LandingComponent } from './landing/landing.component';
 
 export const routes: Routes = [
 
-  { path: 'home', component: LandingComponent}
+  {
+    path: 'home', component: LandingComponent,
+  },
   {
     path: 'pages',
     loadChildren: () => import('./pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard]

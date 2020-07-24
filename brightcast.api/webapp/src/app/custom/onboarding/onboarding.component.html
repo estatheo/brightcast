@@ -123,7 +123,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="contactList">Contact List</label>
-                                <input #file type="file" multiple accept=".csv" (change)="upload(file.files)" nbInput fullWidth formControlName="contactList"
+                                <input #file type="file" multiple accept=".csv" (change)="upload(file.files, true)" nbInput fullWidth formControlName="contactList"
                                     placeholder="Upload Contact List" required>
                             </div>
                         </form>
