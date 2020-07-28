@@ -5,7 +5,7 @@ import { MainComponent } from './main/main.component';
 import { CustomerListComponent } from './customer-list/customer-list.component';
 import { CampaignComponent } from './campaign/campaign.component';
 import { ContactComponent } from './contact/contact.component';
-import { ChatComponent } from './campaign/chat/chat.component';
+import { ChatComponent } from './chat/chat.component';
 
 
 const routes: Routes = [
@@ -25,7 +25,10 @@ const routes: Routes = [
         path: 'customer-list/:id/contacts', component: ContactComponent,
       },
       {
-        path: 'campaign/:id/chat', component: ChatComponent,
+        path: 'chat', component: ChatComponent,
+      },
+      {
+        path: 'campaign/chat/:id', component: ChatComponent,
       },
     ],
   },

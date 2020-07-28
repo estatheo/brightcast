@@ -20,6 +20,12 @@ export const MENU_ITEMS: NbMenuItem[] = [
     home: true,
   },
   {
+    title: 'Chat',
+    icon: 'message-circle-outline',
+    link: '/pages/main/chat',
+    home: true,
+  },
+  {
     title: 'Settings',
     icon: 'settings-2-outline',
     link: '/pages/main/settings',

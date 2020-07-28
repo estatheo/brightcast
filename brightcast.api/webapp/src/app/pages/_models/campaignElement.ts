@@ -9,4 +9,5 @@ export class CampaignElement {
     read?: number;
     response: number;
     status: number;
+    contactListIds: number[];
 }
