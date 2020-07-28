@@ -2,10 +2,36 @@ import { Injectable } from '@angular/core';
 
 import { messages } from './messages';
 import { botReplies, gifsLinks, imageLinks } from './bot-replies';
-
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { of ,  Observable } from 'rxjs';
+import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
 @Injectable()
 export class ChatService {
 
+  apiURL: string = environment.apiUrl;
+  private cache$: Observable<Object>;
+
+  constructor(private httpClient: HttpClient) {
+  }
+
+  get data() {
+    if ( !this.cache$ ) {
+      this.cache$ = this.requestData().pipe(
+        publishReplay(1),
+        refCount(),
+      );
+    }
+    return this.cache$;
+  }
+
+  refreshData() {
+    this.cache$ = null;
+  }
+
+  private requestData() {
+    return this.httpClient.get(`${this.apiURL}/contact/ofList/`).pipe(map(response => response));
+  }
 
   loadMessages() {
     return messages;
