@@ -25,6 +25,7 @@ import {
   NbAlertModule,
   NbSpinnerModule,
   NbChatModule,
+  NbMenuModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -43,7 +44,7 @@ import { ContactEditComponent } from './contact/contact-edit/contact-edit.compon
 import { ContactFormComponent } from './contact/contact-form/contact-form.component';
 import { ContactService } from '../../@core/apis/contact.service';
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { ChatComponent } from './campaign/chat/chat.component';
+import { ChatComponent } from './chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import { ChatComponent } from './campaign/chat/chat.component';
     NbSpinnerModule,
     ClipboardModule,
     NbChatModule,
+    NbMenuModule,
   ],
   entryComponents: [
     WindowFormComponent,
