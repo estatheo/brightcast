@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NbMenuService, NbMenuItem } from '@nebular/theme';
 import { ChatService } from './chat.service';
@@ -10,6 +10,7 @@ import { Contact } from '../../_models/contact';
 import { AccountService } from '../../../pages/_services';
 import { UserProfile } from '../../../pages/_models/userProfile';
 import { map, takeUntil } from 'rxjs/operators';
+import { ChatMessage } from '../../_models/chat';
 
 @Component({
   selector: 'ngx-chat',
@@ -19,7 +20,7 @@ import { map, takeUntil } from 'rxjs/operators';
 })
 export class ChatComponent implements OnInit {
   chat_menu: Array<NbMenuItem> = [];
-  messages: any[];
+  messages: ChatMessage[] = [];
   campaign_data: CampaignData;
   chat_title: string;
   chat_themes = ['success', 'danger', 'primary', 'info', 'warning'];
@@ -34,20 +35,24 @@ export class ChatComponent implements OnInit {
     private campaignsService: CampaignService,
     private contactService: ContactService,
     private userService: AccountService,
+    private _ngZone: NgZone,
     private route: ActivatedRoute, private router: Router) {
-    this.messages = this.chatService.loadMessages();
+    // this.messages = this.chatService.loadMessages();
+    this.subscribeToEvents();
   }
 
   ngOnInit(): void {
+    this.chatService.startConnection();
+    this.chatService.registerOnServerEvents();
     this.chat_title = 'Chat';
     this.chat_theme = this.chat_themes[Math.floor(Math.random() * 5)];
 
     this.route.params.subscribe(p => {
       this.campaign_id = parseInt(p['id'], 10);
     });
-    
+
     this.userService.getUserProfile()
-      .subscribe((user: UserProfile) => this.user = user);
+      .subscribe((user: UserProfile) => {this.user = user; console.log(this.user); });
 
     this.campaignsService.refreshData();
     this.campaignsService.data.subscribe((data: CampaignData) => {
@@ -78,20 +83,32 @@ export class ChatComponent implements OnInit {
       };
     });
 
-    this.messages.push({
-      text: event.message,
-      date: new Date(),
-      reply: true,
-      type: files.length ? 'file' : 'text',
-      files: files,
-      user: {
-        name: this.user.firstName + ' ' + this.user.lastName,
-        avatar: this.user.pictureUrl,
-      },
+    const tempMsg = new ChatMessage();
+    tempMsg.text = event.message;
+    tempMsg.createdAt = new Date();
+    tempMsg.reply = true;
+    tempMsg.type = files.length ? 'file' : 'text';
+    tempMsg.files = files;
+    tempMsg.senderId = this.user.id;
+    tempMsg.senderName = this.user.firstName + ' ' + this.user.lastName;
+    tempMsg.avatarUrl = this.user.pictureUrl;
+    tempMsg.campaignId = this.campaign_id;
+    tempMsg.contactListId = this.contactService.contactListId;
+    this.messages.push(tempMsg);
+    this.chatService.sendMessage(tempMsg);
+    console.log('messages', this.messages);
+  }
+
+  private subscribeToEvents(): void {
+
+    this.chatService.messageReceived.subscribe((message: ChatMessage) => {
+      this._ngZone.run(() => {
+        message.reply = true;
+        if (message.senderId !== this.user.id) {
+          message.reply = false;
+          this.messages.push(message);
+        }
+      });
     });
-    const botReply = this.chatService.reply(event.message);
-    if (botReply) {
-      setTimeout(() => { this.messages.push(botReply); }, 500);
-    }
   }
 }
