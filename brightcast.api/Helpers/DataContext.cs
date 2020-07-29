@@ -44,5 +44,6 @@ namespace brightcast.Helpers
         public DbSet<CampaignSent> CampaignSents { get; set; }
         public DbSet<CampaignSentStats> CampaignSentStatses { get; set; }
         public DbSet<Business> Businesses { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NbMenuService, NbMenuItem } from '@nebular/theme';
+import { NbMenuService, NbMenuItem, NbToastrService } from '@nebular/theme';
 import { ChatService } from './chat.service';
 import { CampaignService} from '../../../@core/apis/campaign.service';
 import { CampaignData } from '../../_models/campaignData';
@@ -11,6 +11,7 @@ import { AccountService } from '../../../pages/_services';
 import { UserProfile } from '../../../pages/_models/userProfile';
 import { map, takeUntil } from 'rxjs/operators';
 import { ChatMessage } from '../../_models/chat';
+import { stringify } from 'querystring';
 
 @Component({
   selector: 'ngx-chat',
@@ -22,7 +23,7 @@ export class ChatComponent implements OnInit {
   chat_menu: Array<NbMenuItem> = [];
   messages: ChatMessage[] = [];
   campaign_data: CampaignData;
-  chat_title: string;
+  chat_title: string = 'Chat';
   chat_themes = ['success', 'danger', 'primary', 'info', 'warning'];
   chat_theme: string;
   campaign_id: number;
@@ -32,6 +33,7 @@ export class ChatComponent implements OnInit {
   constructor(
     protected chatService: ChatService,
     private menuService: NbMenuService,
+    private toastrService: NbToastrService,
     private campaignsService: CampaignService,
     private contactService: ContactService,
     private userService: AccountService,
@@ -44,15 +46,24 @@ export class ChatComponent implements OnInit {
   ngOnInit(): void {
     this.chatService.startConnection();
     this.chatService.registerOnServerEvents();
-    this.chat_title = 'Chat';
     this.chat_theme = this.chat_themes[Math.floor(Math.random() * 5)];
 
-    this.route.params.subscribe(p => {
-      this.campaign_id = parseInt(p['id'], 10);
-    });
-
     this.userService.getUserProfile()
-      .subscribe((user: UserProfile) => {this.user = user; console.log(this.user); });
+      .subscribe((user: UserProfile) => {
+        this.user = user; console.log(this.user);
+        this.route.params.subscribe(p => {
+          this.campaign_id = parseInt(p['id'], 10);
+          this.chatService.loadMessagesByCampaignId(this.campaign_id).subscribe( (data: ChatMessage[]) => {
+            data.forEach((message: ChatMessage) => {
+              if (message.senderId === this.user.id) {
+                message.reply = true;
+                console.log(message.senderId);
+              }
+              this.messages.push(message);
+            });
+          });
+        });
+      });
 
     this.campaignsService.refreshData();
     this.campaignsService.data.subscribe((data: CampaignData) => {
@@ -88,7 +99,7 @@ export class ChatComponent implements OnInit {
     tempMsg.createdAt = new Date();
     tempMsg.reply = true;
     tempMsg.type = files.length ? 'file' : 'text';
-    tempMsg.files = files;
+    tempMsg.files = files.toString();
     tempMsg.senderId = this.user.id;
     tempMsg.senderName = this.user.firstName + ' ' + this.user.lastName;
     tempMsg.avatarUrl = this.user.pictureUrl;
@@ -96,6 +107,10 @@ export class ChatComponent implements OnInit {
     tempMsg.contactListId = this.contactService.contactListId;
     this.messages.push(tempMsg);
     this.chatService.sendMessage(tempMsg);
+    this.chatService.newChatMessage(tempMsg).subscribe(() => {
+    }, error => {
+      this.toastrService.danger(error, 'There was an error on our side😢');
+    });
     console.log('messages', this.messages);
   }
 

@@ -26,6 +26,7 @@ import {
   NbSpinnerModule,
   NbChatModule,
   NbMenuModule,
+  NbToastrModule,
 } from '@nebular/theme';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -90,6 +91,7 @@ import { ChatComponent } from './chat/chat.component';
     ClipboardModule,
     NbChatModule,
     NbMenuModule,
+    NbToastrModule,
   ],
   entryComponents: [
     WindowFormComponent,

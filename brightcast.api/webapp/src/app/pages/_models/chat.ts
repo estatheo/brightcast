@@ -5,10 +5,9 @@
     avatarUrl?: string;
     type?: string;
     reply?: boolean;
-    files?: any;
+    files?: string;
     text?: string;
     createdAt?: Date;
     campaignId?: number;
     contactListId?: number;
-    status?: number;
 }

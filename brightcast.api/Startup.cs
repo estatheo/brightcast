@@ -94,6 +94,7 @@ namespace brightcast
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserProfileService, UserProfileService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IChatService, ChatService>();
             services.AddScoped<IContactService, ContactService>();
             services.AddScoped<IContactListService, ContactListService>();
             services.AddScoped<ICampaignService, CampaignService>();
@@ -140,6 +141,7 @@ namespace brightcast
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapHub<ChatHub>("/ChatHub");
             });
             app.UseDeveloperExceptionPage();
             //app.UseSpa(spa =>
@@ -154,11 +156,6 @@ namespace brightcast
             //        spa.UseAngularCliServer(npmScript: "start");
             //    }
             //});
-
-            app.UseSignalR(options =>
-            {
-                options.MapHub<ChatHub>(path: "/ChatHub");
-            });
         }
     }
 }
