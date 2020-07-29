@@ -13,7 +13,6 @@ import { ChatMessage } from '../../_models/chat';
 export class ChatService {
 
   apiURL: string = environment.apiUrl;
-  private cache$: Observable<Object>;
   messageReceived = new EventEmitter<ChatMessage>();
 
   private _hubConnection: HubConnection;
@@ -43,54 +42,19 @@ export class ChatService {
     });
   }
 
-  get data() {
-    if ( !this.cache$ ) {
-      this.cache$ = this.requestData().pipe(
-        publishReplay(1),
-        refCount(),
-      );
-    }
-    return this.cache$;
+  loadMessagesByContactListId(contactListId: number) {
+    return this.httpClient.get(`${this.apiURL}/chat/ofList/${contactListId}/`).pipe(map(response => response));
   }
 
-  refreshData() {
-    this.cache$ = null;
+  loadMessagesByCampaignId(campaignId: number) {
+    return this.httpClient.get(`${this.apiURL}/chat/ofCampaign/${campaignId}/`).pipe(map(response => response));
   }
 
-  private requestData() {
-    return this.httpClient.get(`${this.apiURL}/contact/ofList/`).pipe(map(response => response));
+  newChatMessage(newMessage: ChatMessage) {
+    return this.httpClient.post(`${this.apiURL}/chat/new`, newMessage).pipe(map(response => response));
   }
 
   loadMessages() {
     return messages;
-  }
-
-  loadBotReplies() {
-    return botReplies;
-  }
-
-  reply(message: string) {
-    const botReply: any =  this.loadBotReplies()
-      .find((reply: any) => message.search(reply.regExp) !== -1);
-
-    if (botReply.reply.type === 'quote') {
-      botReply.reply.quote = message;
-    }
-
-    if (botReply.type === 'gif') {
-      botReply.reply.files[0].url = gifsLinks[Math.floor(Math.random() * gifsLinks.length)];
-    }
-
-    if (botReply.type === 'pic') {
-      botReply.reply.files[0].url = imageLinks[Math.floor(Math.random() * imageLinks.length)];
-    }
-
-    if (botReply.type === 'group') {
-      botReply.reply.files[1].url = gifsLinks[Math.floor(Math.random() * gifsLinks.length)];
-      botReply.reply.files[2].url = imageLinks[Math.floor(Math.random() * imageLinks.length)];
-    }
-
-    botReply.reply.text = botReply.answerArray[Math.floor(Math.random() * botReply.answerArray.length)];
-    return { ...botReply.reply };
   }
 }

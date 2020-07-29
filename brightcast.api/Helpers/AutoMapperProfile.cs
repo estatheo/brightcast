@@ -4,6 +4,7 @@ using brightcast.Models.Businesses;
 using brightcast.Models.Campaigns;
 using brightcast.Models.ContactLists;
 using brightcast.Models.Contacts;
+using brightcast.Models.Chats;
 using brightcast.Models.Roles;
 using brightcast.Models.UserProfiles;
 using brightcast.Models.Users;
@@ -23,6 +24,7 @@ namespace brightcast.Helpers
             CreateMap<UserProfileModel, UserProfile>();
             CreateMap<RoleModel, Role>();
             CreateMap<ContactModel, Contact>();
+            CreateMap<ChatModel, ChatMessage>();
             CreateMap<ContactListModel, ContactList>();
             CreateMap<CampaignModel, Campaign>();
             CreateMap<CampaignSentModel, CampaignSent>();

@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
-namespace brightcast.Models.Chats
+
+namespace brightcast.Entities
 {
-  public class ChatModel
+  public class ChatMessage
     {
         public int Id { get; set; }
         public int SenderId { get; set; }
@@ -15,5 +15,6 @@ namespace brightcast.Models.Chats
         public DateTime CreatedAt { get; set; }
         public int CampaignId { get; set; }
         public int ContactListId { get; set; }
+        public int Status { get; set; }
     }
 }

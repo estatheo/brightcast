@@ -10,14 +10,14 @@ export class ContactService {
   private cache$: Observable<Object>;
   contactListId: number;
 
-  constructor(private httpClient: HttpClient) {   
+  constructor(private httpClient: HttpClient) {
   }
 
   get data() {
-    if( !this.cache$ ) {
+    if ( !this.cache$ ) {
       this.cache$ = this.requestData().pipe(
         publishReplay(1),
-        refCount()
+        refCount(),
       );
     }
     return this.cache$;
@@ -32,7 +32,7 @@ export class ContactService {
   }
 
   NewContact(contact) {
-    return this.httpClient.post(`${this.apiURL}/contact/new`,contact).pipe(map(response => response))
+    return this.httpClient.post(`${this.apiURL}/contact/new`, contact).pipe(map(response => response));
   }
 
   Delete(id) {
@@ -47,4 +47,3 @@ export class ContactService {
     this.contactListId = id;
   }
 }
-  
