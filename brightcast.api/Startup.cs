@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Helpers;
 using brightcast.Services;
+using ChatApp.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,9 +37,18 @@ namespace brightcast
             //else
             //    services.AddDbContext<DataContext, SqliteDataContext>();
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            });
+
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddSignalR();
 
             // configure strongly typed settings objects
             var appSettingsSection = _configuration.GetSection("AppSettings");
@@ -108,10 +118,7 @@ namespace brightcast
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -147,6 +154,11 @@ namespace brightcast
             //        spa.UseAngularCliServer(npmScript: "start");
             //    }
             //});
+
+            app.UseSignalR(options =>
+            {
+                options.MapHub<ChatHub>(path: "/ChatHub");
+            });
         }
     }
 }

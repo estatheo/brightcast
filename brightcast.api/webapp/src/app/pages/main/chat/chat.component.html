@@ -16,13 +16,13 @@
                            [type]="msg.type"
                            [message]="msg.text"
                            [reply]="msg.reply"
-                           [sender]="msg.user.name"
-                           [date]="msg.date"
+                           [sender]="msg.senderName"
+                           [date]="msg.createdAt"
                            [files]="msg.files"
                            [quote]="msg.quote"
                            [latitude]="msg.latitude"
                            [longitude]="msg.longitude"
-                           [avatar]="msg.user.avatar">
+                           [avatar]="msg.avatarUrl">
           </nb-chat-message>
           <nb-chat-form (send)="sendMessage($event)" [dropFiles]="true">
           </nb-chat-form>
