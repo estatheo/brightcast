@@ -27,7 +27,7 @@ export class ChatService {
   startConnection = () => {
     Object.defineProperty(WebSocket, 'OPEN', { value: 1 });
     this._hubConnection = new HubConnectionBuilder()
-        .withUrl('https://localhost:44315' + '/ChatHub',
+        .withUrl(this.apiURL + 'ChatHub',
           { transport: HttpTransportType.WebSockets | HttpTransportType.LongPolling })
         .build();
 
