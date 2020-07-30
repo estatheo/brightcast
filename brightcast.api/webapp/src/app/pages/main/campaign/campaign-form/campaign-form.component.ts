@@ -44,6 +44,8 @@ export class CampaignFormComponent implements OnInit{
         message: [this.campaign.message, Validators.required],
         contactListId: [this.campaign.contactListIds != null && this.campaign.contactListIds != undefined ? this.campaign.contactListIds[0] : 0]
       });
+      console.log(this.contactListList);
+      console.log(this.form.controls.contactListId.value);
     }
 
     uploadImage(files) {

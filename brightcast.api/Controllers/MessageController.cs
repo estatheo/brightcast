@@ -18,7 +18,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class MessageController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -64,9 +64,9 @@ namespace brightcast.Controllers
                 template.Status = model.MessageStatus;
                 template.Error_Code = model.ErrorCode;
                 template.Error_Message = model.ErrorMessage;
-                template.Date_Created = model.DateCreated;
-                template.Date_Updated = model.DateUpdated;
-                template.Date_Sent = model.DateSent;
+                //template.Date_Created = model.DateCreated;
+                //template.Date_Updated = model.DateUpdated;
+                //template.Date_Sent = model.DateSent;
 
                 _messageService.UpdateTemplateMessage(template);
 
@@ -93,9 +93,7 @@ namespace brightcast.Controllers
                     _messageService.AddReceiveMessage(new ReceiveMessage
                     {
                         Body = model.Body,
-                        Date_Created = model.DateCreated,
-                        Date_Updated = model.DateUpdated,
-                        Date_Sent = model.DateSent,
+                        Date_Created = DateTime.UtcNow,
                         Error_Code = model.ErrorCode,
                         Error_Message = model.ErrorMessage,
                         From = model.From,
@@ -115,6 +113,7 @@ namespace brightcast.Controllers
                         {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
                             new KeyValuePair<string, string>("Body", $"{campaign.Message}"),
+                            new KeyValuePair<string, string>("MediaUrl", $"{campaign.FileUrl}"),
                             new KeyValuePair<string, string>("StatusCallback",
                                 $"{_appSettings.ApiBaseUrl}/api/message/callback/campaign"),
                             new KeyValuePair<string, string>("To", $"{model.From}")
@@ -138,9 +137,7 @@ namespace brightcast.Controllers
                     {
                         MessageSid = resultModel.Sid,
                         Body = resultModel.Body,
-                        Date_Created = resultModel.Date_Created,
-                        Date_Sent = resultModel.Date_Sent,
-                        Date_Updated = resultModel.Date_Updated,
+                        Date_Created = DateTime.UtcNow,
                         Error_Code = resultModel.Error_Code,
                         Error_Message = resultModel.Error_Message,
                         From = resultModel.From,

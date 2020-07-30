@@ -7,24 +7,24 @@ import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
 export class ContactListService {
 
   apiURL: string = environment.apiUrl;
-  private cache$: Observable<Object>;
+  private cache: Observable<Object>;
   
 
   constructor(private httpClient: HttpClient) {   
   }
 
   get data() {
-    if( !this.cache$ ) {
-      this.cache$ = this.requestData().pipe(
+    if( !this.cache ) {
+      this.cache = this.requestData().pipe(
         publishReplay(1),
         refCount()
       );
     }
-    return this.cache$;
+    return this.cache;
   }
 
   refreshData() {
-    this.cache$ = null;
+    this.cache = null;
   }
 
   private requestData() {

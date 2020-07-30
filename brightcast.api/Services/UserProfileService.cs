@@ -101,6 +101,12 @@ namespace brightcast.Services
                 profile.PictureUrl = profileParam.PictureUrl;
             }
 
+            // update businessRole if it has changed
+            if (!string.IsNullOrWhiteSpace(profileParam.BusinessRole) && profileParam.BusinessRole != profile.BusinessRole)
+            {
+                profile.BusinessRole = profileParam.BusinessRole;
+            }
+
             // update user properties if provided
 
             profile.UpdatedBy = profileParam.UpdatedBy;

@@ -12,7 +12,8 @@ import { NbToastrService } from '@nebular/theme';
 export class OnboardingComponent implements OnInit {
   userPicture: FormData;
   businessLogo: FormData;
-  docData: FormData;
+  contactListData: FormData;
+  mediaData: FormData;
   model;
   form1: any;
   form2: any;
@@ -30,7 +31,6 @@ export class OnboardingComponent implements OnInit {
     });
     this.form2 = this.formBuilder.group({
       name: ['', Validators.required],
-      logo: ['', Validators.required],
       email: ['', Validators.required],
       website: ['', Validators.required],
       address: ['', Validators.required],
@@ -43,19 +43,28 @@ export class OnboardingComponent implements OnInit {
     this.form4 = this.formBuilder.group({
       name: ['', Validators.required],
       message: ['', Validators.required],
-      file: ['', Validators.required]
+      file: ['']
     });
   }
 
-  upload(files) {
+  upload(files, isContactList) {
     if (files.length === 0) {
       return;
     }
 
-    this.docData = new FormData();
+    if(isContactList) {
+      this.contactListData = new FormData();
 
-    for (let file of files) {
-      this.docData.append(file.name, file);
+      for (let file of files) {
+        this.contactListData.append(file.name, file);
+      }
+    }
+    else {
+      this.mediaData = new FormData();
+
+      for (let file of files) {
+        this.mediaData.append(file.name, file);
+      }
     }
   }
   
@@ -83,9 +92,9 @@ export class OnboardingComponent implements OnInit {
 
   onSubmit() {
 
-    this.accountService.uploadImage(this.userPicture).subscribe(up => {
-      this.accountService.uploadImage(this.businessLogo).subscribe(bl => {
-        this.accountService.uploadDoc(this.docData).subscribe(dd => {
+    if(this.mediaData == null || this.mediaData == undefined) {
+      this.accountService.uploadImage(this.userPicture).subscribe(up => {
+        this.accountService.uploadDoc(this.contactListData).subscribe(dd => {
           this.accountService.onboarding({
             address: this.form2.controls.address.value,
             category: this.form2.controls.category.value,
@@ -104,16 +113,60 @@ export class OnboardingComponent implements OnInit {
             }, {
               name: this.form4.controls.name.value,
               message: this.form4.controls.message.value,
-              fileUrl: 'test'
+              fileUrl: ''
             }, {
               name: this.form3.controls.contactListName.value,
-              fileUrl: 'test'
+              fileUrl: dd['name']
             }).subscribe(result => {this.router.navigate(['pages/dashboard']);}, error => {
-              this.toastrService.danger(error, "There was an error on our side😢");
+              this.toastrService.danger(`⚠ ${error}`, "Error!");  
           });
-        });
+        }, error => {
+          this.toastrService.danger(`⚠ ${error}`, "Error!");  
       });     
+      }, error => {
+        this.toastrService.danger(`⚠ ${error}`, "Error!");  
     });
+    } else {
+      this.accountService.uploadDoc(this.mediaData).subscribe(md => {
+        this.accountService.uploadImage(this.userPicture).subscribe(up => {
+          this.accountService.uploadDoc(this.contactListData).subscribe(dd => {
+            this.accountService.onboarding({
+              address: this.form2.controls.address.value,
+              category: this.form2.controls.category.value,
+              email:this.form2.controls.email.value,
+              name: this.form2.controls.name.value,
+              website: this.form2.controls.website.value,
+              membership: "free"  }, {
+                name: 'user',
+                scope: ['user', this.form1.controls.role.value],
+              }, {
+                Default: true,
+                Phone: this.form1.controls.phone.value,
+                firstName: this.form1.controls.firstName.value,
+                lastName: this.form1.controls.lastName.value,
+                pictureUrl: up['name']
+              }, {
+                name: this.form4.controls.name.value,
+                message: this.form4.controls.message.value,
+                fileUrl: md['name']
+              }, {
+                name: this.form3.controls.contactListName.value,
+                fileUrl: dd['name']
+              }).subscribe(result => {this.router.navigate(['pages/dashboard']);}, error => {
+                this.toastrService.danger(`⚠ ${error}`, "Error!");  
+            });
+          }, error => {
+            this.toastrService.danger(`⚠ ${error}`, "Error!");  
+        });
+        }, error => {
+          this.toastrService.danger(`⚠ ${error}`, "Error!");  
+      });   
+      }, error => {
+        this.toastrService.danger(`⚠ ${error}`, "Error!");  
+    });
+      
+    }
+    
 
   }
 

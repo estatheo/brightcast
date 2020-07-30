@@ -10,6 +10,7 @@ namespace brightcast.Services
     {
         Contact GetById(int id);
         List<Contact> GetAllByContactListId(int contactListId);
+        List<Contact> GetAllSubscribedByContactListId(int contactListId);
         Contact Create(Contact contact);
         void Update(Contact contact);
         void Delete(int id);
@@ -36,6 +37,12 @@ namespace brightcast.Services
         {
 
             return _context.Contacts.Where(x => x.ContactListId == contactListId && x.Deleted == 0).ToList();
+        }
+
+        public List<Contact> GetAllSubscribedByContactListId(int contactListId)
+        {
+
+            return _context.Contacts.Where(x => x.ContactListId == contactListId && x.Deleted == 0 && x.Subscribed).ToList();
         }
 
 
@@ -83,7 +90,7 @@ namespace brightcast.Services
                 contact.Email = contactParam.Email;
             }
 
-            // update user properties if provided
+            contact.Subscribed = contactParam.Subscribed;
 
             contact.UpdatedBy = contactParam.UpdatedBy;
 

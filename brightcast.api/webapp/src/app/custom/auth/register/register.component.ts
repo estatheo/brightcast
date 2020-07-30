@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService, AlertService } from '../../../pages/_services';
 import { first } from 'rxjs/operators';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-register',
@@ -22,7 +23,8 @@ export class RegisterComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private accountService: AccountService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private toastrService: NbToastrService
   ) { }
 
   ngOnInit(): void {
@@ -65,15 +67,13 @@ export class RegisterComponent implements OnInit {
     this.loading = true;
         this.accountService.register(this.form.value)
             .subscribe(
-                data => {                    
+                data => {         
+                    this.toastrService.primary("✨ The registration is complete!", "Success!");           
                     this.alertService.success('Registration successful', { keepAfterRouteChange: true });
                     this.router.navigate(['auth/register/confirm'], { relativeTo: this.route });
                 },
                 error => {
-                    this.alertText = error;
-                      this.authError = true;
-                      setTimeout(() =>  this.onClose(), 2000);
-                    this.alertService.error(error);
+                    this.toastrService.danger(`⚠ ${error}`, "Error!");                
                     this.loading = false;
                 });
   }

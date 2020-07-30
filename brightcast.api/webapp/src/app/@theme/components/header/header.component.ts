@@ -19,7 +19,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   userPictureOnly: boolean = false;
   user: UserProfile;
-
+  name;
+  avatar;
   themes = [
     {
       value: 'default',
@@ -56,7 +57,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.userService.getUserProfile()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((user: UserProfile) => this.user = user);
+      .subscribe((user: UserProfile) => {
+        this.user = user;
+        this.avatar = 'url("' + this.user.pictureUrl + '")';
+        this.name = this.user.firstName + ' ' + this.user.lastName;
+      });
 
     const { xl } = this.breakpointService.getBreakpointsMap();
     this.themeService.onMediaQueryChange()

@@ -16,6 +16,8 @@ namespace brightcast.Services
         ReceiveMessage GetReceiveMessageByMessageId(string messageId);
         CampaignMessage AddCampaignMessage(CampaignMessage entity);
         CampaignMessage GetCampaignMessageByMessageId(string messageId);
+        List<CampaignMessage> GetCampaignMessagesByCampaignId(int campaignId);
+        List<ReceiveMessage> GetReceiveMessagesByCampaignId(int campaignId);
         CampaignMessage UpdateCampaignMessage(CampaignMessage entity);
     }
 
@@ -95,6 +97,16 @@ namespace brightcast.Services
             var result = _context.CampaignMessages.FirstOrDefault(x => x.MessageSid == messageId && x.Deleted == 0);
 
             return result;
+        }
+
+        public List<CampaignMessage> GetCampaignMessagesByCampaignId(int campaignId)
+        {
+            return _context.CampaignMessages.Where(x => x.CampaignId == campaignId && x.Deleted == 0).ToList();
+        }
+
+        public List<ReceiveMessage> GetReceiveMessagesByCampaignId(int campaignId)
+        {
+            return _context.ReceiveMessages.Where(x => x.CampaignId == campaignId && x.Deleted == 0).ToList();
         }
 
         public CampaignMessage UpdateCampaignMessage(CampaignMessage entity)

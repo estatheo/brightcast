@@ -22,7 +22,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class CampaignController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -31,6 +31,7 @@ namespace brightcast.Controllers
         private readonly ICampaignService _campaignService;
         private readonly IContactListService _contactListService;
         private readonly IContactService _contactService;
+        private readonly IBusinessService _businessService;
         private readonly IMapper _mapper;
         private readonly IMessageService _messageService;
         private readonly IUserProfileService _userProfileService;
@@ -43,6 +44,7 @@ namespace brightcast.Controllers
             IContactListService contactListService,
             IContactService contactService,
             IMessageService messageService,
+            IBusinessService businessService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -53,6 +55,7 @@ namespace brightcast.Controllers
             _contactListService = contactListService;
             _contactService = contactService;
             _messageService = messageService;
+            _businessService = businessService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -239,7 +242,9 @@ namespace brightcast.Controllers
             try
             {
                 //todo: change with a loop for each contact list
-                var contacts = _contactService.GetAllByContactListId(model.ContactListIds.FirstOrDefault());
+                var contacts = _contactService.GetAllSubscribedByContactListId(model.ContactListIds.FirstOrDefault());
+
+                var business = _businessService.GetById(userProfile.BusinessId);
 
                 foreach (var contact in contacts)
                 {
@@ -249,7 +254,7 @@ namespace brightcast.Controllers
                         new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage}"),
+                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage.Replace("{{1}}", business.Name)}"),
                             new KeyValuePair<string, string>("StatusCallback",
                                 $"{_appSettings.ApiBaseUrl}/api/message/callback/template"),
                             new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
@@ -285,12 +290,14 @@ namespace brightcast.Controllers
                         Status = resultModel.Status
                     });
 
-                    var campaign = _campaignService.GetById(model.Id);
-
-                    campaign.Status = 2;
-
-                    _campaignService.Update(campaign);
+                   
                 }
+
+                var campaign = _campaignService.GetById(model.Id);
+
+                campaign.Status = 2;
+
+                _campaignService.Update(campaign);
 
                 return Ok();
             }

@@ -25,13 +25,14 @@ import {
 
 } from '@nebular/theme';
 import { JwtInterceptor, ErrorInterceptor } from './pages/_helpers';
+import { LandingComponent } from './landing/landing.component';
 
 @NgModule({
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
-  declarations: [AppComponent],
+  declarations: [AppComponent, LandingComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

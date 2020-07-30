@@ -20,7 +20,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class FileController : ControllerBase
     {
         private IMapper _mapper;

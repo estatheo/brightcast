@@ -22,7 +22,7 @@
                     </div>
                     <div class="form-group">
                         <label for="picture" class="label">Avatar Picture</label>
-                        <input type="file" #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files, false)" nbInput fullWidth formControlName="picture" placeholder="Avatar">
+                        <input type="file" #image type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(image.files, false)" nbInput fullWidth formControlName="pictureUrl" placeholder="Avatar">
                     </div>
                     <div class="form-group">
                         <label for="phone" class="label">Phone</label>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="form-group">
                         <label for="role" class="label">Role</label>
-                        <nb-select selected="1" formControlName="role" fullWidth value="{{user?.role}}">
+                        <nb-select selected="1" formControlName="businessRole" fullWidth value="{{user?.businessRole}}">
                             <nb-option value="Founder">Founder</nb-option>
                             <nb-option value="COO">COO</nb-option>
                             <nb-option value="HeadofOperations">Head of Operations</nb-option>
@@ -51,10 +51,6 @@
                     <div class="form-group">
                         <label for="name" class="label">Business Name</label>
                         <input type="text" nbInput fullWidth formControlName="name" placeholder="Business" value="{{business?.name}}">
-                    </div>
-                    <div class="form-group">
-                        <label for="logo" class="label">Business Logo</label>
-                        <input type="file" #businessLogo type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(businessLogo.files, true)" nbInput fullWidth formControlName="logo" placeholder="Logo">
                     </div>
                     <div class="form-group">
                         <label for="email" class="label">Email</label>

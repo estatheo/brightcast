@@ -57,11 +57,7 @@
                                 <input type="text" nbInput fullWidth formControlName="name" placeholder="Business">
                             </div>
                             <div class="form-group">
-                                <label for="logo" class="label">Business Logo</label>
-                                <input type="file" #businessLogo type="file" multiple accept="image/x-png,image/gif,image/jpeg" (change)="uploadImage(businessLogo.files, true)" nbInput fullWidth formControlName="logo" placeholder="Logo">
-                            </div>
-                            <div class="form-group">
-                                <label for="email" class="label">Email</label>
+                                <label for="email" class="label">Business Contact Email</label>
                                 <input type="email" nbInput fullWidth formControlName="email" placeholder="Email">
                             </div>
                             <div class="form-group">
@@ -116,8 +112,11 @@
                                     placeholder="Contact List Name" />
                             </div>
                             <div class="form-group">
+                                <p class="download-description">Download the <a href="https://brightcaststrgprd.blob.core.windows.net/assets/ContactList.csv" download="template.csv" target="_blank">.csv template</a>, add your contacts and reupload the file!</p>
+                            </div>
+                            <div class="form-group">
                                 <label for="contactList">Contact List</label>
-                                <input #file type="file" multiple accept=".csv" (change)="upload(file.files)" nbInput fullWidth formControlName="contactList"
+                                <input #file type="file" multiple accept=".csv" (change)="upload(file.files, true)" nbInput fullWidth formControlName="contactList"
                                     placeholder="Upload Contact List">
                             </div>
                         </form>
@@ -144,7 +143,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="file" class="label">Media File</label>
-                                <input type="file" nbInput fullWidth formControlName="file" placeholder="file">
+                                <input #mediaFile type="file" nbInput fullWidth formControlName="file" placeholder="file" (change)="upload(mediaFile.files, false)" placeholder="Upload Campaign Media File">
                             </div>
                         </form>
                     </div>

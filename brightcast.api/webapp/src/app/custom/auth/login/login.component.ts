@@ -4,6 +4,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService, AlertService } from '../../../pages/_services';
 import { first } from 'rxjs/operators';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-login',
@@ -21,7 +22,9 @@ export class LoginComponent extends NbLoginComponent {
     private route: ActivatedRoute,
     public router: Router,
     private accountService: AccountService,
-    private alertService: AlertService) {
+    private alertService: AlertService,
+    private toastrService: NbToastrService
+    ) {
     super(null, null, null, router);
   }
 
@@ -65,10 +68,7 @@ export class LoginComponent extends NbLoginComponent {
               this.router.navigate([this.returnUrl]);
             },
             error => {
-                this.alertText = error;
-                this.authError = true;
-                setTimeout(() =>  this.onClose(), 2000);
-                this.alertService.error(error);
+                this.toastrService.danger(`⚠ ${error}`, "Error!");                
                 this.loading = false;
             });
 }

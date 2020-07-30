@@ -15,6 +15,7 @@ import {
   NbSelectModule,
   NbRouteTabsetModule,
   NbStepperModule,
+  NbLayoutModule,
 } from '@nebular/theme';
 import { RegisterComponent } from './register/register.component';
 import { ResetComponent } from './reset/reset.component';
@@ -22,10 +23,11 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { VerifyComponent } from './verify/verify.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
 import { CommunicationPageComponent } from './communication-page/communication-page.component';
+import { TermsComponent } from './terms/terms.component';
 
 
 @NgModule({
-  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent, CommunicationPageComponent],
+  declarations: [LoginComponent, RegisterComponent, ResetComponent, VerifyComponent, NewPasswordComponent, CommunicationPageComponent, TermsComponent],
   imports: [
     CommonModule,
     ThemeModule,
@@ -42,7 +44,7 @@ import { CommunicationPageComponent } from './communication-page/communication-p
     NbSelectModule,
     NbRouteTabsetModule,
     NbStepperModule,
-
+    NbLayoutModule,
     NbAuthModule,
 
   ]

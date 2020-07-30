@@ -30,7 +30,7 @@ export class CampaignService {
     this.cache$ = null;
   }
 
-  private requestData() {
+  requestData() {
     return this.httpClient.get(`${this.apiURL}/campaign/data`).pipe(map(response => response));
   }
 

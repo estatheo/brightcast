@@ -30,16 +30,11 @@ export class ResetComponent implements OnInit {
   }
 
   reset(email) {
-    this.accountService.requestPasswordReset(email).subscribe(data => {                    
-      this.alertService.success('Registration successful', { keepAfterRouteChange: true });
+    this.accountService.requestPasswordReset(email).subscribe(data => {
       this.router.navigate(['../../login'], { relativeTo: this.route });
   },
   error => {
-      this.toastrService.danger("❌ There was an error with the request!", "Error!");
-      this.alertText = error;
-        this.authError = true;
-        setTimeout(() =>  this.onClose(), 2000);
-      this.alertService.error(error);
+      this.toastrService.danger(`⚠ ${error}`, "Error!");    
       this.loading = false;
   });
   }
