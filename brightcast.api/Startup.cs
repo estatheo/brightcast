@@ -37,15 +37,6 @@ namespace brightcast
             //else
             //    services.AddDbContext<DataContext, SqliteDataContext>();
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder => builder
-                .WithOrigins("http://localhost:4200")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
-            });
-
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSignalR();
@@ -57,6 +48,16 @@ namespace brightcast
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins(appSettings.UiBaseUrl)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            });
+
             services.AddAuthentication(x =>
                 {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -141,7 +142,7 @@ namespace brightcast
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapHub<ChatHub>("/apiChatHub");
+                endpoints.MapHub<ChatHub>("/ChatHub");
             });
             app.UseDeveloperExceptionPage();
             //app.UseSpa(spa =>
