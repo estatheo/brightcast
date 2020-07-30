@@ -99,7 +99,7 @@ export class OnboardingComponent implements OnInit {
   onSubmit() {
     this.loading = true;
 
-    if (this.mediaData == null || this.mediaData == undefined) {
+    if (this.mediaData == null || this.mediaData === undefined) {
       this.accountService.uploadImage(this.userPicture).subscribe(up => {
         this.accountService.uploadDoc(this.contactListData).subscribe(dd => {
           this.accountService.onboarding({

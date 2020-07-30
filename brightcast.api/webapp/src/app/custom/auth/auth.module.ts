@@ -35,8 +35,8 @@ import { TermsComponent } from './terms/terms.component';
     ResetComponent,
     VerifyComponent,
     NewPasswordComponent,
-    TermsComponent,
-    CommunicationPageComponent],
+    CommunicationPageComponent,
+    TermsComponent],
   imports: [
     CommonModule,
     ThemeModule,

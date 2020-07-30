@@ -254,7 +254,7 @@ namespace brightcast.Controllers
                         new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage}".Replace("{{1}}",business.Name)),
+                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage.Replace("{{1}}", business.Name)}"),
                             new KeyValuePair<string, string>("StatusCallback",
                                 $"{_appSettings.ApiBaseUrl}/api/message/callback/template"),
                             new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")

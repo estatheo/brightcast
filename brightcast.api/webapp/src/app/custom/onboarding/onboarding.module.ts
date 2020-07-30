@@ -15,6 +15,7 @@ import {
   NbToastrModule,
   NbIconModule,
   NbSpinnerModule,
+  NbIconModule,
 } from '@nebular/theme';
 import { ThemeModule } from '../../@theme/theme.module';
 import { OnboardingComponent } from './onboarding.component';
@@ -44,6 +45,8 @@ import { NbEvaIconsModule } from '@nebular/eva-icons';
     NbEvaIconsModule,
     NbIconModule,
     NbSpinnerModule,
-  ],
+    NbEvaIconsModule,
+    NbIconModule,
+  ]
 })
 export class OnboardingModule { }
