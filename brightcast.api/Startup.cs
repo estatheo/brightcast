@@ -141,7 +141,7 @@ namespace brightcast
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapHub<ChatHub>("/ChatHub");
+                endpoints.MapHub<ChatHub>("/apiChatHub");
             });
             app.UseDeveloperExceptionPage();
             //app.UseSpa(spa =>
