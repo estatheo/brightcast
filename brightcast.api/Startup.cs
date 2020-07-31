@@ -38,7 +38,8 @@ namespace brightcast
                 .WithOrigins("https://app.brightcast.io")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .AllowCredentials());
+                .AllowCredentials()
+                .SetIsOriginAllowed((host) => true));
             });
 
             // use sql server db in production and sqlite db in development
@@ -46,7 +47,7 @@ namespace brightcast
             services.AddDbContext<DataContext>();
             //else
             //    services.AddDbContext<DataContext, SqliteDataContext>();
-
+            
             services.AddSignalR();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -121,7 +122,6 @@ namespace brightcast
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -133,11 +133,11 @@ namespace brightcast
             app.UseRouting();
 
             // global cors policy
-            
+            app.UseCors("CorsPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseWebSockets();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
