@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../pages/_services';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-verify',
@@ -9,7 +10,7 @@ import { AccountService } from '../../../pages/_services';
 })
 export class VerifyComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router: Router, private accountService: AccountService) { }
+  constructor(private route: ActivatedRoute, private router: Router, private accountService: AccountService, private toastrService: NbToastrService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(p => {
@@ -17,6 +18,8 @@ export class VerifyComponent implements OnInit {
       console.log(id);
       this.accountService.verify(id).subscribe(x => {
         this.router.navigateByUrl('/auth/login');
+      }, error => {        
+        this.toastrService.danger(`⚠ ${error}`, "Error!");    
       });
     })
   }

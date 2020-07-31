@@ -29,7 +29,7 @@
                 </div>              
             </div>
             <div class="form-group">
-                <nb-checkbox status="basic" [formControl]="form.controls['cb']">I agree with terms & conditions</nb-checkbox>
+                <nb-checkbox status="basic" [formControl]="form.controls['cb']">I agree with <a routerLink="/auth/terms">terms & conditions</a></nb-checkbox>
             </div>
             <button [nbSpinner]="loading" nbSpinnerStatus="success" type="submit" fullWidth nbButton status="primary" class="button">Create Account</button>
             <div class="login-bottom-container">

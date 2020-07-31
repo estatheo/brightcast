@@ -22,7 +22,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class CampaignController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -242,19 +242,19 @@ namespace brightcast.Controllers
             try
             {
                 //todo: change with a loop for each contact list
-                var contacts = _contactService.GetAllByContactListId(model.ContactListIds.FirstOrDefault());
+                var contacts = _contactService.GetAllSubscribedByContactListId(model.ContactListIds.FirstOrDefault());
+
+                var business = _businessService.GetById(userProfile.BusinessId);
 
                 foreach (var contact in contacts)
                 {
                     var client = new HttpClient();
 
-                    var business = _businessService.GetByUserProfileId(userProfile.Id);
-
                     var requestModel = new FormUrlEncodedContent(
                         new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage}".Replace("{{1}}",business.Name)),
+                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage.Replace("{{1}}", business.Name)}"),
                             new KeyValuePair<string, string>("StatusCallback",
                                 $"{_appSettings.ApiBaseUrl}/api/message/callback/template"),
                             new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
@@ -290,12 +290,14 @@ namespace brightcast.Controllers
                         Status = resultModel.Status
                     });
 
-                    var campaign = _campaignService.GetById(model.Id);
-
-                    campaign.Status = 2;
-
-                    _campaignService.Update(campaign);
+                   
                 }
+
+                var campaign = _campaignService.GetById(model.Id);
+
+                campaign.Status = 2;
+
+                _campaignService.Update(campaign);
 
                 return Ok();
             }

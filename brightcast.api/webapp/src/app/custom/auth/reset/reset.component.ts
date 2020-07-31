@@ -30,7 +30,7 @@ export class ResetComponent implements OnInit {
       this.loading = false;
     },
     error => {
-        this.toastrService.danger('❌ ' + error, 'Error');
+        this.toastrService.danger(`⚠ ${error}`, 'Error');
         this.loading = false;
     });
   }

@@ -9,8 +9,8 @@
       },
       "azureHosting": {
         "subscription": "f1fbd2ba-6874-43c7-811c-8bc3cdb01da0",
-        "resourceGroupName": "ngx-admin-demo-static-deploy",
-        "account": "ngxadmindemostatic"
+        "resourceGroupName": "brightcastprdrsg",
+        "account": "brightcaststrgprd"
       }
     }
   ]

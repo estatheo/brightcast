@@ -64,7 +64,7 @@ export class LoginComponent extends NbLoginComponent implements OnInit {
               this.router.navigate([this.returnUrl]);
             },
             error => {
-                this.toastrService.danger(error, 'Error');
+                this.toastrService.danger(`⚠ ${error}`, 'Error!');
                 this.loading = false;
             });
     }

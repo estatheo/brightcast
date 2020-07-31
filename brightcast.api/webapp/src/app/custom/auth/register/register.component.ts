@@ -56,12 +56,12 @@ export class RegisterComponent implements OnInit {
         .subscribe(
             data => {
               //  this.alertService.success('Registration successful', { keepAfterRouteChange: true });
-                this.toastrService.success('Registered successfully. We have sent you an email. Please verify it\'s you.', 'Success', {duration: 7000});
+                this.toastrService.success('✨ Registered successfully. We have sent you an email. Please verify it\'s you.', 'Success', {duration: 7000});
                 this.router.navigate(['auth/register/confirm'], { relativeTo: this.route });
                 this.loading = false;
             },
             error => {
-                this.toastrService.danger(error, 'Error');
+                this.toastrService.danger(`⚠ ${error}`, 'Error');
                 this.loading = false;
             });
   }

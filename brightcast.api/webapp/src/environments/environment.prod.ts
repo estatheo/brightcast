@@ -5,5 +5,5 @@
  */
 export const environment = {
   production: true,
-  apiUrl: 'https://api.brightcast.io/api'
+  apiUrl: 'https://api.brightcast.io',
 };

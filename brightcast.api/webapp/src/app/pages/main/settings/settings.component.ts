@@ -30,13 +30,12 @@ export class SettingsComponent implements OnInit {
     this.form1 = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      picture: ['', Validators.required],
+      pictureUrl: ['', Validators.required],
       phone: ['', Validators.required],
-      role: ['', Validators.required]
+      businessRole: ['', Validators.required]
     });
     this.form2 = this.formBuilder.group({
       name: ['', Validators.required],
-      logo: ['', Validators.required],
       email: ['', Validators.required],
       website: ['', Validators.required],
       address: ['', Validators.required],
@@ -84,37 +83,78 @@ export class SettingsComponent implements OnInit {
   }
 
   onSubmitPersonal() {
-    this.accountService.uploadImage(this.userPicture).subscribe(up => {
+    if(this.userPicture != null && this.userPicture != undefined) {
+      this.accountService.uploadImage(this.userPicture).subscribe(up => {
+        this.accountService.update(this.user.id, {
+          id: this.user.id,
+          firstName: this.form1.controls.firstName.value,
+          lastName: this.form1.controls.lastName.value,
+          businessRole: this.form1.controls.businessRole.value,
+          pictureUrl: up['name'],
+          Phone: this.form1.controls.phone.value,
+          Default: this.user.Default
+        }).subscribe(() => {
+          this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+          this.dataReady = false;
+          this.accountService.getSettingsData().subscribe(data => {
+            this.business = data['business'];
+            this.user = data['user'];
+            this.form1.patchValue(this.user);
+            this.form2.patchValue(this.business);
+            this.dataReady = true;
+          });
+        }, error => {
+            this.toastrService.danger(error, "There was an error on our side😢");
+        });
+      });
+    } else {
       this.accountService.update(this.user.id, {
         id: this.user.id,
         firstName: this.form1.controls.firstName.value,
         lastName: this.form1.controls.lastName.value,
-        pictureUrl: up['name'],
+        businessRole: this.form1.controls.businessRole.value,
+        pictureUrl: this.form1.controls.pictureUrl.value,
         Phone: this.form1.controls.phone.value,
         Default: this.user.Default
       }).subscribe(() => {
-        this.toastrService.success("🚀 The campaign has been updated!", "Success!");}, error => {
+        this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+        this.dataReady = false;
+        this.accountService.getSettingsData().subscribe(data => {
+          this.business = data['business'];
+          this.user = data['user'];
+          this.form1.patchValue(this.user);
+          this.form2.patchValue(this.business);
+          this.dataReady = true;
+        });
+      }, error => {
           this.toastrService.danger(error, "There was an error on our side😢");
       });
-    });
+    }   
+    
   
   }
 
   onSubmitBusiness() {
-    this.accountService.uploadImage(this.businessLogo).subscribe(bl => {
-      this.accountService.updateBusiness({
-        id: this.business.id,
-        name: this.form2.controls.name.value,
-        membership: this.business.membership,
-        website: this.form2.controls.website.value,
-        address: this.form2.controls.address.value,
-        email: this.form2.controls.email.value,
-        category: this.form2.controls.category.value,
-      }).subscribe(() => {
-        this.toastrService.success("🚀 The campaign has been updated!", "Success!");}, error => {
-          this.toastrService.danger(error, "There was an error on our side😢");
+    this.accountService.updateBusiness({
+      id: this.business.id,
+      name: this.form2.controls.name.value,
+      membership: this.business.membership,
+      website: this.form2.controls.website.value,
+      address: this.form2.controls.address.value,
+      email: this.form2.controls.email.value,
+      category: this.form2.controls.category.value,
+    }).subscribe(() => {
+      this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+      this.dataReady = false;
+      this.accountService.getSettingsData().subscribe(data => {
+        this.business = data['business'];
+        this.user = data['user'];
+        this.form1.patchValue(this.user);
+        this.form2.patchValue(this.business);
+        this.dataReady = true;
       });
-    })
+    }, error => {
+        this.toastrService.danger(error, "There was an error on our side😢");
+    });
   }
-
 }

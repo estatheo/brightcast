@@ -15,6 +15,8 @@ namespace brightcast.Models.UserProfiles
         public string Phone { get; set; }
         [Required]
         public bool Default { get; set; }
+
+        public string BusinessRole { get; set; }
         public int BusinessId { get; set; }
         public int RoleId { get; set; }
     }

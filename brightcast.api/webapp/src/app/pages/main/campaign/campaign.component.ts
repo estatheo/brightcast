@@ -35,16 +35,20 @@ export class CampaignComponent implements OnInit {
   }
 
   openModalForEdit(event) {
-    this.windowService.open(
-      CampaignFormComponent,
-      { title: 'Edit Campaign', context: { contactListList: this.data.contactLists, campaign: event } });
+    this.campaignsService.data.subscribe((data: CampaignData) => {
+      this.data = data;
+      this.windowService.open(
+        CampaignFormComponent,
+        { title: 'Edit Campaign', context: { contactListList: this.data.contactLists, campaign: event } });
+    });
+
   }
 
   delete(id) {
     this.campaignsService.Delete(id).subscribe(() => {
       this.toastrService.primary('❌ The campaign has been deleted!', 'Deleted!');
       this.campaignsService.refreshData();
-      this.campaignsService.data.subscribe((data: CampaignData) => {
+      this.campaignsService.requestData().subscribe((data: CampaignData) => {
         this.data = data;
       });
     }, error => {
@@ -55,7 +59,7 @@ export class CampaignComponent implements OnInit {
   send(campaign) {
     this.loading = true;
     this.campaignsService.SendCampaign(campaign).subscribe(result => {
-      this.toastrService.success('Sent campaign messages successfully!', 'Success');
+      this.toastrService.primary('🎉 The campaign has been sent!', 'Success!');
       this.campaignsService.refreshData();
       this.campaignsService.data.subscribe((data: CampaignData) => {
         this.data = data;

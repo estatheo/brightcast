@@ -7,6 +7,7 @@ import { NbAuthComponent } from '@nebular/auth';
 import { VerifyComponent } from './verify/verify.component';
 import { NewPasswordComponent } from './new-password/new-password.component';
 import { CommunicationPageComponent } from './communication-page/communication-page.component';
+import { TermsComponent } from './terms/terms.component';
 
 
 const routes: Routes = [
@@ -21,6 +22,9 @@ const routes: Routes = [
       },
       {
         path: 'register', component: RegisterComponent
+      },
+      {
+        path: 'terms', component: TermsComponent
       },
       {
         path: 'verify/:id', component: VerifyComponent

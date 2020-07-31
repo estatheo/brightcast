@@ -10,6 +10,7 @@ namespace brightcast.Entities
         public string LastName { get; set; }
         public string PictureUrl { get; set; }
         public string Phone { get; set; }
+        public string BusinessRole { get; set; }
         public bool Default { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }

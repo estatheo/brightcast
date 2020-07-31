@@ -73,3 +73,28 @@
     height: 4.5rem;
   }
 }
+
+
+.profile-image {
+  box-sizing: border-box;
+  display: inline-flex;
+  position: relative;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  width: 3rem;
+  height: 3rem;
+  cursor: inherit;
+  background-size: cover;
+  text-align: center;
+  margin: 0px;
+  padding: 0px;
+  border-radius: 50%;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  overflow: hidden;
+  background-position: center center;
+}

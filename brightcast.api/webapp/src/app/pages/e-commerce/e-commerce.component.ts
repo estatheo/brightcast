@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from '../_services';
 import { DashboardService } from '../../@core/apis/dashboard.service';
@@ -9,21 +9,26 @@ import { DashboardService } from '../../@core/apis/dashboard.service';
   templateUrl: './e-commerce.component.html',
   styleUrls: ['e-commerce.component.scss']
 })
-export class ECommerceComponent implements OnInit {
+export class ECommerceComponent implements OnInit, AfterViewInit {
 
-  absoluteValues = [0, 0, 0, 0, 0];
-  percentageValues = [+2.5, -1.5, +2.5, -1.5, -1.5];
+  absoluteValues;
+  percentageValues;
   selectedChart = "Delivered";
+  dataReady = false;
   dashboardData;
   constructor(private router: Router, private accountService: AccountService, private dashboardService: DashboardService) {
 
   }
 
+  ngOnInit(){
 
-  ngOnInit() {
+  }
+
+  ngAfterViewInit() {
     const maxValue = Math.max.apply(null, this.absoluteValues);
     const self = this;
     let initial = 0;
+    console.log('bbb',this.absoluteValues);
     this.accountService.onboardingCheck();
     this.dashboardService.data.subscribe(data => {
       console.log('aaaaaaa', data);
@@ -42,7 +47,9 @@ export class ECommerceComponent implements OnInit {
         data['newSubscribers']['percentage'],
         data['unsubscribed']['percentage'],
         data['replies']['percentage'],
-      ];          
+      ];         
+      this.dataReady = true;
+      console.log('bbb',this.absoluteValues);
     });
     
   }

@@ -13,11 +13,13 @@ import {
   NbRouteTabsetModule,
   NbStepperModule,
   NbToastrModule,
+  NbIconModule,
   NbSpinnerModule,
 } from '@nebular/theme';
 import { ThemeModule } from '../../@theme/theme.module';
 import { OnboardingComponent } from './onboarding.component';
 import { OnboardingRoutingModule } from './onboarding-routing.module';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 
 @NgModule({
@@ -39,6 +41,8 @@ import { OnboardingRoutingModule } from './onboarding-routing.module';
     NbStepperModule,
     OnboardingRoutingModule,
     NbToastrModule,
+    NbEvaIconsModule,
+    NbIconModule,
     NbSpinnerModule,
   ],
 })

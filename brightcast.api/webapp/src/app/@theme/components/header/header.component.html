@@ -12,15 +12,28 @@
 
 <div class="header-container">
   <nb-actions size="small">
-
+    <nb-action class="user-action">
+      <div class="profile-image" [ngStyle]="{backgroundImage: avatar }"></div>
+    </nb-action>
+    <nb-action class="user-action">
+      <h6>{{name}}</h6>
+    </nb-action>
+    <div class="profile">
+      
+    </div>
     <!-- <nb-action class="control-item">
       <nb-search type="rotate-layout"></nb-search>
     </nb-action>
     <nb-action class="control-item" icon="email-outline"></nb-action>
-    <nb-action class="control-item" icon="bell-outline"></nb-action> -->
+    <nb-action class="control-item" icon="bell-outline"></nb-action> 
     <nb-action class="user-action" *nbIsGranted="['view', 'user']">
       <nb-user [nbContextMenu]="userMenu" [onlyPicture]="userPictureOnly" [name]="user?.firstName + ' ' + user?.lastName" [picture]="user?.pictureUrl">
       </nb-user>
     </nb-action>
+    
+    -->
+    
+
+    
   </nb-actions>
 </div>

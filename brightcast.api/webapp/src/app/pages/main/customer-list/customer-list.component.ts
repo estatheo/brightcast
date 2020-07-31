@@ -22,15 +22,19 @@ export class CustomerListComponent implements OnInit {
   ngOnInit(): void {
     this.contactListService.data.subscribe((data: ContactListElement[]) => {
       this.data = data;
-    }) 
+    }); 
   }
   openModal() {
     this.windowService.open(CustomerFormComponent, { title: 'New Contact List'});
 
   }
   openModalForEdit(event) {    
-    let item: ContactListElement = event;
-    this.windowService.open(CustomerListEditComponent, { title: 'Edit Contact List', context: { contactList: item } });
+    this.contactListService.data.subscribe((data: ContactListElement[]) => {
+      this.data = data;
+      let item: ContactListElement = event;
+      this.windowService.open(CustomerListEditComponent, { title: 'Edit Contact List', context: { contactList: item } });
+    }); 
+    
   }
 
   delete(id) {

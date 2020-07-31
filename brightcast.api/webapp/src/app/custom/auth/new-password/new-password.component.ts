@@ -59,7 +59,7 @@ export class NewPasswordComponent implements OnInit {
                 this.router.navigate(['auth/password/confirm'], { relativeTo: this.route });
             },
             error => {
-                this.toastrService.danger('❌ The request password token is expired!', 'Error!');
+                this.toastrService.danger(`⚠ ${error}`, 'Error!');
                 this.loading = false;
             });
   }

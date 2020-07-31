@@ -13,7 +13,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ContactController : ControllerBase
     {
         private readonly AppSettings _appSettings;

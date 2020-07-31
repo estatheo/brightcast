@@ -18,7 +18,7 @@ namespace brightcast.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class UserProfileController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -201,6 +201,7 @@ namespace brightcast.Controllers
                     Phone = userProfile.Phone,
                     Id = userProfile.Id,
                     PictureUrl = userProfile.PictureUrl,
+                    BusinessRole = userProfile.BusinessRole,
                     Role = "",
                     Scope = new List<string>()
                 },
@@ -291,6 +292,7 @@ namespace brightcast.Controllers
                 LastName = userProfile.LastName,
                 Phone = userProfile.Phone,
                 PictureUrl = userProfile.PictureUrl,
+                BusinessRole = userProfile.BusinessRole,
                 Role = userProfile.Role?.Name,
                 Scope = userProfile.Role?.Scope?.Split(',').ToList()
             };

@@ -91,6 +91,11 @@ namespace brightcast.Services
                 business.Website = businessParam.Website;
             }
 
+            if (!string.IsNullOrWhiteSpace(businessParam.Category) && businessParam.Category != business.Category)
+            {
+                business.Category = businessParam.Category;
+            }
+
             // update user properties if provided
 
             business.UpdatedBy = businessParam.UpdatedBy;
