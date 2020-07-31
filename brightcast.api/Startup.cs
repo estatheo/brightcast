@@ -32,7 +32,15 @@ namespace brightcast
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", p =>
+                {
+                    p.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
 
             // use sql server db in production and sqlite db in development
             //if (_env.IsProduction())
@@ -40,7 +48,7 @@ namespace brightcast
             //else
             //    services.AddDbContext<DataContext, SqliteDataContext>();
 
-            services.AddSignalR().AddAzureSignalR();
+            services.AddSignalR();
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -126,10 +134,7 @@ namespace brightcast
             app.UseRouting();
 
             // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            app.UseCors("AllowAll");
 
             app.UseAuthentication();
             app.UseAuthorization();
