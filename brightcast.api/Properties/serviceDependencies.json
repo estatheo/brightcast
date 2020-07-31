@@ -1,12 +1,16 @@
 {
   "dependencies": {
+    "signalr1": {
+      "type": "signalr",
+      "connectionId": "Azure__SignalR__ConnectionString"
+    },
     "mssql1": {
       "type": "mssql",
       "connectionId": "WebApiDatabase"
     },
-    "signalr1": {
-      "type": "signalr",
-      "connectionId": "Azure__SignalR__ConnectionString"
+    "storage1": {
+      "type": "storage",
+      "connectionId": "AppSettings/StorageConnectionString"
     }
   }
 }

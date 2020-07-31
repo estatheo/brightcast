@@ -27,30 +27,29 @@ namespace brightcast
             _env = env;
             _configuration = configuration;
         }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", p =>
-                {
-                    p.AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-                });
-            });
-
             // use sql server db in production and sqlite db in development
             //if (_env.IsProduction())
             services.AddDbContext<DataContext>();
             //else
             //    services.AddDbContext<DataContext, SqliteDataContext>();
 
-            services.AddSignalR();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder => builder
+                .WithOrigins("https://app.brightcast.io")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .SetIsOriginAllowed((host) => true));
+            });
+
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddSignalR();
 
             // configure strongly typed settings objects
             var appSettingsSection = _configuration.GetSection("AppSettings");
@@ -59,12 +58,11 @@ namespace brightcast
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
-
             services.AddAuthentication(x =>
-                {
-                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(x =>
                 {
                     x.Events = new JwtBearerEvents
@@ -122,10 +120,10 @@ namespace brightcast
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
-            app.UseFileServer();
-            
+            app.UseStaticFiles();
             //if (!env.IsDevelopment())
             //{
             //    app.UseSpaStaticFiles();
@@ -134,11 +132,12 @@ namespace brightcast
             app.UseRouting();
 
             // global cors policy
-            app.UseCors("AllowAll");
+
 
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseWebSockets();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
