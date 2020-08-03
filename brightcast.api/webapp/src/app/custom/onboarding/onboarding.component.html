@@ -115,9 +115,6 @@
                                 <p>Download the <a href="https://brightcaststrgprd.blob.core.windows.net/assets/ContactList.csv" download="template.csv" target="blank" style="color: hotpink;">.csv template</a>, add your contacts and reupload the file!</p>
                             </nb-alert>
                             <div class="form-group">
-                                <p class="download-description">Download the <a href="https://brightcaststrgprd.blob.core.windows.net/assets/ContactList.csv" download="template.csv" target="_blank">.csv template</a>, add your contacts and reupload the file!</p>
-                            </div>
-                            <div class="form-group">
                                 <label for="contactList">Contact List</label>
                                 <input #file type="file" multiple accept=".csv" (change)="upload(file.files, true)" nbInput fullWidth formControlName="contactList"
                                     placeholder="Upload Contact List">
