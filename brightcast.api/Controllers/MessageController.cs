@@ -115,7 +115,7 @@ namespace brightcast.Controllers
                             new KeyValuePair<string, string>("Body", $"{campaign.Message}"),
                             new KeyValuePair<string, string>("MediaUrl", $"{campaign.FileUrl}"),
                             new KeyValuePair<string, string>("StatusCallback",
-                                $"{_appSettings.ApiBaseUrl}/api/message/callback/campaign"),
+                                $"{_appSettings.ApiBaseUrl}/message/callback/campaign"),
                             new KeyValuePair<string, string>("To", $"{model.From}")
                         }
                     );

@@ -4,14 +4,12 @@ import { NbMenuService, NbMenuItem, NbToastrService } from '@nebular/theme';
 import { ChatService } from './chat.service';
 import { CampaignService} from '../../../@core/apis/campaign.service';
 import { CampaignData } from '../../_models/campaignData';
-import { ContactListElement } from '../../_models/contactListElement';
 import { ContactService } from '../../../@core/apis/contact.service';
 import { Contact } from '../../_models/contact';
 import { AccountService } from '../../../pages/_services';
 import { UserProfile } from '../../../pages/_models/userProfile';
-import { map, takeUntil } from 'rxjs/operators';
 import { ChatMessage } from '../../_models/chat';
-import { stringify } from 'querystring';
+import { Invitation } from '../../_models/invitation';
 
 @Component({
   selector: 'ngx-chat',
@@ -50,14 +48,13 @@ export class ChatComponent implements OnInit {
 
     this.userService.getUserProfile()
       .subscribe((user: UserProfile) => {
-        this.user = user; console.log(this.user);
+        this.user = user;
         this.route.params.subscribe(p => {
           this.campaign_id = parseInt(p['id'], 10);
           this.chatService.loadMessagesByCampaignId(this.campaign_id).subscribe( (data: ChatMessage[]) => {
             data.forEach((message: ChatMessage) => {
               if (message.senderId === this.user.id) {
                 message.reply = true;
-                console.log(message.senderId);
               }
               this.messages.push(message);
             });
@@ -111,19 +108,37 @@ export class ChatComponent implements OnInit {
     }, error => {
       this.toastrService.danger(error, 'There was an error on our side😢');
     });
-    console.log('messages', this.messages);
   }
 
   private subscribeToEvents(): void {
-
     this.chatService.messageReceived.subscribe((message: ChatMessage) => {
       this._ngZone.run(() => {
+        if (message.campaignId !== this.campaign_id) {
+          return;
+        }
         message.reply = true;
         if (message.senderId !== this.user.id) {
           message.reply = false;
           this.messages.push(message);
         }
       });
+    });
+  }
+
+  invite(inviteeId: number, phoneNumber: string) {
+    const temp = new Invitation();
+    temp.inviteeId = inviteeId;
+    temp.campaignId = this.campaign_id;
+    temp.senderId = this.user.id;
+    temp.senderName = this.user.firstName + ' ' + this.user.lastName;
+    temp.phoneNumber = phoneNumber;
+    temp.bodyMessage = temp.senderName +
+      ' sent you an invitation for Brightcast chat.' +
+      ' URL is http://localhost:4200/pages/main/campaign/chat/' + temp.campaignId;
+    temp.createdAt = new Date();
+    this.chatService.sendInviteMessage(temp).subscribe(() => {
+    }, error => {
+      this.toastrService.danger(error, 'There was an error on our side😢');
     });
   }
 }

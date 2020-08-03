@@ -1,12 +1,20 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using AutoMapper;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Net.Http.Headers;
 using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Chats;
+using brightcast.Models.Twilio;
 using brightcast.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace brightcast.Controllers
 {
@@ -83,6 +91,44 @@ namespace brightcast.Controllers
             }
         }
 
+        [HttpPost("sendInvitation")]
+        public async Task<IActionResult> SendInvitation([FromBody] InvitationModel model)
+        {
+            try
+            {
+                var client = new HttpClient();
+
+                var requestModel = new FormUrlEncodedContent(
+                    new List<KeyValuePair<string, string>>
+                    {
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{model.BodyMessage}"),
+                            new KeyValuePair<string, string>("StatusCallback",
+                                $"{_appSettings.ApiBaseUrl}/message/callback/template"),
+                            new KeyValuePair<string, string>("To", $"whatsapp:{model.PhoneNumber}")
+                    }
+                );
+                var req = new HttpRequestMessage(HttpMethod.Post,
+                        $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
+                { Content = requestModel };
+
+                req.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
+                    Encoding.ASCII.GetBytes(
+                        $"{_appSettings.TwilioAccountSID}:{_appSettings.TwilioAuthToken}")));
+
+                var result = await client.SendAsync(req);
+
+                var resultModel =
+                    JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
+                        await result.Content.ReadAsStringAsync());
+                return Ok();
+            }
+            catch (AppException ex)
+            {
+                // return error message if there was an exception
+                return BadRequest(new { message = ex });
+            }
+        }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

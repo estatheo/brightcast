@@ -33,7 +33,14 @@
           <p>Customer List:</p>
           <ul>
             <li *ngFor="let item of customer_list">
-              {{item.firstName + ' ' + item.lastName}}
+              <div class="customer_item">
+                <div class="customer_name">
+                  {{item.firstName + ' ' + item.lastName}}
+                </div>
+                <div class="customer_status">
+                  <button nbButton outline (click)="invite(item.id, item.phone)" size="small" status="primary">Invite</button>
+                </div>
+              </div>
             </li>
           </ul>
         </div>

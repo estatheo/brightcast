@@ -8,6 +8,7 @@ import { of ,  Observable } from 'rxjs';
 import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
 import { HubConnection, HubConnectionBuilder, HttpTransportType } from '@aspnet/signalr';
 import { ChatMessage } from '../../_models/chat';
+import { Invitation } from '../../_models/invitation';
 
 @Injectable()
 export class ChatService {
@@ -54,6 +55,10 @@ export class ChatService {
     return this.httpClient.post(`${this.apiURL}/chat/new`, newMessage).pipe(map(response => response));
   }
 
+  sendInviteMessage(invitation: Invitation) {
+    return this.httpClient.post(`${this.apiURL}/chat/sendInvitation`, invitation).pipe(map(response => response));
+  }
+  
   loadMessages() {
     return messages;
   }
