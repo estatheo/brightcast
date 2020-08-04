@@ -2,6 +2,9 @@
     id?: number;
     senderId?: number;
     senderName?: string;
+    receiverId?: number;
+    receiverName?: string;
+    receiverPhone?: string;
     avatarUrl?: string;
     type?: string;
     reply?: boolean;

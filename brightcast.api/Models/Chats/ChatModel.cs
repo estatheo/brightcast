@@ -7,6 +7,9 @@ namespace brightcast.Models.Chats
         public int Id { get; set; }
         public int SenderId { get; set; }
         public string SenderName { get; set; }
+        public int ReceiverId { get; set; }
+        public string ReceiverName { get; set; }
+        public string ReceiverPhone { get; set; }
         public string AvatarUrl { get; set; }
         public string Type { get; set; }
         public bool Reply { get; set; }
