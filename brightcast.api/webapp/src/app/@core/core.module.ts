@@ -20,7 +20,6 @@ import { OrdersChartData } from './data/orders-chart';
 import { ProfitChartData } from './data/profit-chart';
 import { TrafficListData } from './data/traffic-list';
 import { EarningData } from './data/earning';
-import { OrdersProfitChartData } from './data/orders-profit-chart';
 import { TrafficBarData } from './data/traffic-bar';
 import { ProfitBarAnimationChartData } from './data/profit-bar-animation-chart';
 import { TemperatureHumidityData } from './data/temperature-humidity';

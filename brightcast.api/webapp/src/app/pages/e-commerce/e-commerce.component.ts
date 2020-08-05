@@ -26,9 +26,11 @@ export class ECommerceComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    /*
     const maxValue = Math.max.apply(null, this.absoluteValues);
     const self = this;
     const initial = 0;
+    */
     this.accountService.onboardingCheck();
     this.dashboardService.data.subscribe(data => {
       this.absoluteValues =

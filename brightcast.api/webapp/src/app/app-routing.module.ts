@@ -10,7 +10,7 @@ export const routes: Routes = [
   },
   {
     path: 'pages',
-    loadChildren: () => import('./pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard]
+    loadChildren: () => import('./pages/pages.module').then(m => m.PagesModule), canActivate: [AuthGuard],
   },
   {
     path: 'auth',
@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
   {
     path: 'onboarding',
-    loadChildren: './custom/onboarding/onboarding.module#OnboardingModule', canActivate: [AuthGuard]
+    loadChildren: './custom/onboarding/onboarding.module#OnboardingModule', canActivate: [AuthGuard],
   },
   {
     path: 'signup_contact/:id',

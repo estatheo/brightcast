@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NbMenuService, NbMenuItem, NbToastrService } from '@nebular/theme';
+import { ActivatedRoute } from '@angular/router';
+import { NbMenuItem, NbToastrService } from '@nebular/theme';
 import { ChatService } from './chat.service';
 import { CampaignService} from '../../../@core/apis/campaign.service';
 import { CampaignData } from '../../_models/campaignData';
@@ -30,13 +30,12 @@ export class ChatComponent implements OnInit {
 
   constructor(
     protected chatService: ChatService,
-    private menuService: NbMenuService,
     private toastrService: NbToastrService,
     private campaignsService: CampaignService,
     private contactService: ContactService,
     private userService: AccountService,
     private _ngZone: NgZone,
-    private route: ActivatedRoute, private router: Router) {
+    private route: ActivatedRoute) {
     // this.messages = this.chatService.loadMessages();
     this.subscribeToEvents();
   }

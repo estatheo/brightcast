@@ -5,7 +5,6 @@ import { ProfitChartComponent } from './charts/profit-chart.component';
 import { OrdersChart } from '../../../@core/data/orders-chart';
 import { ProfitChart } from '../../../@core/data/profit-chart';
 import { OrderProfitChartSummary } from '../../../@core/data/orders-profit-chart';
-import { DashboardService } from '../../../@core/apis/dashboard.service';
 
 @Component({
   selector: 'ngx-ecommerce-charts',
@@ -17,7 +16,6 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
 
   @Input() option: string;
 
-  private alive = true;
   chartPanelSummary: OrderProfitChartSummary[];
   period: string = 'week';
   ordersChartData: OrdersChart;
@@ -25,15 +23,9 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
   @ViewChild('ordersChart', { static: true }) ordersChart: OrdersChartComponent;
   @ViewChild('profitChart', { static: true }) profitChart: ProfitChartComponent;
 
-  constructor(private ordersProfitChartService: DashboardService) {
-    // this.ordersProfitChartService.getOrderProfitChartSummary()
-    //   .pipe(takeWhile(() => this.alive))
-    //   .subscribe((summary) => {
-    //     this.chartPanelSummary = summary;
-    //   });
+  constructor() {
 
     this.getOrdersChartData(this.period);
-    // this.getProfitChartData(this.period);
   }
 
   setPeriodAndGetChartData(value: string): void {
@@ -42,12 +34,10 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
     }
 
     this.getOrdersChartData(value);
-    // this.getProfitChartData(value);
   }
 
   changeTab(selectedTab) {
     if (selectedTab.tabTitle === 'Profit') {
-      // this.profitChart.resizeChart();
     } else {
       this.ordersChart.resizeChart();
     }
@@ -56,15 +46,6 @@ export class ECommerceChartsPanelComponent implements OnDestroy {
   getOrdersChartData(period: string) {
   }
 
-  // getProfitChartData(period: string) {
-  //   this.ordersProfitChartService.getProfitChartData(period)
-  //     .pipe(takeWhile(() => this.alive))
-  //     .subscribe(profitChartData => {
-  //       this.profitChartData = profitChartData;
-  //     });
-  // }
-
   ngOnDestroy() {
-    this.alive = false;
   }
 }
