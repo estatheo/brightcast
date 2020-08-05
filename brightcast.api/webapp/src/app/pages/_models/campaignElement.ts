@@ -1,5 +1,3 @@
-import { ContactList } from './contactList';
-
 export class CampaignElement {
     id?: number;
     name?: string;

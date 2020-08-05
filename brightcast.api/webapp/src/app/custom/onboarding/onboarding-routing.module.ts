@@ -7,17 +7,17 @@ import { OnboardingComponent } from './onboarding.component';
 const routes: Routes = [
   {
     path: '', component: NbAuthComponent,    // first one has to auth component with router-outlet inside of it
-    children: [      
+    children: [
       {
         path: '', component: OnboardingComponent,
-      }
-    ]
-  }
+      },
+    ],
+  },
 
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class OnboardingRoutingModule { }

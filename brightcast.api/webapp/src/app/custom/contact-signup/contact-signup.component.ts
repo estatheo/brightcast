@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ContactService } from '../../@core/apis/contact.service';
 import { ContactListService } from '../../@core/apis/contactList.service';
@@ -21,7 +21,6 @@ export class ContactSignupComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private toastrService: NbToastrService,
     private contactService: ContactService,
     private contactListSevice: ContactListService,

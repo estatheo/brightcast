@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { NbWindowRef, NbToastrService } from '@nebular/theme';
-import { ContactListElement } from '../../../_models/contactListElement';
-import { ContactListService } from '../../../../@core/apis/contactList.service';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contact } from '../../../_models/contact';
@@ -38,17 +36,22 @@ import { ContactService } from '../../../../@core/apis/contact.service';
 export class ContactEditComponent implements OnInit {
     contactElement: Contact;
     form;
-    constructor(private router: Router, private formBuilder: FormBuilder, public windowRef: NbWindowRef, private contactService: ContactService, private toastrService: NbToastrService) {
+    constructor(
+      private router: Router,
+      private formBuilder: FormBuilder,
+      public windowRef: NbWindowRef,
+      private contactService: ContactService,
+      private toastrService: NbToastrService) {
         this.form = this.formBuilder.group({
           firstName: ['', Validators.required],
           lastName: ['', Validators.required],
           phone: ['', Validators.required],
           email: ['', Validators.required],
-          subscribed: ['', Validators.required]
+          subscribed: ['', Validators.required],
         });
     }
 
-    ngOnInit(){        
+    ngOnInit() {
       this.form.patchValue(this.contactElement);
     }
 
@@ -64,17 +67,17 @@ export class ContactEditComponent implements OnInit {
           phone: this.form.controls.phone.value,
           email: this.form.controls.email.value,
           subscribed: this.form.controls.subscribed.value,
-          contactListId: this.contactElement.contactListId
+          contactListId: this.contactElement.contactListId,
 
         }).subscribe(() => {
-            this.toastrService.success("🚀 The Contact List has been updated!", "Success!");
+            this.toastrService.success('🚀 The Contact List has been updated!', 'Success!');
             this.contactService.refreshData();
-            this.router.navigateByUrl('/',{skipLocationChange: true}).then(() => {
+            this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
               this.router.navigate([`/pages/main/customer-list/${this.contactElement.contactListId}/contacts`]);
               this.close();
             });
           }, error => {
-            this.toastrService.danger(error, "There was an error on our side😢");
-          })
+            this.toastrService.danger(error, 'There was an error on our side😢');
+          });
       }
 }

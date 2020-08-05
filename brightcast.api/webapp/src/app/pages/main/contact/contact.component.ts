@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NbWindowService, NbToastrService } from '@nebular/theme';
 import { Contact } from '../../_models/contact';
 import { ContactList } from '../../_models/contactList';
@@ -6,7 +6,7 @@ import { ContactService } from '../../../@core/apis/contact.service';
 import { ContactListService } from '../../../@core/apis/contactList.service';
 import { ContactFormComponent } from './contact-form/contact-form.component';
 import { ContactEditComponent } from './contact-edit/contact-edit.component';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss'],
 })
-export class ContactComponent implements OnInit {
+export class ContactComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,

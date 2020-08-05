@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../pages/_services';
-import { first } from 'rxjs/operators';
 import { NbToastrService } from '@nebular/theme';
 
 @Component({

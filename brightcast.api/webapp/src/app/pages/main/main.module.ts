@@ -36,7 +36,6 @@ import { CampaignFormComponent } from './campaign/campaign-form/campaign-form.co
 import { WindowFormComponent } from '../modal-overlays/window/window-form/window-form.component';
 import { CampaignService} from '../../@core/apis/campaign.service';
 import { CustomerFormComponent } from './customer-list/customer-form/customer-form.component';
-import { BrowserModule } from '@angular/platform-browser';
 import { CampaignNewComponent } from './campaign/campaign-new/campaign-new.component';
 import { ContactListService } from '../../@core/apis/contactList.service';
 import { CustomerListEditComponent } from './customer-list/customer-list-edit/customer-list-edit.component';

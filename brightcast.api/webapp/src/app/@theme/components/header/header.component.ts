@@ -1,12 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 
-import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { AccountService } from '../../../pages/_services';
-import { User } from '../../../pages/_models';
 import { UserProfile } from '../../../pages/_models/userProfile';
 
 @Component({
@@ -29,7 +27,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     {
       value: 'dark',
       name: 'Dark',
-    }
+    },
     // {
     //   value: 'cosmic',
     //   name: 'Cosmic',

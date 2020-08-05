@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NbWindowRef, NbToastrService } from '@nebular/theme';
 import { CampaignService } from '../../../../@core/apis/campaign.service';
 import { FormBuilder, Validators } from '@angular/forms';
-import { CampaignElement } from '../../../_models/campaignElement';
 import { Router } from '@angular/router';
 import { AccountService } from '../../../_services';
 import { ContactList } from '../../../_models/contactList';

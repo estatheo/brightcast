@@ -15,36 +15,36 @@ const routes: Routes = [
     path: '', component: NbAuthComponent,    // first one has to auth component with router-outlet inside of it
     children: [
       {
-        path: '', component: LoginComponent
+        path: '', component: LoginComponent,
       },
       {
-        path: 'login', component: LoginComponent
+        path: 'login', component: LoginComponent,
       },
       {
-        path: 'register', component: RegisterComponent
+        path: 'register', component: RegisterComponent,
       },
       {
-        path: 'terms', component: TermsComponent
+        path: 'terms', component: TermsComponent,
       },
       {
-        path: 'verify/:id', component: VerifyComponent
+        path: 'verify/:id', component: VerifyComponent,
       },
       {
-        path: 'reset-password', component: ResetComponent
+        path: 'reset-password', component: ResetComponent,
       },
       {
-        path: 'new-password/:id', component: NewPasswordComponent
+        path: 'new-password/:id', component: NewPasswordComponent,
       },
       {
-        path: ':route/confirm', component: CommunicationPageComponent
-      }
-    ]
-  }
+        path: ':route/confirm', component: CommunicationPageComponent,
+      },
+    ],
+  },
 
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AuthRoutingModule { }

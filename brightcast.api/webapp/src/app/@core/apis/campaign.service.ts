@@ -1,26 +1,23 @@
 import { Injectable } from '@angular/core';
-import { PeriodsService } from '../mock/periods.service';
-import { OrdersChart, OrdersChartData } from '../data/orders-chart';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { OrderProfitChartSummary } from '../data/orders-profit-chart';
-import { of ,  Observable } from 'rxjs';
-import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, refCount, publishReplay } from 'rxjs/operators';
 @Injectable()
 export class CampaignService {
 
   apiURL: string = environment.apiUrl;
   private cache$: Observable<Object>;
-  
 
-  constructor(private httpClient: HttpClient) {   
+
+  constructor(private httpClient: HttpClient) {
   }
 
   get data() {
-    if( !this.cache$ ) {
+    if ( !this.cache$ ) {
       this.cache$ = this.requestData().pipe(
         publishReplay(1),
-        refCount()
+        refCount(),
       );
     }
     return this.cache$;
@@ -35,7 +32,7 @@ export class CampaignService {
   }
 
   NewCampaign(campaign) {
-    return this.httpClient.post(`${this.apiURL}/campaign/new`,campaign).pipe(map(response => response))
+    return this.httpClient.post(`${this.apiURL}/campaign/new`, campaign).pipe(map(response => response));
   }
 
   Delete(id) {
@@ -47,7 +44,6 @@ export class CampaignService {
   }
 
   SendCampaign(campaign) {
-    return this.httpClient.post(`${this.apiURL}/campaign/send`,campaign).pipe(map(response => response))
+    return this.httpClient.post(`${this.apiURL}/campaign/send`, campaign).pipe(map(response => response));
   }
 }
-  

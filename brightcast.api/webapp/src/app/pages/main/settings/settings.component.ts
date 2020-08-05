@@ -1,19 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AccountService } from '../../_services';
 import { NbToastrService } from '@nebular/theme';
 import { Business } from '../../_models/business';
-import { User } from '../../_models';
 import { UserProfile } from '../../_models/userProfile';
 
 @Component({
   selector: 'ngx-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
 })
 export class SettingsComponent implements OnInit {
-  btnstuatus = ['primary', 'secondary']
+  btnstuatus = ['primary', 'secondary'];
   settingClass = ['personal', 'business'];
   userPicture: FormData;
   businessLogo: FormData;
@@ -24,7 +22,10 @@ export class SettingsComponent implements OnInit {
   business: Business;
   user: UserProfile;
   dataReady = false;
-  constructor(private router: Router, private formBuilder: FormBuilder, private accountService: AccountService, private toastrService: NbToastrService) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private accountService: AccountService,
+    private toastrService: NbToastrService) { }
 
   ngOnInit(): void {
     this.form1 = this.formBuilder.group({
@@ -32,14 +33,14 @@ export class SettingsComponent implements OnInit {
       lastName: ['', Validators.required],
       pictureUrl: ['', Validators.required],
       phone: ['', Validators.required],
-      businessRole: ['', Validators.required]
+      businessRole: ['', Validators.required],
     });
     this.form2 = this.formBuilder.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
       website: ['', Validators.required],
       address: ['', Validators.required],
-      category: ['', Validators.required]
+      category: ['', Validators.required],
     });
     this.accountService.getSettingsData().subscribe(data => {
       this.business = data['business'];
@@ -48,7 +49,7 @@ export class SettingsComponent implements OnInit {
       this.form2.patchValue(this.business);
       this.dataReady = true;
     });
-    
+
   }
 
   uploadImage(files, isBusiness) {
@@ -56,20 +57,20 @@ export class SettingsComponent implements OnInit {
       return;
     }
 
-    if(isBusiness) {
+    if (isBusiness) {
       this.businessLogo = new FormData();
 
-      for (let file of files) {
+      for (const file of files) {
         this.businessLogo.append(file.name, file);
-      }  
+      }
     } else {
       this.userPicture = new FormData();
 
-      for (let file of files) {
+      for (const file of files) {
         this.userPicture.append(file.name, file);
-      }  
+      }
     }
-    
+
   }
 
   toggle() {
@@ -83,7 +84,7 @@ export class SettingsComponent implements OnInit {
   }
 
   onSubmitPersonal() {
-    if(this.userPicture != null && this.userPicture != undefined) {
+    if (this.userPicture != null && this.userPicture !== undefined) {
       this.accountService.uploadImage(this.userPicture).subscribe(up => {
         this.accountService.update(this.user.id, {
           id: this.user.id,
@@ -92,9 +93,9 @@ export class SettingsComponent implements OnInit {
           businessRole: this.form1.controls.businessRole.value,
           pictureUrl: up['name'],
           Phone: this.form1.controls.phone.value,
-          Default: this.user.Default
+          Default: this.user.Default,
         }).subscribe(() => {
-          this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+          this.toastrService.success('🚀 The campaign has been updated!', 'Success!');
           this.dataReady = false;
           this.accountService.getSettingsData().subscribe(data => {
             this.business = data['business'];
@@ -104,7 +105,7 @@ export class SettingsComponent implements OnInit {
             this.dataReady = true;
           });
         }, error => {
-            this.toastrService.danger(error, "There was an error on our side😢");
+            this.toastrService.danger(error, 'There was an error on our side😢');
         });
       });
     } else {
@@ -115,9 +116,9 @@ export class SettingsComponent implements OnInit {
         businessRole: this.form1.controls.businessRole.value,
         pictureUrl: this.form1.controls.pictureUrl.value,
         Phone: this.form1.controls.phone.value,
-        Default: this.user.Default
+        Default: this.user.Default,
       }).subscribe(() => {
-        this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+        this.toastrService.success('🚀 The campaign has been updated!', 'Success!');
         this.dataReady = false;
         this.accountService.getSettingsData().subscribe(data => {
           this.business = data['business'];
@@ -127,11 +128,11 @@ export class SettingsComponent implements OnInit {
           this.dataReady = true;
         });
       }, error => {
-          this.toastrService.danger(error, "There was an error on our side😢");
+          this.toastrService.danger(error, 'There was an error on our side😢');
       });
-    }   
-    
-  
+    }
+
+
   }
 
   onSubmitBusiness() {
@@ -144,7 +145,7 @@ export class SettingsComponent implements OnInit {
       email: this.form2.controls.email.value,
       category: this.form2.controls.category.value,
     }).subscribe(() => {
-      this.toastrService.success("🚀 The campaign has been updated!", "Success!");
+      this.toastrService.success('🚀 The campaign has been updated!', 'Success!');
       this.dataReady = false;
       this.accountService.getSettingsData().subscribe(data => {
         this.business = data['business'];
@@ -154,7 +155,7 @@ export class SettingsComponent implements OnInit {
         this.dataReady = true;
       });
     }, error => {
-        this.toastrService.danger(error, "There was an error on our side😢");
+        this.toastrService.danger(error, 'There was an error on our side😢');
     });
   }
 }

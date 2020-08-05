@@ -7,7 +7,7 @@ import { AccountService } from '../_services';
 export class AuthGuard implements CanActivate {
     constructor(
         private router: Router,
-        private accountService: AccountService
+        private accountService: AccountService,
     ) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

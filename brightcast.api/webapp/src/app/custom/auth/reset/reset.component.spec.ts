@@ -8,7 +8,7 @@ describe('ResetComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ResetComponent ]
+      declarations: [ ResetComponent ],
     })
     .compileComponents();
   }));

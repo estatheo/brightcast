@@ -2,7 +2,6 @@ import { AfterViewInit, Component, Input, OnChanges, OnDestroy } from '@angular/
 import { NbThemeService } from '@nebular/theme';
 import { delay, takeWhile } from 'rxjs/operators';
 
-import { OrdersChart } from '../../../../@core/data/orders-chart';
 import { LayoutService } from '../../../../@core/utils/layout.service';
 import { DashboardService } from '../../../../@core/apis/dashboard.service';
 
@@ -266,8 +265,8 @@ export class OrdersChartComponent implements AfterViewInit, OnDestroy, OnChanges
   }
 
   updateOrdersChartOptions(ordersChartData) {
-    const options = this.option;      
-    let chartData = {};
+    const options = this.option;
+    const chartData = {};
     this.dashboardService.data.subscribe(data => {
       switch (this.cardOption) {
         case 'delivered':
@@ -301,7 +300,7 @@ export class OrdersChartComponent implements AfterViewInit, OnDestroy, OnChanges
         xAxis,
         series,
       };
-    });       
+    });
   }
 
   getNewSeries(series, linesData: number[][]) {

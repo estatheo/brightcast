@@ -6,22 +6,25 @@ import { NbToastrService } from '@nebular/theme';
 @Component({
   selector: 'ngx-verify',
   templateUrl: './verify.component.html',
-  styleUrls: ['./verify.component.scss']
+  styleUrls: ['./verify.component.scss'],
 })
 export class VerifyComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private router: Router, private accountService: AccountService, private toastrService: NbToastrService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private accountService: AccountService,
+    private toastrService: NbToastrService) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(p => {
-      let id = p['id'];
-      console.log(id);
+      const id = p['id'];
       this.accountService.verify(id).subscribe(x => {
         this.router.navigateByUrl('/auth/login');
-      }, error => {        
-        this.toastrService.danger(`⚠ ${error}`, "Error!");    
+      }, error => {
+        this.toastrService.danger(`⚠ ${error}`, 'Error!');
       });
-    })
+    });
   }
 
 }

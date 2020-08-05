@@ -4,5 +4,5 @@ import { CampaignElement } from './campaignElement';
 export class CampaignData {
     campaigns: CampaignElement[];
     contactLists: ContactList[];
-    
+
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NbLoginComponent, NbAuthService } from '@nebular/auth';
+import { NbLoginComponent } from '@nebular/auth';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../pages/_services';

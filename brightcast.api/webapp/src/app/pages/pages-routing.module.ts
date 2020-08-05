@@ -21,7 +21,7 @@ const routes: Routes = [{
       component: DashboardComponent,
     },
     { path: 'logout',
-      component: LogoutComponent 
+      component: LogoutComponent,
     },
     {
       path: 'main', loadChildren: () => import('./main/main.module').then(m => m.MainModule),

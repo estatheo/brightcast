@@ -34,11 +34,11 @@ import { DashboardService } from '../@core/apis/dashboard.service';
   ],
   declarations: [
     PagesComponent,
-    LogoutComponent
+    LogoutComponent,
   ],
   providers: [
-    DashboardService
-  ]
+    DashboardService,
+  ],
 })
 export class PagesModule {
 }

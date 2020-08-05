@@ -57,7 +57,6 @@ export class SmartTableComponent {
 
   constructor(private service: SmartTableData) {
     const data = this.service.getData();
-    console.log("data in smart table: ", data);
     this.data = data;
     this.source.load(data);
   }

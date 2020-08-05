@@ -303,7 +303,8 @@ namespace brightcast.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                // return error message if there was an exception
+                return BadRequest(new {message = ex.Message});
             }
         }
 

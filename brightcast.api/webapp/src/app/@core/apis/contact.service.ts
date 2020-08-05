@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { of ,  Observable } from 'rxjs';
-import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, refCount, publishReplay } from 'rxjs/operators';
 @Injectable()
 export class ContactService {
 

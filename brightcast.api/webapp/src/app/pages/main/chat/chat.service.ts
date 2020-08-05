@@ -1,11 +1,9 @@
 import { EventEmitter, Injectable } from '@angular/core';
 
 import { messages } from './messages';
-import { botReplies, gifsLinks, imageLinks } from './bot-replies';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import { of ,  Observable } from 'rxjs';
-import { shareReplay, map, refCount, publishReplay } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { HubConnection, HubConnectionBuilder, HttpTransportType } from '@aspnet/signalr';
 import { ChatMessage } from '../../_models/chat';
 import { Invitation } from '../../_models/invitation';
@@ -58,7 +56,7 @@ export class ChatService {
   sendInviteMessage(invitation: Invitation) {
     return this.httpClient.post(`${this.apiURL}/chat/sendInvitation`, invitation).pipe(map(response => response));
   }
-  
+
   loadMessages() {
     return messages;
   }

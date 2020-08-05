@@ -72,7 +72,7 @@ import { CountoModule } from 'angular2-counto';
     NgxChartsModule,
     LeafletModule,
     NbCardModule,
-    CountoModule
+    CountoModule,
 
   ],
   declarations: [
