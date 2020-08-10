@@ -1,2 +1,0 @@
-# brightcast
- api and ui
