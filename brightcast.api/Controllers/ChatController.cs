@@ -25,41 +25,26 @@ namespace brightcast.Controllers
     {
         private readonly AppSettings _appSettings;
         private readonly IChatService _chatService;
+        private readonly IContactService _contactService;
         private readonly IMapper _mapper;
 
         public ChatController(
             IChatService chatService,
+            IContactService contactService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _chatService = chatService;
+            _contactService = contactService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
 
-        [HttpGet("ofList/{id}/")]
-        public IActionResult GetAllByContactListId(int id)
-        {
-            var chatMessages = _chatService.GetAllByContactListId(id);
-            return Ok(chatMessages.Select(x => new ChatModel
-            {
-                Id = x.Id,
-                SenderId = x.SenderId,
-                SenderName = x.SenderName,
-                AvatarUrl = x.AvatarUrl,
-                Type = x.Type,
-                Files = x.Files,
-                Text = x.Text,
-                CreatedAt = x.CreatedAt,
-                ContactListId = x.ContactListId,
-                CampaignId = x.CampaignId,
-            }));
-        }
 
-        [HttpGet("ofCampaign/{id}/")]
-        public IActionResult GetAllByCampaignId(int id)
+        [HttpGet("ofCampaignAndContact/{campaignId}/{contactId}")]
+        public IActionResult GetAllByCampaignIdAndContactId(int campaignId, int contactId)
         {
-            var chatMessages = _chatService.GetAllByCampaignId(id);
+            var chatMessages = _chatService.GetAllByCampaignAndContactId(campaignId, contactId);
             return Ok(chatMessages.Select(x => new ChatModel
             {
                 Id = x.Id,
@@ -70,16 +55,44 @@ namespace brightcast.Controllers
                 Files = x.Files,
                 Text = x.Text,
                 CreatedAt = x.CreatedAt,
-                ContactListId = x.ContactListId,
+                ContactId = x.ContactId,
                 CampaignId = x.CampaignId,
             }));
         }
 
         [HttpPost("new")]
-        public IActionResult Create([FromBody] ChatModel model)
+        public async Task<IActionResult> Create([FromBody] ChatModel model)
         {
             try
             {
+                var contact = _contactService.GetById(model.ContactId);
+
+                var client = new HttpClient();
+
+                var requestModel = new FormUrlEncodedContent(
+                    new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                        new KeyValuePair<string, string>("Body", $"{model.Text}"),
+                        //new KeyValuePair<string, string>("StatusCallback",
+                        //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
+                        new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
+                    }
+                );
+                var req = new HttpRequestMessage(HttpMethod.Post,
+                        $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
+                    { Content = requestModel };
+
+                req.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
+                    Encoding.ASCII.GetBytes(
+                        $"{_appSettings.TwilioAccountSID}:{_appSettings.TwilioAuthToken}")));
+
+                var result = await client.SendAsync(req);
+
+                var resultModel =
+                    JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
+                        await result.Content.ReadAsStringAsync());
+                
                 _chatService.Create(_mapper.Map<ChatMessage>(model));
 
                 return Ok();

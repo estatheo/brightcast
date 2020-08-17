@@ -9,8 +9,7 @@ namespace brightcast.Services
     public interface IChatService
     {
         ChatMessage GetById(int id);
-        List<ChatMessage> GetAllByContactListId(int contactListId);
-        List<ChatMessage> GetAllByCampaignId(int campaignId);
+        List<ChatMessage> GetAllByCampaignAndContactId(int campaignId, int contactId);
         ChatMessage Create(ChatMessage chatMessage);
         void Delete(int id);
 
@@ -32,15 +31,10 @@ namespace brightcast.Services
             return chatMessage != null && chatMessage.Status == 0 ? chatMessage : null;
         }
 
-        public List<ChatMessage> GetAllByContactListId(int contactListId)
+        public List<ChatMessage> GetAllByCampaignAndContactId(int campaignId, int contactId)
         {
 
-            return _context.ChatMessages.Where(x => x.ContactListId == contactListId && x.Status == 1).ToList();
-        }
-        public List<ChatMessage> GetAllByCampaignId(int campaignId)
-        {
-
-            return _context.ChatMessages.Where(x => x.CampaignId == campaignId && x.Status == 1).ToList();
+            return _context.ChatMessages.Where(x => x.CampaignId == campaignId && x.ContactId == contactId && x.Status == 1).ToList();
         }
 
         public ChatMessage Create(ChatMessage chatMessage)

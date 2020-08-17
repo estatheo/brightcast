@@ -25,6 +25,7 @@ export class ChatComponent implements OnInit {
   chat_themes = ['success', 'danger', 'primary', 'info', 'warning'];
   chat_theme: string;
   campaign_id: number;
+  contact_id: number;
   customer_list: Contact[];
   user: UserProfile;
 
@@ -49,15 +50,18 @@ export class ChatComponent implements OnInit {
       .subscribe((user: UserProfile) => {
         this.user = user;
         this.route.params.subscribe(p => {
-          this.campaign_id = parseInt(p['id'], 10);
-          this.chatService.loadMessagesByCampaignId(this.campaign_id).subscribe( (data: ChatMessage[]) => {
-            data.forEach((message: ChatMessage) => {
-              if (message.senderId === this.user.id) {
-                message.reply = true;
-              }
-              this.messages.push(message);
+          this.campaign_id = parseInt(p['campaignId'], 10);
+          this.contact_id = parseInt(p['contactId'], 10);
+          if(!(isNaN(this.campaign_id) || isNaN(this.contact_id))){
+            this.chatService.loadMessagesByCampaignAndContactId(this.campaign_id, this.contact_id).subscribe( (data: ChatMessage[]) => {
+              data.forEach((message: ChatMessage) => {
+                if (message.senderId === this.user.id) {
+                  message.reply = true;
+                }
+                this.messages.push(message);
+              });
             });
-          });
+          }        
         });
       });
 
@@ -66,17 +70,51 @@ export class ChatComponent implements OnInit {
       this.campaign_data = data;
       this.campaign_data.campaigns.forEach((campaign_item) => {
         if (campaign_item.id === this.campaign_id) {
-          this.chat_title = 'Chat for \"' + campaign_item.name + '\"';
+          this.chat_title = 'Chat for \"' + campaign_item.name + '\"' + ' with ' + '' + this.customer_list.find(x => x.id = this.contact_id).firstName + ' ' + this.customer_list.find(x => x.id = this.contact_id).lastName;
           this.contactService.SetContactListId(campaign_item.contactListIds[0]);
           this.contactService.data.subscribe((contactlist: Contact[]) => {
             this.contactService.refreshData();
             this.customer_list = contactlist;
+            this.contact_id = this.customer_list[0].id;
+            if(this.chat_menu.filter(x => x.title === campaign_item.name).length == 0) {
+              this.chat_menu.push({
+                title: campaign_item.name,
+                url: '/pages/main/campaign/chat/' + campaign_item.id + '/' + this.contact_id,
+              });
+            }
+            this.chatService.loadMessagesByCampaignAndContactId(this.campaign_id, this.contact_id).subscribe( (data: ChatMessage[]) => {
+              data.forEach((message: ChatMessage) => {
+                if (message.senderId === this.user.id) {
+                  message.reply = true;
+                }
+                this.messages.push(message);
+              });
+            });        
+          });
+        } else {
+          this.campaign_id = this.campaign_data.campaigns[0].id;
+          this.contactService.SetContactListId(campaign_item.contactListIds[0]);
+          this.contactService.data.subscribe((contactlist: Contact[]) => {
+            this.contactService.refreshData();
+            this.customer_list = contactlist;
+            this.contact_id = this.customer_list[0].id;
+            if(this.chat_menu.filter(x => x.title === campaign_item.name).length == 0) {
+              this.chat_menu.push({
+                title: campaign_item.name,
+                url: '/pages/main/campaign/chat/' + campaign_item.id + '/' + this.contact_id,
+              });
+            }
+            this.chat_title = 'Chat for \"' + campaign_item.name + '\"' + ' with ' + '' + this.customer_list.find(x => x.id = this.contact_id).firstName + ' ' + this.customer_list.find(x => x.id = this.contact_id).lastName;
+            this.chatService.loadMessagesByCampaignAndContactId(this.campaign_id, this.contact_id).subscribe( (data: ChatMessage[]) => {
+              data.forEach((message: ChatMessage) => {
+                if (message.senderId === this.user.id) {
+                  message.reply = true;
+                }
+                this.messages.push(message);
+              });
+            });
           });
         }
-        this.chat_menu.push({
-          title: campaign_item.name,
-          url: '/pages/main/campaign/chat/' + campaign_item.id,
-        });
       });
     });
   }
@@ -100,7 +138,7 @@ export class ChatComponent implements OnInit {
     tempMsg.senderName = this.user.firstName + ' ' + this.user.lastName;
     tempMsg.avatarUrl = this.user.pictureUrl;
     tempMsg.campaignId = this.campaign_id;
-    tempMsg.contactListId = this.contactService.contactListId;
+    tempMsg.contactId = this.contact_id;
     this.messages.push(tempMsg);
     this.chatService.sendMessage(tempMsg);
     this.chatService.newChatMessage(tempMsg).subscribe(() => {
@@ -123,6 +161,20 @@ export class ChatComponent implements OnInit {
       });
     });
   }
+
+  selectContact(contactId: number) {
+    this.contact_id = contactId;
+
+    this.chatService.loadMessagesByCampaignAndContactId(this.campaign_id, this.contact_id).subscribe( (data: ChatMessage[]) => {
+              data.forEach((message: ChatMessage) => {
+                if (message.senderId === this.user.id) {
+                  message.reply = true;
+                }
+                this.messages.push(message);
+              });
+            });
+  }
+
 
   invite(inviteeId: number, phoneNumber: string) {
     const temp = new Invitation();

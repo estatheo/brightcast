@@ -14,7 +14,7 @@ namespace brightcast.Entities
         public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CampaignId { get; set; }
-        public int ContactListId { get; set; }
+        public int ContactId { get; set; }
         public int Status { get; set; }
     }
 }

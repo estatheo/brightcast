@@ -41,12 +41,8 @@ export class ChatService {
     });
   }
 
-  loadMessagesByContactListId(contactListId: number) {
-    return this.httpClient.get(`${this.apiURL}/chat/ofList/${contactListId}/`).pipe(map(response => response));
-  }
-
-  loadMessagesByCampaignId(campaignId: number) {
-    return this.httpClient.get(`${this.apiURL}/chat/ofCampaign/${campaignId}/`).pipe(map(response => response));
+  loadMessagesByCampaignAndContactId(campaignId: number, contactId: number) {
+    return this.httpClient.get(`${this.apiURL}/chat/ofCampaignAndContact/${campaignId}/${contactId}/`).pipe(map(response => response));
   }
 
   newChatMessage(newMessage: ChatMessage) {

@@ -123,7 +123,6 @@ namespace brightcast
             app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
             //if (!env.IsDevelopment())
             //{
             //    app.UseSpaStaticFiles();

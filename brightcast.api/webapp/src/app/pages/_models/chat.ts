@@ -12,5 +12,5 @@
     text?: string;
     createdAt?: Date;
     campaignId?: number;
-    contactListId?: number;
+    contactId?: number;
 }

@@ -112,22 +112,29 @@ namespace brightcast.Controllers
 
             foreach (var campaign in campaigns)
             {
-                var campaignsSent = _campaignSentService.GetAllByCampaignId(campaign.Id);
+                //var campaignsSent = _campaignSentService.GetAllByCampaignId(campaign.Id);
+                var campaignsSent = _messageService.GetCampaignMessagesByCampaignId(campaign.Id);
+                var responses = _messageService.GetReceiveMessagesByCampaignId(campaign.Id);
                 var values = new[] {0, 0, 0};
                 if (campaignsSent != null)
+                {
                     foreach (var campaignSent in campaignsSent)
                     {
-                        values[0] += _contactService.GetAllByContactListId(campaignSent.ContactListId)
-                            .Count;
-                        var stats = _campaignSentStatsService.GetByCampaignSentId(campaignSent.Id);
-                        if (stats != null)
-                            foreach (var campaignSentStatse in stats)
-                            {
-                                values[1] += campaignSentStatse.Read;
-                                values[2] += campaignSentStatse.Replies;
-                            }
+                        values[0] += campaignSent.Status == "read" || campaignSent.Status == "delivered" || campaignSent.Status == "sent" || campaignSent.Status == "received" || campaignSent.Status == "receiving" ? 1 : 0;
+                        values[1] += campaignSent.Status == "read" ? 1 : 0;
                     }
+                }
 
+                if (responses != null)
+                {
+                    foreach (var receiveMessage in responses)
+                    {
+                        values[2] += receiveMessage.Status == "read" || receiveMessage.Status == "delivered" ||
+                                     receiveMessage.Status == "received" || receiveMessage.Status == "receiving"
+                            ? 1
+                            : 0;
+                    }
+                }
 
                 result.campaigns.Add(new CampaignResponseModel
                 {

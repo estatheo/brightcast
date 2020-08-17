@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -30,6 +32,7 @@ namespace brightcast.Controllers
         private IMapper _mapper;
         private readonly IMessageService _messageService;
         private IUserProfileService _userProfileService;
+        private IChatService _chatService;
 
         public MessageController(
             IUserProfileService userProfileService,
@@ -39,6 +42,7 @@ namespace brightcast.Controllers
             IContactListService contactListService,
             IContactService contactService,
             IMessageService messageService,
+            IChatService chatService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -49,6 +53,7 @@ namespace brightcast.Controllers
             _contactListService = contactListService;
             _contactService = contactService;
             _messageService = messageService;
+            _chatService = chatService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -59,6 +64,8 @@ namespace brightcast.Controllers
         {
             try
             {
+                // todo test concurrency and find a better way to match to correct campaign & contact
+
                 var template = _messageService.GetTemplateMessageByMessageId(model.MessageSid);
 
                 template.Status = model.MessageStatus;
@@ -69,6 +76,9 @@ namespace brightcast.Controllers
                 //template.Date_Sent = model.DateSent;
 
                 _messageService.UpdateTemplateMessage(template);
+
+                //todo add logic to check for void error codes and unsubscribe from list
+
 
                 return Ok();
             }
@@ -88,6 +98,7 @@ namespace brightcast.Controllers
                 var templateMessage = _messageService.GetLastByTo(model.From);
 
                 var campaign = _campaignService.GetById(templateMessage.CampaignId);
+                var contact = _contactService.GetById(templateMessage.ContactId);
 
                 if (model.ErrorCode == null && _messageService.CheckReceivedCampaignMessage(templateMessage) == false)
                 {
@@ -105,21 +116,45 @@ namespace brightcast.Controllers
                         ContactId = templateMessage.ContactId
                     });
 
+                    
+
+
                     //send campaign message
 
                     var client = new HttpClient();
+                    FormUrlEncodedContent requestModel = null;
 
-                    var requestModel = new FormUrlEncodedContent(
-                        new List<KeyValuePair<string, string>>
-                        {
-                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body", $"{campaign.Message}"),
-                            new KeyValuePair<string, string>("MediaUrl", $"{campaign.FileUrl}"),
-                            new KeyValuePair<string, string>("StatusCallback",
-                                $"{_appSettings.ApiBaseUrl}/message/callback/campaign"),
-                            new KeyValuePair<string, string>("To", $"{model.From}")
-                        }
-                    );
+
+                    if (string.IsNullOrWhiteSpace(campaign.FileUrl))
+                    {
+                        requestModel = new FormUrlEncodedContent(
+                            new List<KeyValuePair<string, string>>
+                            {
+                                new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                                new KeyValuePair<string, string>("Body", $"{campaign.Message}"),
+                                new KeyValuePair<string, string>("StatusCallback",
+                                    $"{_appSettings.ApiBaseUrl}/message/callback/campaign"),
+                                new KeyValuePair<string, string>("To", $"{model.From}")
+                            }
+                        );
+                    }
+                    else
+                    {
+                        requestModel = new FormUrlEncodedContent(
+                            new List<KeyValuePair<string, string>>
+                            {
+                                new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                                new KeyValuePair<string, string>("Body", $"{campaign.Message}"),
+                                new KeyValuePair<string, string>("MediaUrl", $"{campaign.FileUrl}"),
+                                new KeyValuePair<string, string>("StatusCallback",
+                                    $"{_appSettings.ApiBaseUrl}/message/callback/campaign"),
+                                new KeyValuePair<string, string>("To", $"{model.From}")
+                            }
+                        );
+                    }
+
+
+                    
                     var req = new HttpRequestMessage(HttpMethod.Post,
                             $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
                         {Content = requestModel};
@@ -147,6 +182,20 @@ namespace brightcast.Controllers
                         CampaignId = templateMessage.CampaignId
                     });
                 }
+
+                _chatService.Create(new ChatMessage()
+                {
+                    SenderId = templateMessage.ContactId,
+                    SenderName = contact.FirstName + " " + contact.LastName,
+                    AvatarUrl = "", //todo: add default avatar
+                    Type = "text",
+                    Reply = false,
+                    Files = "",
+                    Text = model.Body,
+                    CreatedAt = DateTime.UtcNow,
+                    CampaignId = templateMessage.CampaignId,
+                    ContactId = templateMessage.ContactId
+                });
 
                 return Ok();
             }

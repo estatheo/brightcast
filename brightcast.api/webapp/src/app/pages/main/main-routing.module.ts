@@ -28,7 +28,7 @@ const routes: Routes = [
         path: 'chat', component: ChatComponent,
       },
       {
-        path: 'campaign/chat/:id', component: ChatComponent,
+        path: 'campaign/chat/:campaignId/:contactId', component: ChatComponent,
       },
     ],
   },
