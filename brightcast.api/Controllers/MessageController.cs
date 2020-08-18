@@ -115,8 +115,8 @@ namespace brightcast.Controllers
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     });
-
                     
+
 
 
                     //send campaign message

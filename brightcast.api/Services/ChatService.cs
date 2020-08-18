@@ -39,11 +39,20 @@ namespace brightcast.Services
 
         public ChatMessage Create(ChatMessage chatMessage)
         {
-            chatMessage.Status = 1;
-            _context.ChatMessages.Add(chatMessage);
-            _context.SaveChanges();
+            try
+            {
+                chatMessage.Status = 1;
+                _context.ChatMessages.Add(chatMessage);
+                _context.SaveChanges();
 
-            return chatMessage;
+                return chatMessage;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+           
         }
 
 
