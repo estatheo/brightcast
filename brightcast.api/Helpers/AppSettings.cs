@@ -11,6 +11,7 @@ namespace brightcast.Helpers
         public string TwilioAuthToken { get; set; }
         public string TwilioWhatsappNumber { get; set; }
         public string TwilioTemplateMessage { get; set; }
+        public string TwilioInitializeMessage { get; set; }
 
 
     }

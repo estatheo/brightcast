@@ -8,7 +8,7 @@ namespace ChatApp.Hubs
     {  
         public async Task NewMessage(ChatModel msg)  
         {  
-            await Clients.All.SendAsync("MessageReceived", msg);  
+            await Clients.All.SendAsync("messageReceived", msg);  
         }  
     }  
 }

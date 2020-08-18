@@ -49,7 +49,7 @@ namespace brightcast
 
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            services.AddSignalR();
+            services.AddSignalR().AddAzureSignalR();
 
             // configure strongly typed settings objects
             var appSettingsSection = _configuration.GetSection("AppSettings");
@@ -136,7 +136,10 @@ namespace brightcast
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseWebSockets();
-
+            app.UseAzureSignalR(routes =>
+            {
+                routes.MapHub<ChatHub>("/chat");
+            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -144,6 +147,8 @@ namespace brightcast
                     pattern: "{controller}/{action=Index}/{id?}");
                 endpoints.MapHub<ChatHub>("/ChatHub");
             });
+
+
             app.UseDeveloperExceptionPage();
             //app.UseSpa(spa =>
             //{

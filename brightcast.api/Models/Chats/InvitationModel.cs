@@ -10,6 +10,7 @@ namespace brightcast.Models.Chats
         public string BodyMessage { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CampaignId { get; set; }
+        public int ContactId { get; set; }
         public string PhoneNumber { get; set; }
     }
 }

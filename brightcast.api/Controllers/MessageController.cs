@@ -9,10 +9,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
 using brightcast.Helpers;
+using brightcast.Models.Chats;
 using brightcast.Models.Twilio;
 using brightcast.Services;
+using ChatApp.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -32,6 +35,7 @@ namespace brightcast.Controllers
         private IMapper _mapper;
         private readonly IMessageService _messageService;
         private IUserProfileService _userProfileService;
+        private readonly IHubContext<ChatHub> _hub;
         private IChatService _chatService;
 
         public MessageController(
@@ -43,6 +47,7 @@ namespace brightcast.Controllers
             IContactService contactService,
             IMessageService messageService,
             IChatService chatService,
+            IHubContext<ChatHub> hub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -54,6 +59,7 @@ namespace brightcast.Controllers
             _contactService = contactService;
             _messageService = messageService;
             _chatService = chatService;
+            _hub = hub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -183,19 +189,24 @@ namespace brightcast.Controllers
                     });
                 }
 
-                _chatService.Create(new ChatMessage()
+                var chatModel = new ChatModel()
                 {
+                    ContactId = templateMessage.ContactId,
+                    CampaignId = templateMessage.CampaignId,
+                    CreatedAt = DateTime.UtcNow,
+                    ReceiverPhone = contact.Phone,
+                    Text = model.Body,
+                    AvatarUrl = "",
+                    Files = "",
+                    Reply = true,
                     SenderId = templateMessage.ContactId,
                     SenderName = contact.FirstName + " " + contact.LastName,
-                    AvatarUrl = "", //todo: add default avatar
-                    Type = "text",
-                    Reply = false,
-                    Files = "",
-                    Text = model.Body,
-                    CreatedAt = DateTime.UtcNow,
-                    CampaignId = templateMessage.CampaignId,
-                    ContactId = templateMessage.ContactId
-                });
+                    Type = "text"
+                };
+
+                await _hub.Clients.All.SendAsync("newMessage", chatModel );
+
+                _chatService.Create(_mapper.Map<ChatMessage>(chatModel));
 
                 return Ok();
             }

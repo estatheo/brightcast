@@ -6,13 +6,16 @@ using AutoMapper;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Chats;
 using brightcast.Models.Twilio;
 using brightcast.Services;
+using ChatApp.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -25,17 +28,29 @@ namespace brightcast.Controllers
     {
         private readonly AppSettings _appSettings;
         private readonly IChatService _chatService;
+        private readonly IMessageService _messageService;
+        private readonly IBusinessService _businessService;
+        private readonly IUserProfileService _userProfileService;
         private readonly IContactService _contactService;
+        private readonly IHubContext<ChatHub> _hub;
         private readonly IMapper _mapper;
 
         public ChatController(
             IChatService chatService,
             IContactService contactService,
+            IMessageService messageService,
+            IUserProfileService userProfileService,
+            IBusinessService businessService,
+            IHubContext<ChatHub> hub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _chatService = chatService;
             _contactService = contactService;
+            _messageService = messageService;
+            _userProfileService = userProfileService;
+            _businessService = businessService;
+            _hub = hub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -105,20 +120,45 @@ namespace brightcast.Controllers
         }
 
         [HttpPost("sendInvitation")]
-        public async Task<IActionResult> SendInvitation([FromBody] InvitationModel model)
+        public async Task<IActionResult> SendInvitation([FromBody] ChatModel model)
         {
+            int userId;
+
+            try
+            {
+                userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "User not found" });
+            }
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            if (userProfile == null || userProfile.Id == 0)
+                return NotFound(
+                    new
+                    {
+                        message = "UserProfile Not Found"
+                    });
+
             try
             {
                 var client = new HttpClient();
+
+                var contact = _contactService.GetById(model.ContactId);
+
+                var business = _businessService.GetByUserProfileId(userProfile.Id);
 
                 var requestModel = new FormUrlEncodedContent(
                     new List<KeyValuePair<string, string>>
                     {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                            new KeyValuePair<string, string>("Body", $"{model.BodyMessage}"),
+                            new KeyValuePair<string, string>("Body", $"{_appSettings.TwilioTemplateMessage.Replace("{{1}}", business.Name)}"),
                             new KeyValuePair<string, string>("StatusCallback",
                                 $"{_appSettings.ApiBaseUrl}/message/callback/template"),
-                            new KeyValuePair<string, string>("To", $"whatsapp:{model.PhoneNumber}")
+                            new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
                     }
                 );
                 var req = new HttpRequestMessage(HttpMethod.Post,
@@ -134,6 +174,27 @@ namespace brightcast.Controllers
                 var resultModel =
                     JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
                         await result.Content.ReadAsStringAsync());
+                
+                _messageService.AddTemplateMessage(new TemplateMessage
+                {
+                    MessageSid = resultModel.Sid,
+                    Body = resultModel.Body,
+                    Date_Created = resultModel.Date_Created,
+                    Date_Sent = resultModel.Date_Sent,
+                    Date_Updated = resultModel.Date_Updated,
+                    Error_Code = resultModel.Error_Code,
+                    Error_Message = resultModel.Error_Message,
+                    From = resultModel.From,
+                    To = resultModel.To,
+                    ContactId = contact.Id,
+                    CampaignId = model.CampaignId,
+                    Status = resultModel.Status
+                });
+
+                await _hub.Clients.All.SendAsync("messageReceived", model );
+
+                _chatService.Create(_mapper.Map<ChatMessage>(model));
+
                 return Ok();
             }
             catch (AppException ex)
