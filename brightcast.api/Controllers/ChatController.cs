@@ -191,7 +191,7 @@ namespace brightcast.Controllers
                     Status = resultModel.Status
                 });
 
-                await _hub.Clients.All.SendAsync("messageReceived", model );
+                await _hub.Clients.All.SendAsync("newMessage", model );
 
                 _chatService.Create(_mapper.Map<ChatMessage>(model));
 
