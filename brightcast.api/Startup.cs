@@ -36,17 +36,17 @@ namespace brightcast
             services.AddDbContext<DataContext>();
             //else
             //    services.AddDbContext<DataContext, SqliteDataContext>();
-
-            services.AddCors(options =>
+            
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+            builder =>
             {
-                options.AddPolicy("CorsPolicy", builder => builder
-                .WithOrigins("https://app.brightcast.io")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .SetIsOriginAllowed((host) => true));
-            });
-
+                builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowCredentials()
+                    .WithOrigins("app.brightcast.io"); ;
+            }));
+            
             services.AddControllers();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSignalR().AddAzureSignalR();
