@@ -86,7 +86,8 @@ namespace brightcast.Controllers
                     KeyString = contactList.KeyString,
                     Contacts = listOfContacts.Count,
                     Unsubscribed = listOfContacts.Where(x => !x.Subscribed).ToList().Count,
-                    Campaigns = _campaignService.GetByContactListId(contactList.Id).Count
+                    Campaigns = _campaignService.GetByContactListId(contactList.Id).Count,
+                    fileUrl = contactList.FileUrl
                 });
             }
 
@@ -105,7 +106,8 @@ namespace brightcast.Controllers
                 KeyString = contactList.KeyString,
                 Contacts = listOfContacts.Count,
                 Unsubscribed = listOfContacts.Where(x => !x.Subscribed).ToList().Count,
-                Campaigns = _campaignService.GetByContactListId(contactList.Id).Count
+                Campaigns = _campaignService.GetByContactListId(contactList.Id).Count,
+                fileUrl = contactList.FileUrl
             };
             return Ok(model);
         }
