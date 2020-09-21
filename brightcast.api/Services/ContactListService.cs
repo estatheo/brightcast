@@ -13,6 +13,7 @@ namespace brightcast.Services
         ContactList GetById(int id);
         int GetIdByKeyString(string keyString);
         List<ContactList> GetAllByUserProfileId(int userProfileId);
+        List<ContactList> GetByCampaignId(int campaignId);
         ContactList Create(ContactList contactList);
         void Update(ContactList contactList);
         void Delete(int id);
@@ -33,6 +34,20 @@ namespace brightcast.Services
             var contactList = _context.ContactLists.Find(id);
 
             return contactList != null && contactList.Deleted == 0 ? contactList : null;
+        }
+
+        public List<ContactList> GetByCampaignId(int campaignId)
+        {
+            var contactListsIds = _context.CampaignContactLists.Where(x => x.CampaignId == campaignId).ToList();
+
+            var contactLists = new List<ContactList>();
+
+            foreach (var contactListId in contactListsIds)
+            {
+                contactLists.Add(_context.ContactLists.FirstOrDefault(x => x.Id == contactListId.ContactListId && x.Deleted == 0));
+            }
+
+            return contactLists;
         }
 
         public int GetIdByKeyString(string keyString)

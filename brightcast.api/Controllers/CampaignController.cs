@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Azure.Core.Pipeline;
 using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Campaigns;
@@ -156,10 +157,106 @@ namespace brightcast.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _campaignService.GetById(id);
-            var model = _mapper.Map<CampaignModel>(user);
+            var campaign = _campaignService.GetById(id);
+            var model = _mapper.Map<CampaignModel>(campaign);
             return Ok(model);
         }
+
+        [HttpGet("data/{id}")]
+        public IActionResult GetCampaignData(int id)
+        {
+            var campaign = _campaignService.GetById(id);
+
+            var messages = _messageService.GetCampaignMessagesByCampaignId(campaign.Id);
+            var receivedMessages = _messageService.GetReceiveMessagesByCampaignId(campaign.Id);
+            var contactLists = _contactListService.GetByCampaignId(campaign.Id);
+            var contacts = new List<Contact>();
+            foreach (var contactList in contactLists)
+            {
+                var c = _contactService.GetAllByContactListId(contactList.Id);
+                contacts.AddRange(c);
+            }
+
+            //todo: add filtering
+            var model = new CampaignDataModel()
+            {
+                Id = campaign.Id,
+                FileUrl = campaign.FileUrl,
+                Name = campaign.Name,
+                Message = campaign.Message,
+                Status = campaign.Status,
+                Delivered = messages.Count(x => x.Status == "delivered" || x.Status == "read"),
+                DeliveredPercentage = 0,
+                Replies = receivedMessages.Count(x => x.Status == "delivered" || x.Status == "read"),
+                RepliesPercentage = 0,
+                Subscribed = contacts.Count(),
+                SubscribedPercentage = 0,
+                Read = messages.Count(x => x.Status == "read"),
+                ReadPercentage = 0
+            };
+
+            if (messages.Count(x =>
+                (x.Status == "delivered" || x.Status == "read") &&
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.DeliveredPercentage = messages.Count(x => (x.Status == "delivered" || x.Status == "read")
+                                                                && (x.CreatedAt >=
+                                                                    DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                                ))
+                    / messages.Count(x =>
+                        (x.Status == "delivered" || x.Status == "read") &&
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+            if (receivedMessages.Count(x =>
+                (x.Status == "delivered" || x.Status == "read") &&
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.RepliesPercentage = receivedMessages.Count(x => (x.Status == "delivered" || x.Status == "read")
+                                                                      && (x.CreatedAt >=
+                                                                          DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                                      ))
+                    / receivedMessages.Count(x =>
+                        (x.Status == "delivered" || x.Status == "read") &&
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+            if (contacts.Count(x =>
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.SubscribedPercentage = contacts.Count(
+                        x => x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                    )
+                    / contacts.Count(x =>
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+            if (messages.Count(x =>
+                (x.Status == "read") &&
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.ReadPercentage = messages.Count(x => (x.Status == "read")
+                                                           && (x.CreatedAt >=
+                                                               DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                           ))
+                    / messages.Count(x =>
+                        (x.Status == "read") &&
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+
+
+            return Ok(model);
+        }
+
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CampaignModel model)
