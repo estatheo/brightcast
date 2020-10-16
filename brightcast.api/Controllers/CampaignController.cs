@@ -403,7 +403,16 @@ namespace brightcast.Controllers
 
                 _campaignService.Update(campaign);
 
-                return Ok();
+                var resultCampaign = new CampaignModel()
+                {
+                    Id = campaign.Id,
+                    Status = campaign.Status,
+                    Message = campaign.Message,
+                    FileUrl = campaign.FileUrl,
+                    Name = campaign.Name
+                };
+
+                return Ok(resultCampaign);
             }
             catch (Exception ex)
             {
@@ -457,7 +466,16 @@ namespace brightcast.Controllers
                     ContactListId = model.ContactListIds.FirstOrDefault()
                 });
 
-                return Ok();
+                var result = new CampaignModel()
+                {
+                    Id = campaign.Id,
+                    Status = campaign.Status,
+                    Message = campaign.Message,
+                    FileUrl = campaign.FileUrl,
+                    Name = campaign.Name
+                };
+
+                return Ok(result);
             }
             catch (AppException ex)
             {

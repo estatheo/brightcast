@@ -183,7 +183,12 @@ namespace brightcast.Controllers
                     Subscribed = x.Subscribed
                 }));
 
-                return Ok();
+                return Ok(new ContactListModel()
+                {
+                    Id = entity.Id,
+                    FileUrl = entity.FileUrl,
+                    Name = entity.Name
+                });
             }
             catch (AppException ex)
             {
