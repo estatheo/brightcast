@@ -345,8 +345,10 @@ namespace brightcast.Controllers
 
             try
             {
+                var contactLists = _contactListService.GetByCampaignId(model.Id);
+
                 //todo: change with a loop for each contact list
-                var contacts = _contactService.GetAllSubscribedByContactListId(model.ContactListIds.FirstOrDefault());
+                var contacts = _contactService.GetAllSubscribedByContactListId(contactLists[0].Id);
 
                 var business = _businessService.GetById(userProfile.BusinessId);
 

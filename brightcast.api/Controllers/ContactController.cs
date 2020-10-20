@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using brightcast.Entities;
@@ -57,7 +58,7 @@ namespace brightcast.Controllers
             }));
         }
 
-        [HttpGet("byCampaignId/{id}")]
+        [HttpGet("byCampaignId/{campaignId}")]
         public IActionResult GetByCampaignId(int campaignId)
         {
             var contactLists = _contactListService.GetByCampaignId(campaignId);
@@ -91,8 +92,8 @@ namespace brightcast.Controllers
                             Id = contactEntity.Id,
                             FirstName = contactEntity.FirstName,
                             LastName = contactEntity.LastName,
-                            Body = lastTemplateMessage.Body,
-                            Time = lastTemplateMessage.CreatedAt
+                            Body = lastTemplateMessage?.Body,
+                            Time = lastTemplateMessage != null ? lastTemplateMessage.CreatedAt : DateTime.Now
                         });
                     }
                 }
