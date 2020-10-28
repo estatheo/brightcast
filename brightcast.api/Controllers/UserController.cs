@@ -22,15 +22,21 @@ namespace brightcast.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _userService;
+        private IUserProfileService _userProfileService;
+        private IBusinessService _businessService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
         public UserController(
             IUserService userService,
+            IUserProfileService userProfileService,
+            IBusinessService businessService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
             _userService = userService;
+            _userProfileService = userProfileService;
+            _businessService = businessService;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -94,7 +100,6 @@ namespace brightcast.Controllers
         public IActionResult Verify(Guid code)
         {
             _userService.ActivateUser(code);
-
             return Ok();
         }
 

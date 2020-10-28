@@ -8,6 +8,7 @@ using brightcast.Entities;
 using brightcast.Helpers;
 using brightcast.Models.Campaigns;
 using brightcast.Models.ContactLists;
+using brightcast.Models.Contacts;
 using brightcast.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -171,7 +172,11 @@ namespace brightcast.Controllers
                 // update user 
                 var entity = _contactListService.Create(contactList);
 
-                var contacts = await parser.ParseFile(contactList.FileUrl);
+                var contacts = new List<ContactParseModel>();
+                if (!string.IsNullOrWhiteSpace(contactList.FileUrl))
+                {
+                    contacts = await parser.ParseFile(contactList.FileUrl);
+                }
 
                 contacts.ForEach(x => _contactService.Create(new Contact
                 {
@@ -183,7 +188,7 @@ namespace brightcast.Controllers
                     Subscribed = x.Subscribed
                 }));
 
-                return Ok(new ContactListModel()
+                 return Ok(new ContactListModel()
                 {
                     Id = entity.Id,
                     FileUrl = entity.FileUrl,
