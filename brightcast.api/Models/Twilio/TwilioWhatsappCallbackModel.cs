@@ -11,6 +11,7 @@ namespace brightcast.Models.Twilio
         public int Id { get; set; }
         public string MessageSid { get; set; }
         public string Body { get; set; }
+        public string MediaUrl { get; set; }
 
         [JsonProperty(PropertyName = "date_created")]
         public DateTime DateCreated { get; set; }

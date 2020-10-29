@@ -413,8 +413,8 @@ namespace brightcast.Controllers
                         Type = "text",
                         Files = "",
                         AvatarUrl = "",
-                        SenderId = userId,
-                        SenderName = userProfile.FirstName + " " + userProfile.LastName,
+                        SenderId = userProfile.Id,
+                        SenderName = business.Name,
                         CampaignId = model.Id,
                         ContactId = contact.Id
                     };

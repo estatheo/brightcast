@@ -35,6 +35,7 @@ namespace brightcast.Controllers
         private IMapper _mapper;
         private readonly IMessageService _messageService;
         private IUserProfileService _userProfileService;
+        private readonly IBusinessService _businessService;
         private readonly IHubContext<ChatHub> _hub;
         private IChatService _chatService;
 
@@ -46,6 +47,7 @@ namespace brightcast.Controllers
             IContactListService contactListService,
             IContactService contactService,
             IMessageService messageService,
+            IBusinessService businessService,
             IChatService chatService,
             IHubContext<ChatHub> hub,
             IMapper mapper,
@@ -59,6 +61,7 @@ namespace brightcast.Controllers
             _contactService = contactService;
             _messageService = messageService;
             _chatService = chatService;
+            _businessService = businessService;
             _hub = hub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
@@ -105,6 +108,8 @@ namespace brightcast.Controllers
 
                 var campaign = _campaignService.GetById(templateMessage.CampaignId);
                 var contact = _contactService.GetById(templateMessage.ContactId);
+                var business = _businessService.GetByUserProfileId(campaign.UserProfileId ?? 0);
+
 
                 if (model.ErrorCode == null && _messageService.CheckReceivedCampaignMessage(templateMessage) == false)
                 {
@@ -128,7 +133,7 @@ namespace brightcast.Controllers
                         CreatedAt = DateTime.Now,
                         Reply = false,
                         Type = "text",
-                        Files = "",
+                        Files = model.MediaUrl,
                         AvatarUrl = "",
                         SenderId = contact.Id,
                         SenderName = contact.FirstName + " " + contact.LastName,
@@ -211,8 +216,8 @@ namespace brightcast.Controllers
                         Type = "text",
                         Files = string.IsNullOrWhiteSpace(campaign.FileUrl) ? "" : campaign.FileUrl,
                         AvatarUrl = "",
-                        SenderId = contact.Id,
-                        SenderName = contact.FirstName + " " + contact.LastName,
+                        SenderId = campaign.UserProfileId ?? 0,
+                        SenderName = business.Name,
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     };
@@ -220,9 +225,34 @@ namespace brightcast.Controllers
                     _chatService.Create(chatModel);
 
                     await _hub.Clients.All.SendAsync("newMessage", chatModel);
+
+                    return Ok();
+                }
+                else
+                {
+                    var chatModel = new ChatModel()
+                    {
+                        ContactId = templateMessage.ContactId,
+                        CampaignId = templateMessage.CampaignId,
+                        CreatedAt = DateTime.UtcNow,
+                        ReceiverPhone = contact.Phone,
+                        Text = model.Body,
+                        AvatarUrl = "",
+                        Files = "",
+                        Reply = false,
+                        SenderId = templateMessage.ContactId,
+                        SenderName = contact.FirstName + " " + contact.LastName,
+                        Type = "text"
+                    };
+
+                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
+
+                    _chatService.Create(_mapper.Map<ChatMessage>(chatModel));
+
+                    return Ok();
                 }
 
-                return Ok();
+                
             }
             catch (Exception ex)
             {
