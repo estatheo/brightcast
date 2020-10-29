@@ -84,16 +84,37 @@ namespace brightcast.Controllers
 
                 var client = new HttpClient();
 
-                var requestModel = new FormUrlEncodedContent(
-                    new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                        new KeyValuePair<string, string>("Body", $"{model.Text}"),
-                        //new KeyValuePair<string, string>("StatusCallback",
-                        //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
-                        new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
-                    }
-                );
+                FormUrlEncodedContent requestModel;
+
+                if (string.IsNullOrWhiteSpace(model.Files))
+                {
+                    requestModel = new FormUrlEncodedContent(
+                        new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{model.Text}"),
+                            //new KeyValuePair<string, string>("StatusCallback",
+                            //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
+                            new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
+                        }
+                    );
+                }
+                else
+                {
+                    requestModel = new FormUrlEncodedContent(
+                        new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{model.Text}"),
+                            new KeyValuePair<string, string>("MediaUrl", $"{model.Files}"),
+                            //new KeyValuePair<string, string>("StatusCallback",
+                            //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
+                            new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
+                        }
+                    );
+                }
+
+                
                 var req = new HttpRequestMessage(HttpMethod.Post,
                         $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
                     { Content = requestModel };

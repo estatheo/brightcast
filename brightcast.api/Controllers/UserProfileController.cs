@@ -278,6 +278,8 @@ namespace brightcast.Controllers
             var userProfile = _userProfileService.GetAllByUserId(userId)
                 .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
+            var user = _userService.GetById(userId);
+
             if (userProfile == null || userProfile.Id == 0)
             {
                 try
@@ -288,7 +290,7 @@ namespace brightcast.Controllers
                         Category = "",
                         Deleted = 0,
                         Membership = "Free",
-                        Name = "",
+                        Name = user.BusinessName,
                         Website = "",
                         Email = ""
                     });
@@ -299,8 +301,8 @@ namespace brightcast.Controllers
                         Deleted = 0,
                         Default = true,
                         UserId = userId,
-                        FirstName = "",
-                        LastName = "",
+                        FirstName = user.FullName.Trim().Split(' ')[0],
+                        LastName = user.FullName.Trim().Split(' ')[1],
                         Phone = "",
                         PictureUrl = ""
                     });
