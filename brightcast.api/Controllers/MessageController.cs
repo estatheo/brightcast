@@ -126,7 +126,7 @@ namespace brightcast.Controllers
                     {
                         Text = model.Body,
                         CreatedAt = DateTime.Now,
-                        Reply = true,
+                        Reply = false,
                         Type = "text",
                         Files = "",
                         AvatarUrl = "",
