@@ -14,8 +14,10 @@ using brightcast.Models.Campaigns;
 using brightcast.Models.ContactLists;
 using brightcast.Models.Twilio;
 using brightcast.Services;
+using ChatApp.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -33,9 +35,11 @@ namespace brightcast.Controllers
         private readonly IContactListService _contactListService;
         private readonly IContactService _contactService;
         private readonly IBusinessService _businessService;
+        private readonly IChatService _chatService;
         private readonly IMapper _mapper;
         private readonly IMessageService _messageService;
         private readonly IUserProfileService _userProfileService;
+        private readonly IHubContext<ChatHub> _hub;
 
         public CampaignController(
             IUserProfileService userProfileService,
@@ -46,6 +50,8 @@ namespace brightcast.Controllers
             IContactService contactService,
             IMessageService messageService,
             IBusinessService businessService,
+            IChatService chatService,
+            IHubContext<ChatHub> hub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -57,6 +63,8 @@ namespace brightcast.Controllers
             _contactService = contactService;
             _messageService = messageService;
             _businessService = businessService;
+            _chatService = chatService;
+            _hub = hub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -396,7 +404,25 @@ namespace brightcast.Controllers
                         Status = resultModel.Status
                     });
 
-                   
+
+                    var chatModel = new ChatMessage()
+                    {
+                        Text = resultModel.Body,
+                        CreatedAt = resultModel.Date_Created ?? DateTime.Now,
+                        Reply = true,
+                        Type = "text",
+                        Files = "",
+                        AvatarUrl = "",
+                        SenderId = userId,
+                        SenderName = userProfile.FirstName + " " + userProfile.LastName,
+                        CampaignId = model.Id,
+                        ContactId = contact.Id
+                    };
+
+                    _chatService.Create(chatModel);
+
+                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
+
                 }
 
                 var campaign = _campaignService.GetById(model.Id);

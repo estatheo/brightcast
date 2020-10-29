@@ -44,7 +44,7 @@ namespace brightcast
                     .AllowAnyMethod()
                     .SetIsOriginAllowed((host) => true)
                     .AllowCredentials()
-                    .WithOrigins("app.brightcast.io"); ;
+                    .WithOrigins("app.brightcast.io", "localhost:4200"); ;
             }));
             
             services.AddControllers();

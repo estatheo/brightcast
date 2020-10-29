@@ -121,9 +121,24 @@ namespace brightcast.Controllers
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     });
+
+                    var chatMessage = new ChatMessage()
+                    {
+                        Text = model.Body,
+                        CreatedAt = DateTime.Now,
+                        Reply = true,
+                        Type = "text",
+                        Files = "",
+                        AvatarUrl = "",
+                        SenderId = contact.Id,
+                        SenderName = contact.FirstName + " " + contact.LastName,
+                        CampaignId = templateMessage.CampaignId,
+                        ContactId = templateMessage.ContactId
+                    };
+
+                    _chatService.Create(chatMessage);
                     
-
-
+                    await _hub.Clients.All.SendAsync("newMessage", chatMessage);
 
                     //send campaign message
 
@@ -187,26 +202,25 @@ namespace brightcast.Controllers
                         ContactId = templateMessage.ContactId,
                         CampaignId = templateMessage.CampaignId
                     });
+
+                    var chatModel = new ChatMessage()
+                    {
+                        Text = resultModel.Body,
+                        CreatedAt = DateTime.Now,
+                        Reply = true,
+                        Type = "text",
+                        Files = string.IsNullOrWhiteSpace(campaign.FileUrl) ? "" : campaign.FileUrl,
+                        AvatarUrl = "",
+                        SenderId = contact.Id,
+                        SenderName = contact.FirstName + " " + contact.LastName,
+                        CampaignId = templateMessage.CampaignId,
+                        ContactId = templateMessage.ContactId
+                    };
+
+                    _chatService.Create(chatModel);
+
+                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
                 }
-
-                var chatModel = new ChatModel()
-                {
-                    ContactId = templateMessage.ContactId,
-                    CampaignId = templateMessage.CampaignId,
-                    CreatedAt = DateTime.UtcNow,
-                    ReceiverPhone = contact.Phone,
-                    Text = model.Body,
-                    AvatarUrl = "",
-                    Files = "",
-                    Reply = true,
-                    SenderId = templateMessage.ContactId,
-                    SenderName = contact.FirstName + " " + contact.LastName,
-                    Type = "text"
-                };
-
-                await _hub.Clients.All.SendAsync("newMessage", chatModel );
-
-                _chatService.Create(_mapper.Map<ChatMessage>(chatModel));
 
                 return Ok();
             }
@@ -255,6 +269,7 @@ namespace brightcast.Controllers
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     });
+
                 }
 
                 return Ok();
