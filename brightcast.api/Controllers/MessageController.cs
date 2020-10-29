@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
+using brightcast.Enums;
 using brightcast.Helpers;
 using brightcast.Models.Chats;
 using brightcast.Models.Twilio;
@@ -109,7 +110,7 @@ namespace brightcast.Controllers
                 var campaign = _campaignService.GetById(templateMessage.CampaignId);
                 var contact = _contactService.GetById(templateMessage.ContactId);
                 var business = _businessService.GetByUserProfileId(campaign.UserProfileId ?? 0);
-
+                var messageStatus = (ChatMessageStatusEnum) Enum.Parse(typeof(ChatMessageStatusEnum), model.SmsStatus, true);
 
                 if (model.ErrorCode == null && _messageService.CheckReceivedCampaignMessage(templateMessage) == false)
                 {
@@ -122,7 +123,7 @@ namespace brightcast.Controllers
                         From = model.From,
                         To = model.To,
                         MessageSid = model.MessageSid,
-                        Status = model.MessageStatus,
+                        Status = model.SmsStatus,
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     });
@@ -133,12 +134,13 @@ namespace brightcast.Controllers
                         CreatedAt = DateTime.Now,
                         Reply = false,
                         Type = "text",
-                        Files = model.MediaUrl,
+                        Files = model.MediaUrl0,
                         AvatarUrl = "",
                         SenderId = contact.Id,
                         SenderName = contact.FirstName + " " + contact.LastName,
                         CampaignId = templateMessage.CampaignId,
-                        ContactId = templateMessage.ContactId
+                        ContactId = templateMessage.ContactId,
+                        Status = (int)messageStatus
                     };
 
                     _chatService.Create(chatMessage);
@@ -219,7 +221,8 @@ namespace brightcast.Controllers
                         SenderId = campaign.UserProfileId ?? 0,
                         SenderName = business.Name,
                         CampaignId = templateMessage.CampaignId,
-                        ContactId = templateMessage.ContactId
+                        ContactId = templateMessage.ContactId,
+                        Status = campaign.Status
                     };
 
                     _chatService.Create(chatModel);
@@ -230,24 +233,24 @@ namespace brightcast.Controllers
                 }
                 else
                 {
-                    var chatModel = new ChatModel()
+                    var chatModel = new ChatMessage()
                     {
-                        ContactId = templateMessage.ContactId,
-                        CampaignId = templateMessage.CampaignId,
-                        CreatedAt = DateTime.UtcNow,
-                        ReceiverPhone = contact.Phone,
                         Text = model.Body,
-                        AvatarUrl = "",
-                        Files = "",
+                        CreatedAt = DateTime.Now,
                         Reply = false,
+                        Type = string.IsNullOrWhiteSpace(model.MediaContentType0) ? "text" : model.MediaContentType0,
+                        Files = model.MediaUrl0,
+                        AvatarUrl = "",
                         SenderId = templateMessage.ContactId,
                         SenderName = contact.FirstName + " " + contact.LastName,
-                        Type = "text"
+                        CampaignId = templateMessage.CampaignId,
+                        ContactId = templateMessage.ContactId,
+                        Status = (int)messageStatus
                     };
 
                     await _hub.Clients.All.SendAsync("newMessage", chatModel);
 
-                    _chatService.Create(_mapper.Map<ChatMessage>(chatModel));
+                    _chatService.Create(chatModel);
 
                     return Ok();
                 }

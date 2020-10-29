@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Azure.Core.Pipeline;
 using brightcast.Entities;
+using brightcast.Enums;
 using brightcast.Helpers;
 using brightcast.Models.Campaigns;
 using brightcast.Models.ContactLists;
@@ -403,8 +404,7 @@ namespace brightcast.Controllers
                         CampaignId = model.Id,
                         Status = resultModel.Status
                     });
-
-
+                    
                     var chatModel = new ChatMessage()
                     {
                         Text = resultModel.Body,
@@ -416,7 +416,8 @@ namespace brightcast.Controllers
                         SenderId = userProfile.Id,
                         SenderName = business.Name,
                         CampaignId = model.Id,
-                        ContactId = contact.Id
+                        ContactId = contact.Id,
+                        Status = (int)(ChatMessageStatusEnum)Enum.Parse(typeof(ChatMessageStatusEnum), resultModel.Status, true)
                     };
 
                     _chatService.Create(chatModel);
