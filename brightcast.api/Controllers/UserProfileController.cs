@@ -278,12 +278,49 @@ namespace brightcast.Controllers
             var userProfile = _userProfileService.GetAllByUserId(userId)
                 .FirstOrDefault(x => x.Default && x.Deleted == 0);
 
+            var user = _userService.GetById(userId);
+
             if (userProfile == null || userProfile.Id == 0)
-                return NotFound(
-                    new
+            {
+                try
+                {
+                    var business = _businessService.Create(new Business()
                     {
-                        message = "UserProfile Not Found"
+                        Address = "",
+                        Category = "",
+                        Deleted = 0,
+                        Membership = "free",
+                        Name = user.BusinessName,
+                        Website = "",
+                        Email = ""
                     });
+                    var up = _userProfileService.Create(new UserProfile()
+                    {
+                        BusinessRole = "",
+                        BusinessId = business.Id,
+                        Deleted = 0,
+                        Default = true,
+                        UserId = userId,
+                        FirstName = user.FullName.Trim().Split(' ')[0],
+                        LastName = user.FullName.Trim().Split(' ')[1],
+                        Phone = "",
+                        PictureUrl = ""
+                    });
+
+                    return Ok(up);
+                }
+                catch (Exception e)
+                {
+                    //log error
+                    return NotFound(
+                        new
+                        {
+                            message = "UserProfile Not Found"
+                        });
+                }
+                
+            }
+                
 
             var response = new UserProfileModel
             {

@@ -7,14 +7,18 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Azure.Core.Pipeline;
 using brightcast.Entities;
+using brightcast.Enums;
 using brightcast.Helpers;
 using brightcast.Models.Campaigns;
 using brightcast.Models.ContactLists;
 using brightcast.Models.Twilio;
 using brightcast.Services;
+using ChatApp.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -32,9 +36,11 @@ namespace brightcast.Controllers
         private readonly IContactListService _contactListService;
         private readonly IContactService _contactService;
         private readonly IBusinessService _businessService;
+        private readonly IChatService _chatService;
         private readonly IMapper _mapper;
         private readonly IMessageService _messageService;
         private readonly IUserProfileService _userProfileService;
+        private readonly IHubContext<ChatHub> _hub;
 
         public CampaignController(
             IUserProfileService userProfileService,
@@ -45,6 +51,8 @@ namespace brightcast.Controllers
             IContactService contactService,
             IMessageService messageService,
             IBusinessService businessService,
+            IChatService chatService,
+            IHubContext<ChatHub> hub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
@@ -56,6 +64,8 @@ namespace brightcast.Controllers
             _contactService = contactService;
             _messageService = messageService;
             _businessService = businessService;
+            _chatService = chatService;
+            _hub = hub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
         }
@@ -156,10 +166,106 @@ namespace brightcast.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _campaignService.GetById(id);
-            var model = _mapper.Map<CampaignModel>(user);
+            var campaign = _campaignService.GetById(id);
+            var model = _mapper.Map<CampaignModel>(campaign);
             return Ok(model);
         }
+
+        [HttpGet("data/{id}")]
+        public IActionResult GetCampaignData(int id)
+        {
+            var campaign = _campaignService.GetById(id);
+
+            var messages = _messageService.GetCampaignMessagesByCampaignId(campaign.Id);
+            var receivedMessages = _messageService.GetReceiveMessagesByCampaignId(campaign.Id);
+            var contactLists = _contactListService.GetByCampaignId(campaign.Id);
+            var contacts = new List<Contact>();
+            foreach (var contactList in contactLists)
+            {
+                var c = _contactService.GetAllByContactListId(contactList.Id);
+                contacts.AddRange(c);
+            }
+
+            //todo: add filtering
+            var model = new CampaignDataModel()
+            {
+                Id = campaign.Id,
+                FileUrl = campaign.FileUrl,
+                Name = campaign.Name,
+                Message = campaign.Message,
+                Status = campaign.Status,
+                Delivered = messages.Count(x => x.Status == "delivered" || x.Status == "read"),
+                DeliveredPercentage = 0,
+                Replies = receivedMessages.Count(x => x.Status == "delivered" || x.Status == "read"),
+                RepliesPercentage = 0,
+                Subscribed = contacts.Count(),
+                SubscribedPercentage = 0,
+                Read = messages.Count(x => x.Status == "read"),
+                ReadPercentage = 0
+            };
+
+            if (messages.Count(x =>
+                (x.Status == "delivered" || x.Status == "read") &&
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.DeliveredPercentage = messages.Count(x => (x.Status == "delivered" || x.Status == "read")
+                                                                && (x.CreatedAt >=
+                                                                    DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                                ))
+                    / messages.Count(x =>
+                        (x.Status == "delivered" || x.Status == "read") &&
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+            if (receivedMessages.Count(x =>
+                (x.Status == "delivered" || x.Status == "read") &&
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.RepliesPercentage = receivedMessages.Count(x => (x.Status == "delivered" || x.Status == "read")
+                                                                      && (x.CreatedAt >=
+                                                                          DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                                      ))
+                    / receivedMessages.Count(x =>
+                        (x.Status == "delivered" || x.Status == "read") &&
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+            if (contacts.Count(x =>
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.SubscribedPercentage = contacts.Count(
+                        x => x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                    )
+                    / contacts.Count(x =>
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+            if (messages.Count(x =>
+                (x.Status == "read") &&
+                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+            {
+                model.ReadPercentage = messages.Count(x => (x.Status == "read")
+                                                           && (x.CreatedAt >=
+                                                               DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                           ))
+                    / messages.Count(x =>
+                        (x.Status == "read") &&
+                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+            }
+
+
+
+            return Ok(model);
+        }
+
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] CampaignModel model)
@@ -245,11 +351,12 @@ namespace brightcast.Controllers
                     {
                         message = "UserProfile Not Found"
                     });
-
             try
             {
+                var contactLists = _contactListService.GetByCampaignId(model.Id);
+
                 //todo: change with a loop for each contact list
-                var contacts = _contactService.GetAllSubscribedByContactListId(model.ContactListIds.FirstOrDefault());
+                var contacts = _contactService.GetAllSubscribedByContactListId(contactLists[0].Id);
 
                 var business = _businessService.GetById(userProfile.BusinessId);
 
@@ -296,8 +403,26 @@ namespace brightcast.Controllers
                         CampaignId = model.Id,
                         Status = resultModel.Status
                     });
+                    
+                    var chatModel = new ChatMessage()
+                    {
+                        Text = resultModel.Body,
+                        CreatedAt = resultModel.Date_Created ?? DateTime.Now,
+                        Reply = true,
+                        Type = "text",
+                        Files = "",
+                        AvatarUrl = "",
+                        SenderId = userProfile.Id,
+                        SenderName = business.Name,
+                        CampaignId = model.Id,
+                        ContactId = contact.Id,
+                        Status = (int)(ChatMessageStatusEnum)Enum.Parse(typeof(ChatMessageStatusEnum), resultModel.Status, true)
+                    };
 
-                   
+                    _chatService.Create(chatModel);
+
+                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
+
                 }
 
                 var campaign = _campaignService.GetById(model.Id);
@@ -306,7 +431,16 @@ namespace brightcast.Controllers
 
                 _campaignService.Update(campaign);
 
-                return Ok();
+                var resultCampaign = new CampaignModel()
+                {
+                    Id = campaign.Id,
+                    Status = campaign.Status,
+                    Message = campaign.Message,
+                    FileUrl = campaign.FileUrl,
+                    Name = campaign.Name
+                };
+
+                return Ok(resultCampaign);
             }
             catch (Exception ex)
             {
@@ -360,7 +494,16 @@ namespace brightcast.Controllers
                     ContactListId = model.ContactListIds.FirstOrDefault()
                 });
 
-                return Ok();
+                var result = new CampaignModel()
+                {
+                    Id = campaign.Id,
+                    Status = campaign.Status,
+                    Message = campaign.Message,
+                    FileUrl = campaign.FileUrl,
+                    Name = campaign.Name
+                };
+
+                return Ok(result);
             }
             catch (AppException ex)
             {
