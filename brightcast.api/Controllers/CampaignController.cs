@@ -351,7 +351,6 @@ namespace brightcast.Controllers
                     {
                         message = "UserProfile Not Found"
                     });
-
             try
             {
                 var contactLists = _contactListService.GetByCampaignId(model.Id);

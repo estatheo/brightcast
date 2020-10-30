@@ -182,7 +182,6 @@ namespace brightcast.Controllers
                         message = "UserProfile Not Found"
                     });
 
-
             var campaignMessages = new List<CampaignMessage>();
             var replies = new List<ReceiveMessage>();
 

@@ -289,7 +289,7 @@ namespace brightcast.Controllers
                         Address = "",
                         Category = "",
                         Deleted = 0,
-                        Membership = "Free",
+                        Membership = "free",
                         Name = user.BusinessName,
                         Website = "",
                         Email = ""
