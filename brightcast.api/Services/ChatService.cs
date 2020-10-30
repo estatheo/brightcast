@@ -10,6 +10,7 @@ namespace brightcast.Services
     {
         ChatMessage GetById(int id);
         List<ChatMessage> GetAllByCampaignAndContactId(int campaignId, int contactId);
+        List<ChatMessage> GetByUserProfileId(int userProfileId);
         ChatMessage Create(ChatMessage chatMessage);
         void Delete(int id);
 
@@ -35,6 +36,13 @@ namespace brightcast.Services
         {
 
             return _context.ChatMessages.Where(x => x.CampaignId == campaignId && x.ContactId == contactId && x.Status == 1).ToList();
+        }
+
+        public List<ChatMessage> GetByUserProfileId(int userProfileId)
+        {
+            var campaignIds = _context.Campaigns.Where(x => x.UserProfileId == userProfileId).Select(x => x.Id).ToList();
+
+            return _context.ChatMessages.Where(x => campaignIds.Contains(x.CampaignId)).ToList();
         }
 
         public ChatMessage Create(ChatMessage chatMessage)

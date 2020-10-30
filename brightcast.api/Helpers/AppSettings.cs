@@ -12,6 +12,9 @@ namespace brightcast.Helpers
         public string TwilioWhatsappNumber { get; set; }
         public string TwilioTemplateMessage { get; set; }
         public string TwilioInitializeMessage { get; set; }
+        public string StripeApiKey { get; set; }
+        public string StripeApiClientId { get; set; }
+        public string StripeWebhookSecret { get; set; }
 
 
     }

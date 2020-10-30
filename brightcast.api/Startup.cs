@@ -103,6 +103,7 @@ namespace brightcast
             services.AddScoped<ICampaignSentService, CampaignSentService>();
             services.AddScoped<IBusinessService, BusinessService>();
             services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IMembershipService, MembershipService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

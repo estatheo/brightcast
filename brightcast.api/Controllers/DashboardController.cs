@@ -33,7 +33,7 @@ namespace brightcast.Controllers
 
         private readonly DashboardDataResponse _emptyResponse = new DashboardDataResponse
         {
-            Delivered = new CardStatModel
+            DeliveredMonth = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
@@ -41,7 +41,7 @@ namespace brightcast.Controllers
                 ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
                 ChartValues = new[] { 0 }
             },
-            Read = new CardStatModel
+            DeliveredWeek = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
@@ -49,7 +49,7 @@ namespace brightcast.Controllers
                 ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
                 ChartValues = new[] { 0 }
             },
-            NewSubscribers = new CardStatModel
+            DeliveredDay = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
@@ -57,7 +57,7 @@ namespace brightcast.Controllers
                 ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
                 ChartValues = new[] { 0 }
             },
-            Unsubscribed = new CardStatModel
+            ReadMonth = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
@@ -65,7 +65,63 @@ namespace brightcast.Controllers
                 ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
                 ChartValues = new[] { 0 }
             },
-            Replies = new CardStatModel
+            ReadWeek = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            ReadDay = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            SubscribersMonth = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            SubscribersWeek = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            SubscribersDay = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            RepliesMonth = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            RepliesWeek = new CardStatModel
+            {
+                Value = 0,
+                Percentage = 0,
+                ChartPoints = 1,
+                ChartLabels = new[] { DateTime.UtcNow.ToString("d") },
+                ChartValues = new[] { 0 }
+            },
+            RepliesDay = new CardStatModel
             {
                 Value = 0,
                 Percentage = 0,
@@ -126,7 +182,6 @@ namespace brightcast.Controllers
                         message = "UserProfile Not Found"
                     });
 
-
             var campaignMessages = new List<CampaignMessage>();
             var replies = new List<ReceiveMessage>();
 
@@ -153,7 +208,54 @@ namespace brightcast.Controllers
             return Ok(response);
         }
 
+        [HttpGet("data/{campaignId}")]
+        public IActionResult GetDataByCampaignId(int campaignId)
+        {
+            int userId;
 
-        
+            try
+            {
+                userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest("User not found");
+            }
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            if (userProfile == null || userProfile.Id == 0)
+                return NotFound(
+                    new
+                    {
+                        message = "UserProfile Not Found"
+                    });
+
+
+            var campaignMessages = new List<CampaignMessage>();
+            var replies = new List<ReceiveMessage>();
+
+            var campaigns = _campaignService.GetById(campaignId);
+
+            if (campaigns == null) return Ok(_emptyResponse);
+
+            campaignMessages = _messageService.GetCampaignMessagesByCampaignId(campaignId);
+            replies = _messageService.GetReceiveMessagesByCampaignId(campaignId);
+
+            var contacts = new List<Contact>();
+
+            var contactLists = _contactListService.GetByCampaignId(campaignId);
+
+            foreach (var contactList in contactLists)
+            {
+                contacts.AddRange(_contactService.GetAllByContactListId(contactList.Id));
+            }
+
+            var response = dataMapper.MapStats(campaignMessages, contacts, replies);
+
+            return Ok(response);
+        }
+
     }
 }

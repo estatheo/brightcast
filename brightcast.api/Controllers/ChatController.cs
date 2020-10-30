@@ -72,28 +72,93 @@ namespace brightcast.Controllers
                 CreatedAt = x.CreatedAt,
                 ContactId = x.ContactId,
                 CampaignId = x.CampaignId,
+                Reply = x.Reply
             }));
         }
 
         [HttpPost("new")]
         public async Task<IActionResult> Create([FromBody] ChatModel model)
         {
+            int userId;
+
+            try
+            {
+                userId = int.Parse(User.FindFirst(ClaimTypes.Name).Value);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "User not found" });
+            }
+
+            var userProfile = _userProfileService.GetAllByUserId(userId)
+                .FirstOrDefault(x => x.Default && x.Deleted == 0);
+
+            if (userProfile == null || userProfile.Id == 0)
+                return NotFound(
+                    new
+                    {
+                        message = "UserProfile Not Found"
+                    });
             try
             {
                 var contact = _contactService.GetById(model.ContactId);
 
                 var client = new HttpClient();
 
-                var requestModel = new FormUrlEncodedContent(
-                    new List<KeyValuePair<string, string>>
+                FormUrlEncodedContent requestModel;
+
+                if (string.IsNullOrWhiteSpace(model.Files))
+                {
+                    requestModel = new FormUrlEncodedContent(
+                        new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{model.Text}"),
+                            //new KeyValuePair<string, string>("StatusCallback",
+                            //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
+                            new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
+                        }
+                    );
+                }
+                else
+                {
+                    requestModel = new FormUrlEncodedContent(
+                        new List<KeyValuePair<string, string>>
+                        {
+                            new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
+                            new KeyValuePair<string, string>("Body", $"{model.Text}"),
+                            new KeyValuePair<string, string>("MediaUrl", $"{model.Files}"),
+                            //new KeyValuePair<string, string>("StatusCallback",
+                            //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
+                            new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
+                        }
+                    );
+                }
+
+                var business = _businessService.GetByUserProfileId(userProfile.Id);
+
+                var messages = _chatService.GetByUserProfileId(userProfile.Id);
+
+                if (business.Membership == "free")
+                {
+                    if (messages.Count(x =>
+                        x.Status == 1 && x.CreatedAt.Year == DateTime.UtcNow.Year &&
+                        x.CreatedAt.Month == DateTime.UtcNow.Month) > 200)
                     {
-                        new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
-                        new KeyValuePair<string, string>("Body", $"{model.Text}"),
-                        //new KeyValuePair<string, string>("StatusCallback",
-                        //    $"{_appSettings.ApiBaseUrl}/message/callback/template"),
-                        new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
+                        return BadRequest(new {message = "limitExceeded" });
                     }
-                );
+                }
+                else if (business.Membership == "premium")
+                {
+                    if (messages.Count(x =>
+                        x.Status == 1 && x.CreatedAt.Year == DateTime.UtcNow.Year &&
+                        x.CreatedAt.Month == DateTime.UtcNow.Month) > 2000)
+                    {
+                        return BadRequest(new { message = "limitExceeded" });
+                    }
+                }
+
+
                 var req = new HttpRequestMessage(HttpMethod.Post,
                         $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
                     { Content = requestModel };

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using brightcast.Entities;
+using brightcast.Enums;
 using brightcast.Helpers;
 using brightcast.Models.Chats;
 using brightcast.Models.Twilio;
@@ -35,6 +36,7 @@ namespace brightcast.Controllers
         private IMapper _mapper;
         private readonly IMessageService _messageService;
         private IUserProfileService _userProfileService;
+        private readonly IBusinessService _businessService;
         private readonly IHubContext<ChatHub> _hub;
         private IChatService _chatService;
 
@@ -46,6 +48,7 @@ namespace brightcast.Controllers
             IContactListService contactListService,
             IContactService contactService,
             IMessageService messageService,
+            IBusinessService businessService,
             IChatService chatService,
             IHubContext<ChatHub> hub,
             IMapper mapper,
@@ -59,6 +62,7 @@ namespace brightcast.Controllers
             _contactService = contactService;
             _messageService = messageService;
             _chatService = chatService;
+            _businessService = businessService;
             _hub = hub;
             _mapper = mapper;
             _appSettings = appSettings.Value;
@@ -105,6 +109,8 @@ namespace brightcast.Controllers
 
                 var campaign = _campaignService.GetById(templateMessage.CampaignId);
                 var contact = _contactService.GetById(templateMessage.ContactId);
+                var business = _businessService.GetByUserProfileId(campaign.UserProfileId ?? 0);
+                var messageStatus = (ChatMessageStatusEnum) Enum.Parse(typeof(ChatMessageStatusEnum), model.SmsStatus, true);
 
                 if (model.ErrorCode == null && _messageService.CheckReceivedCampaignMessage(templateMessage) == false)
                 {
@@ -117,13 +123,29 @@ namespace brightcast.Controllers
                         From = model.From,
                         To = model.To,
                         MessageSid = model.MessageSid,
-                        Status = model.MessageStatus,
+                        Status = model.SmsStatus,
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     });
+
+                    var chatMessage = new ChatMessage()
+                    {
+                        Text = model.Body,
+                        CreatedAt = DateTime.Now,
+                        Reply = false,
+                        Type = "text",
+                        Files = model.MediaUrl0,
+                        AvatarUrl = "",
+                        SenderId = contact.Id,
+                        SenderName = contact.FirstName + " " + contact.LastName,
+                        CampaignId = templateMessage.CampaignId,
+                        ContactId = templateMessage.ContactId,
+                        Status = (int)messageStatus
+                    };
+
+                    _chatService.Create(chatMessage);
                     
-
-
+                    await _hub.Clients.All.SendAsync("newMessage", chatMessage);
 
                     //send campaign message
 
@@ -187,28 +209,53 @@ namespace brightcast.Controllers
                         ContactId = templateMessage.ContactId,
                         CampaignId = templateMessage.CampaignId
                     });
+
+                    var chatModel = new ChatMessage()
+                    {
+                        Text = resultModel.Body,
+                        CreatedAt = DateTime.Now,
+                        Reply = true,
+                        Type = "text",
+                        Files = string.IsNullOrWhiteSpace(campaign.FileUrl) ? "" : campaign.FileUrl,
+                        AvatarUrl = "",
+                        SenderId = campaign.UserProfileId ?? 0,
+                        SenderName = business.Name,
+                        CampaignId = templateMessage.CampaignId,
+                        ContactId = templateMessage.ContactId,
+                        Status = campaign.Status
+                    };
+
+                    _chatService.Create(chatModel);
+
+                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
+
+                    return Ok();
+                }
+                else
+                {
+                    var chatModel = new ChatMessage()
+                    {
+                        Text = model.Body,
+                        CreatedAt = DateTime.Now,
+                        Reply = false,
+                        Type = string.IsNullOrWhiteSpace(model.MediaContentType0) ? "text" : model.MediaContentType0,
+                        Files = model.MediaUrl0,
+                        AvatarUrl = "",
+                        SenderId = templateMessage.ContactId,
+                        SenderName = contact.FirstName + " " + contact.LastName,
+                        CampaignId = templateMessage.CampaignId,
+                        ContactId = templateMessage.ContactId,
+                        Status = (int)messageStatus
+                    };
+
+                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
+
+                    _chatService.Create(chatModel);
+
+                    return Ok();
                 }
 
-                var chatModel = new ChatModel()
-                {
-                    ContactId = templateMessage.ContactId,
-                    CampaignId = templateMessage.CampaignId,
-                    CreatedAt = DateTime.UtcNow,
-                    ReceiverPhone = contact.Phone,
-                    Text = model.Body,
-                    AvatarUrl = "",
-                    Files = "",
-                    Reply = true,
-                    SenderId = templateMessage.ContactId,
-                    SenderName = contact.FirstName + " " + contact.LastName,
-                    Type = "text"
-                };
-
-                await _hub.Clients.All.SendAsync("newMessage", chatModel );
-
-                _chatService.Create(_mapper.Map<ChatMessage>(chatModel));
-
-                return Ok();
+                
             }
             catch (Exception ex)
             {
@@ -255,6 +302,7 @@ namespace brightcast.Controllers
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId
                     });
+
                 }
 
                 return Ok();

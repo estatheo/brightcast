@@ -28,5 +28,6 @@ namespace brightcast.Entities
 
         public ICollection<ContactList> ContactLists { get; set; }
         public ICollection<Campaign> Campaigns { get; set; }
+        public ICollection<CheckoutSession> CheckoutSessions { get; set; }
     }
 }

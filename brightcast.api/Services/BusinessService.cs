@@ -11,6 +11,7 @@ namespace brightcast.Services
         Business GetByUserProfileId(int userProfileId);
         Business Create(Business business);
         void Update(Business business);
+        void UpdateMembership(int userProfileId, string membership);
         void Delete(int id);
 
     }
@@ -104,6 +105,19 @@ namespace brightcast.Services
             
             _context.Businesses.Update(business);
             _context.SaveChanges();
+        }
+
+        public void UpdateMembership(int userProfileId, string membership)
+        {
+            var business = _context.Businesses.SingleOrDefault(x =>
+                x.Id == _context.UserProfiles.SingleOrDefault(y => y.Id == userProfileId).BusinessId);
+            if (business != null)
+            {
+                business.Membership = membership;
+
+                _context.Businesses.Update(business);
+                _context.SaveChanges();
+            }
         }
 
         public void Delete(int id)

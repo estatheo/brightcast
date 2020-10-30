@@ -7,11 +7,18 @@ namespace brightcast.Models.Dashboard
 {
     public class DashboardDataResponse
     {
-        public CardStatModel Delivered { get; set; }
-        public CardStatModel Read { get; set; }
-        public CardStatModel NewSubscribers { get; set; }
-        public CardStatModel Unsubscribed { get; set; }
-        public CardStatModel Replies { get; set; }
+        public CardStatModel DeliveredMonth { get; set; }
+        public CardStatModel DeliveredWeek { get; set; }
+        public CardStatModel DeliveredDay { get; set; }
+        public CardStatModel ReadMonth { get; set; }
+        public CardStatModel ReadWeek { get; set; }
+        public CardStatModel ReadDay { get; set; }
+        public CardStatModel SubscribersMonth { get; set; }
+        public CardStatModel SubscribersWeek { get; set; }
+        public CardStatModel SubscribersDay { get; set; }
+        public CardStatModel RepliesMonth { get; set; }
+        public CardStatModel RepliesWeek { get; set; }
+        public CardStatModel RepliesDay { get; set; }
     }
 
 
