@@ -93,7 +93,7 @@ namespace brightcast.Controllers
                             FirstName = contactEntity.FirstName,
                             LastName = contactEntity.LastName,
                             Body = lastTemplateMessage?.Body,
-                            Time = lastTemplateMessage != null ? lastTemplateMessage.CreatedAt : DateTime.Now
+                            Time = lastTemplateMessage != null ? lastTemplateMessage.CreatedAt : DateTime.UtcNow
                         });
                     }
                 }
@@ -110,6 +110,7 @@ namespace brightcast.Controllers
             {
                 ContactListId = contact.ContactListId,
                 Id = contact.Id,
+                Channels = contact.Channels
                 FirstName = contact.FirstName,
                 LastName = contact.LastName,
                 Email = contact.Email,

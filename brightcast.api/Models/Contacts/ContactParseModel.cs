@@ -11,6 +11,8 @@ namespace brightcast.Models.Contacts
         public string LastName { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
+        public string Telegram { get; set; }
+        public string Whatsapp { get; set; }
         public bool Subscribed { get; set; }
     }
 }

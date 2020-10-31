@@ -39,6 +39,7 @@ namespace brightcast.Controllers
         private readonly IChatService _chatService;
         private readonly IMapper _mapper;
         private readonly IMessageService _messageService;
+        private readonly ITelegramService _telegramService;
         private readonly IUserProfileService _userProfileService;
         private readonly IHubContext<ChatHub> _hub;
 
@@ -52,6 +53,7 @@ namespace brightcast.Controllers
             IMessageService messageService,
             IBusinessService businessService,
             IChatService chatService,
+            ITelegramService telegramService,
             IHubContext<ChatHub> hub,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
@@ -64,6 +66,7 @@ namespace brightcast.Controllers
             _contactService = contactService;
             _messageService = messageService;
             _businessService = businessService;
+            _telegramService = telegramService;
             _chatService = chatService;
             _hub = hub;
             _mapper = mapper;
@@ -206,59 +209,59 @@ namespace brightcast.Controllers
 
             if (messages.Count(x =>
                 (x.Status == "delivered" || x.Status == "read") &&
-                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+                (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) > 0)
             {
                 model.DeliveredPercentage = messages.Count(x => (x.Status == "delivered" || x.Status == "read")
                                                                 && (x.CreatedAt >=
-                                                                    DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                                    DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0))
                                                                 ))
                     / messages.Count(x =>
                         (x.Status == "delivered" || x.Status == "read") &&
-                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+                        (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) * 100;
             }
 
             if (receivedMessages.Count(x =>
                 (x.Status == "delivered" || x.Status == "read") &&
-                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+                (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) > 0)
             {
                 model.RepliesPercentage = receivedMessages.Count(x => (x.Status == "delivered" || x.Status == "read")
                                                                       && (x.CreatedAt >=
-                                                                          DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                                          DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0))
                                                                       ))
                     / receivedMessages.Count(x =>
                         (x.Status == "delivered" || x.Status == "read") &&
-                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+                        (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) * 100;
             }
 
             if (contacts.Count(x =>
-                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+                (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) > 0)
             {
                 model.SubscribedPercentage = contacts.Count(
-                        x => x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                        x => x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0))
                     )
                     / contacts.Count(x =>
-                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+                        (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) * 100;
             }
 
             if (messages.Count(x =>
                 (x.Status == "read") &&
-                (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                 x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) > 0)
+                (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                 x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) > 0)
             {
                 model.ReadPercentage = messages.Count(x => (x.Status == "read")
                                                            && (x.CreatedAt >=
-                                                               DateTime.Now.Subtract(new TimeSpan(28, 0, 0))
+                                                               DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0))
                                                            ))
                     / messages.Count(x =>
                         (x.Status == "read") &&
-                        (x.CreatedAt >= DateTime.Now.Subtract(new TimeSpan(56, 0, 0)) &&
-                         x.CreatedAt <= DateTime.Now.Subtract(new TimeSpan(28, 0, 0)))) * 100;
+                        (x.CreatedAt >= DateTime.UtcNow.Subtract(new TimeSpan(56, 0, 0)) &&
+                         x.CreatedAt <= DateTime.UtcNow.Subtract(new TimeSpan(28, 0, 0)))) * 100;
             }
 
 
@@ -360,11 +363,15 @@ namespace brightcast.Controllers
 
                 var business = _businessService.GetById(userProfile.BusinessId);
 
+                var client = new HttpClient();
+
+                var telegramContacts = new List<Contact>();
+
                 foreach (var contact in contacts)
                 {
-                    var client = new HttpClient();
-
-                    var requestModel = new FormUrlEncodedContent(
+                    if (contact.Channels.Contains("whatsapp"))
+                    {
+                        var requestModel = new FormUrlEncodedContent(
                         new List<KeyValuePair<string, string>>
                         {
                             new KeyValuePair<string, string>("From", $"{_appSettings.TwilioWhatsappNumber}"),
@@ -374,55 +381,65 @@ namespace brightcast.Controllers
                             new KeyValuePair<string, string>("To", $"whatsapp:{contact.Phone}")
                         }
                     );
-                    var req = new HttpRequestMessage(HttpMethod.Post,
-                            $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
-                        {Content = requestModel};
+                        var req = new HttpRequestMessage(HttpMethod.Post,
+                                $"https://api.twilio.com/2010-04-01/Accounts/{_appSettings.TwilioAccountSID}/Messages.json")
+                        { Content = requestModel };
 
-                    req.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
-                        Encoding.ASCII.GetBytes(
-                            $"{_appSettings.TwilioAccountSID}:{_appSettings.TwilioAuthToken}")));
+                        req.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
+                            Encoding.ASCII.GetBytes(
+                                $"{_appSettings.TwilioAccountSID}:{_appSettings.TwilioAuthToken}")));
 
-                    var result = await client.SendAsync(req);
+                        var result = await client.SendAsync(req);
 
-                    var resultModel =
-                        JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
-                            await result.Content.ReadAsStringAsync());
+                        var resultModel =
+                            JsonConvert.DeserializeObject<TwilioTemplateMessageModel>(
+                                await result.Content.ReadAsStringAsync());
 
-                    _messageService.AddTemplateMessage(new TemplateMessage
+                        _messageService.AddTemplateMessage(new TemplateMessage
+                        {
+                            MessageSid = resultModel.Sid,
+                            Body = resultModel.Body,
+                            Date_Created = resultModel.Date_Created,
+                            Date_Sent = resultModel.Date_Sent,
+                            Date_Updated = resultModel.Date_Updated,
+                            Error_Code = resultModel.Error_Code,
+                            Error_Message = resultModel.Error_Message,
+                            From = resultModel.From,
+                            To = resultModel.To,
+                            ContactId = contact.Id,
+                            CampaignId = model.Id,
+                            Status = resultModel.Status
+                        });
+
+                        var chatModel = new ChatMessage()
+                        {
+                            Text = resultModel.Body,
+                            CreatedAt = resultModel.Date_Created ?? DateTime.UtcNow,
+                            Reply = true,
+                            Type = "text",
+                            Files = "",
+                            AvatarUrl = "",
+                            SenderId = userProfile.Id,
+                            SenderName = business.Name,
+                            CampaignId = model.Id,
+                            ContactId = contact.Id,
+                            Channel = "whatsapp",
+                            Status = (int)(ChatMessageStatusEnum)Enum.Parse(typeof(ChatMessageStatusEnum), resultModel.Status, true)
+                        };
+
+                        _chatService.Create(chatModel);
+
+                        await _hub.Clients.All.SendAsync("newMessage", chatModel);
+                    }
+                    else
                     {
-                        MessageSid = resultModel.Sid,
-                        Body = resultModel.Body,
-                        Date_Created = resultModel.Date_Created,
-                        Date_Sent = resultModel.Date_Sent,
-                        Date_Updated = resultModel.Date_Updated,
-                        Error_Code = resultModel.Error_Code,
-                        Error_Message = resultModel.Error_Message,
-                        From = resultModel.From,
-                        To = resultModel.To,
-                        ContactId = contact.Id,
-                        CampaignId = model.Id,
-                        Status = resultModel.Status
-                    });
-                    
-                    var chatModel = new ChatMessage()
-                    {
-                        Text = resultModel.Body,
-                        CreatedAt = resultModel.Date_Created ?? DateTime.Now,
-                        Reply = true,
-                        Type = "text",
-                        Files = "",
-                        AvatarUrl = "",
-                        SenderId = userProfile.Id,
-                        SenderName = business.Name,
-                        CampaignId = model.Id,
-                        ContactId = contact.Id,
-                        Status = (int)(ChatMessageStatusEnum)Enum.Parse(typeof(ChatMessageStatusEnum), resultModel.Status, true)
-                    };
+                        telegramContacts.Add(contact);
+                    }
+                }
 
-                    _chatService.Create(chatModel);
-
-                    await _hub.Clients.All.SendAsync("newMessage", chatModel);
-
+                if (telegramContacts.Count > 0)
+                {
+                    await _telegramService.SendCampaignMessage(model.Message, telegramContacts, userProfile, model.Id);
                 }
 
                 var campaign = _campaignService.GetById(model.Id);

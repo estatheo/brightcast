@@ -12,6 +12,7 @@ namespace brightcast.Entities
         public bool Reply { get; set; }
         public string Files { get; set; }
         public string Text { get; set; }
+        public string Channel { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CampaignId { get; set; }
         public int ContactId { get; set; }

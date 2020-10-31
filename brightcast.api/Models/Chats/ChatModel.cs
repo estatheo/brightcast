@@ -5,6 +5,7 @@ namespace brightcast.Models.Chats
   public class ChatModel
     {
         public int Id { get; set; }
+        public string Channel { get; set; }
         public int SenderId { get; set; }
         public string SenderName { get; set; }
         public int ReceiverId { get; set; }

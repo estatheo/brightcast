@@ -104,6 +104,7 @@ namespace brightcast
             services.AddScoped<IBusinessService, BusinessService>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IMembershipService, MembershipService>();
+            services.AddScoped<ITelegramService, TelegramService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

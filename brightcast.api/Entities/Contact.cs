@@ -6,6 +6,8 @@ namespace brightcast.Entities
   public class Contact
     {
         public int Id { get; set; }
+        public int TelegramUserId { get; set; }
+        public string Channels { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }

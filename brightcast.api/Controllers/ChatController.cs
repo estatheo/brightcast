@@ -72,6 +72,7 @@ namespace brightcast.Controllers
                 CreatedAt = x.CreatedAt,
                 ContactId = x.ContactId,
                 CampaignId = x.CampaignId,
+                Channel = x.Channel,
                 Reply = x.Reply
             }));
         }

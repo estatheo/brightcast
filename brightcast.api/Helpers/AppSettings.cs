@@ -15,6 +15,9 @@ namespace brightcast.Helpers
         public string StripeApiKey { get; set; }
         public string StripeApiClientId { get; set; }
         public string StripeWebhookSecret { get; set; }
+        public string TelegramApiId { get; set; }
+        public string TelegramApiHash { get; set; }
+        public string TelegramApiPhone { get; set; }
 
 
     }

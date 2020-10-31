@@ -131,7 +131,7 @@ namespace brightcast.Controllers
                     var chatMessage = new ChatMessage()
                     {
                         Text = model.Body,
-                        CreatedAt = DateTime.Now,
+                        CreatedAt = DateTime.UtcNow,
                         Reply = false,
                         Type = "text",
                         Files = model.MediaUrl0,
@@ -140,7 +140,8 @@ namespace brightcast.Controllers
                         SenderName = contact.FirstName + " " + contact.LastName,
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId,
-                        Status = (int)messageStatus
+                        Status = (int)messageStatus,
+                        Channel = "whatsapp"
                     };
 
                     _chatService.Create(chatMessage);
@@ -213,7 +214,7 @@ namespace brightcast.Controllers
                     var chatModel = new ChatMessage()
                     {
                         Text = resultModel.Body,
-                        CreatedAt = DateTime.Now,
+                        CreatedAt = DateTime.UtcNow,
                         Reply = true,
                         Type = "text",
                         Files = string.IsNullOrWhiteSpace(campaign.FileUrl) ? "" : campaign.FileUrl,
@@ -222,7 +223,9 @@ namespace brightcast.Controllers
                         SenderName = business.Name,
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId,
-                        Status = campaign.Status
+                        Status = campaign.Status,
+                        Channel = "whatsapp"
+
                     };
 
                     _chatService.Create(chatModel);
@@ -236,7 +239,7 @@ namespace brightcast.Controllers
                     var chatModel = new ChatMessage()
                     {
                         Text = model.Body,
-                        CreatedAt = DateTime.Now,
+                        CreatedAt = DateTime.UtcNow,
                         Reply = false,
                         Type = string.IsNullOrWhiteSpace(model.MediaContentType0) ? "text" : model.MediaContentType0,
                         Files = model.MediaUrl0,
@@ -245,6 +248,7 @@ namespace brightcast.Controllers
                         SenderName = contact.FirstName + " " + contact.LastName,
                         CampaignId = templateMessage.CampaignId,
                         ContactId = templateMessage.ContactId,
+                        Channel = "whatsapp",
                         Status = (int)messageStatus
                     };
 

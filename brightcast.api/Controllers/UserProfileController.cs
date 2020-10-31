@@ -140,6 +140,7 @@ namespace brightcast.Controllers
                 {
                     FirstName = x.FirstName,
                     LastName = x.LastName,
+                    Channels = $"{(string.IsNullOrWhiteSpace(x.Telegram) ? "" : "telegram")},{(string.IsNullOrWhiteSpace(x.Whatsapp) ? "" : "whatsapp")}",
                     ContactListId = contactList.Id,
                     Email = x.Email,
                     Phone = x.Phone,
